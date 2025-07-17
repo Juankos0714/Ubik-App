@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: gestion-clientes-postgres
+    environment:
+      POSTGRES_DB: gestion_clientes
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - gestion-clientes-network
+
+  # Backend Spring Boot
+  backend:
+    build:
+      context: ./gestion-clientes-backend
+      dockerfile: Dockerfile
+    container_name: gestion-clientes-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/gestion_clientes
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - gestion-clientes-network
+    volumes:
+      - ./gestion-clientes-backend:/app
+      - maven_cache:/root/.m2
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./ubik-app
+      dockerfile: Dockerfile
+    container_name: gestion-clientes-frontend
+    environment:
+      REACT_APP_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - gestion-clientes-network
+    volumes:
+      - ./ubik-app:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+  maven_cache:
+
+networks:
+  gestion-clientes-network:
+    driver: bridge
