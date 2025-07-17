@@ -39,7 +39,6 @@ public class UserController {
 
         if (username == null || "anonymousUser".equals(username)) {
             logger.warn("No authenticated user found for /api/user/me request or user is anonymous.");
-            // La inferencia de tipo aquí para <UserResponseDto> es correcta
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("UNAUTHORIZED", "No hay usuario autenticado."));
         }
