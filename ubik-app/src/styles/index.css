@@ -1,0 +1,32 @@
+/*  ARCHIVO DE CONFIGURACION DE ESTILOS GLOBALES*/
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    min-width: 0;
+    font-family: cursive;
+}
+
+:root{
+  --bg-color: #333333;
+  --text-color: #ffffff;
+  color-scheme: light dark; /*  ESTILO PARA EL COLOR DEL SISTEMA */
+}
+
+body{
+  background: var(--bg-color);
+}
+
+h1, h2, h3, h4, h5, h6, p, a, ul, li, span{
+  color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+p,a,ul,li,span{
+  font-size: 1.2rem;
+}
+
