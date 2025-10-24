@@ -37,6 +37,7 @@
   <modules>
     <module>gateway</module>
     <module>products</module>
+    <module>userManagement</module>
   </modules>
 
   <build>
