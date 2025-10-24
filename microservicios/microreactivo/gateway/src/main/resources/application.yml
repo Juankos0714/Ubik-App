@@ -1,0 +1,24 @@
+server:
+  port: 8080
+spring:
+  application.name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # ******** DEFINIR LAS RUTAS DE CADA MICROSERVICIO UNA VEZ ESTE CREADO *********
+          routes:
+            - id: products
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/products/**
+              filters:
+                - StripPrefix=1
+
+          trusted-proxies: '127\.0\.0\.1|::1'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
