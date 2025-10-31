@@ -2,10 +2,12 @@ package com.ubik.usermanagement.infrastructure.adapter.out.repository.mapper;
 
 import com.ubik.usermanagement.domain.model.User;
 import com.ubik.usermanagement.infrastructure.adapter.out.repository.entity.UserEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserMapper {
 
-    public static User toDomain(UserEntity entity) {
+    public User toDomain(UserEntity entity) {
         return new User(
                 entity.id(),
                 entity.username(),
@@ -20,7 +22,7 @@ public class UserMapper {
         );
     }
 
-    public static UserEntity toEntity(User user) {
+    public UserEntity toEntity(User user) {
         return new UserEntity(
                 user.id(),
                 user.username(),

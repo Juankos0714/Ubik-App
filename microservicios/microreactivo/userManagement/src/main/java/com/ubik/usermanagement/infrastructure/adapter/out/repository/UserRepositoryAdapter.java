@@ -1,0 +1,36 @@
+package com.ubik.usermanagement.infrastructure.adapter.out.repository;
+
+import com.ubik.usermanagement.application.port.out.UserRepositoryPort;
+import com.ubik.usermanagement.domain.model.User;
+import com.ubik.usermanagement.infrastructure.adapter.out.repository.mapper.UserMapper;
+import reactor.core.publisher.Mono;
+
+public class UserRepositoryAdapter implements UserRepositoryPort {
+
+    private final UserRepository userRepository;
+    private final UserMapper mapper;
+
+    public UserRepositoryAdapter(UserRepository userRepository, UserMapper mapper) {
+        this.userRepository = userRepository;
+        this.mapper = mapper;
+    }
+    @Override
+    public Mono<User> findByUsername(String username) {
+        return userRepository.findByUsername(username).map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return userRepository.findByEmail(email).map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<User> findByResetToken(String resetToken) {
+        return userRepository.findByResetToken(resetToken).map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<User> save(User user) {
+        return userRepository.save(mapper.toEntity(user)).map(mapper::toDomain);
+    }
+}
