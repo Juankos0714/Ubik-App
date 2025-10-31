@@ -1,24 +1,21 @@
 server:
-  port: 8081
+  port: 8082
 
 spring:
   application:
-    name: userManagement-service
+    name: motelManagement-service
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/userManagement_db
+    url: r2dbc:postgresql://localhost:5432/motel_management_db
     username: postgres
-    password:
+    password: postgres
 
   sql:
     init:
       mode: always
       platform: postgresql
 
-  security:
-    bcrypt:
-      strength: 12  # Fuerza del hash para contraseñas
-
-jwt:
-  secret: mySecretKey1234567890abcdef1234567890abcdef
-  expiration: 86400000 # 1 día en milisegundos
+logging:
+  level:
+    com.ubik.usermanagement: DEBUG
+    org.springframework.r2dbc: DEBUG

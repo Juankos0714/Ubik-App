@@ -1,0 +1,48 @@
+package com.ubik.usermanagement.infrastructure.adapter.out.persistence.mapper;
+
+import com.ubik.usermanagement.domain.model.Room;
+import com.ubik.usermanagement.infrastructure.adapter.out.persistence.entity.RoomEntity;
+import org.springframework.stereotype.Component;
+
+/**
+ * Mapper para convertir entre el modelo de dominio Room y la entidad de persistencia RoomEntity
+ */
+@Component
+public class RoomMapper {
+
+    /**
+     * Convierte de entidad de persistencia a modelo de dominio
+     */
+    public Room toDomain(RoomEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new Room(
+                entity.id(),
+                entity.motelId(),
+                entity.number(),
+                entity.roomType(),
+                entity.price(),
+                entity.description(),
+                entity.isAvailable()
+        );
+    }
+
+    /**
+     * Convierte de modelo de dominio a entidad de persistencia
+     */
+    public RoomEntity toEntity(Room room) {
+        if (room == null) {
+            return null;
+        }
+        return new RoomEntity(
+                room.id(),
+                room.motelId(),
+                room.number(),
+                room.roomType(),
+                room.price(),
+                room.description(),
+                room.isAvailable()
+        );
+    }
+}
