@@ -38,6 +38,7 @@
     <module>gateway</module>
     <module>products</module>
     <module>userManagement</module>
+      <module>motelManegement</module>
   </modules>
 
   <build>

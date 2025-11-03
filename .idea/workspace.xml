@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="aba1757a-4faa-4717-9366-e778d7beeae9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/gateway/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/domain/model/motel.java" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/domain/model/motel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/domain/model/room.java" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/domain/model/room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/infrastructure/adapter/out/repository/motel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/infrastructure/adapter/out/repository/room.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/java/com/ubik/usermanagement/UserManagementApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/motelManegement/src/main/resources/schema-service.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,19 +22,28 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feature-motelManagement" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Juankos0714"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Juankos0714&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Juankos0714/Ubik-App",
-    "accountId": "c96732fd-f258-4e56-a9aa-46f4bb2ef1ef"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Juankos0714/Ubik-App&quot;,
+    &quot;accountId&quot;: &quot;c96732fd-f258-4e56-a9aa-46f4bb2ef1ef&quot;
   }
+}</component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
 }]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -39,26 +55,41 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven. [-q,-pl,MotelManagemement,-am...].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "C:\\Users\\jucar\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe",
     "git-widget-placeholder": "#2 on feature-motelManagement",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/jucar/Documentos/Software_Development/U(BIK/UBIK/Ubik-App",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Global Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
   }
 }]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
-        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
       </set>
     </attachedChunks>
   </component>
@@ -71,6 +102,9 @@
       <updated>1761315291774</updated>
       <workItem from="1761315292968" duration="37000" />
       <workItem from="1761880993432" duration="1221000" />
+      <workItem from="1761882960796" duration="2028000" />
+      <workItem from="1761968101602" duration="1078000" />
+      <workItem from="1762202914392" duration="7212000" />
     </task>
     <servers />
   </component>
