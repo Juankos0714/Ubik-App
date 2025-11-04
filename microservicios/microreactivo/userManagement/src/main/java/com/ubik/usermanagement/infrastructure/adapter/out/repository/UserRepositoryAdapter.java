@@ -3,8 +3,10 @@ package com.ubik.usermanagement.infrastructure.adapter.out.repository;
 import com.ubik.usermanagement.application.port.out.UserRepositoryPort;
 import com.ubik.usermanagement.domain.model.User;
 import com.ubik.usermanagement.infrastructure.adapter.out.repository.mapper.UserMapper;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+@Component
 public class UserRepositoryAdapter implements UserRepositoryPort {
 
     private final UserRepository userRepository;
