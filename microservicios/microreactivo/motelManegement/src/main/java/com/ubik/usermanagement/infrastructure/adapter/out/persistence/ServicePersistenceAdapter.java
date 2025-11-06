@@ -87,6 +87,11 @@ public class ServicePersistenceAdapter implements ServiceRepositoryPort {
     }
 
     @Override
+    public Mono<Boolean> existsRoomServiceRelation(Long roomId, Long serviceId) {
+        return roomServiceR2dbcRepository.existsByRoomIdAndServiceId(roomId, serviceId);
+    }
+
+    @Override
     public Mono<Void> addServiceToRoom(Long roomId, Long serviceId) {
         RoomServiceEntity entity = new RoomServiceEntity(roomId, serviceId);
         return roomServiceR2dbcRepository.save(entity)

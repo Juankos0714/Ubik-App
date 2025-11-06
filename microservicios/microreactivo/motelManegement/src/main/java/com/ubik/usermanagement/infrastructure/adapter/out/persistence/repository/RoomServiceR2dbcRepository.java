@@ -42,4 +42,12 @@ public interface RoomServiceR2dbcRepository extends ReactiveCrudRepository<RoomS
      * @return Mono vacío que completa cuando se elimina
      */
     Mono<Void> deleteByRoomIdAndServiceId(Long roomId, Long serviceId);
+
+    /**
+     * Verifica si existe una relación entre habitación y servicio
+     */
+    @Query("SELECT EXISTS(SELECT 1 FROM room_service WHERE room_id = :roomId AND service_id = :serviceId)")
+    Mono<Boolean> existsByRoomIdAndServiceId(Long roomId, Long serviceId);
+
+
 }

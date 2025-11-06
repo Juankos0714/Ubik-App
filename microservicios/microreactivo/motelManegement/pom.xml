@@ -20,7 +20,7 @@
     <description>Microservicio reactivo para gestión de moteles con PostgreSQL</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>

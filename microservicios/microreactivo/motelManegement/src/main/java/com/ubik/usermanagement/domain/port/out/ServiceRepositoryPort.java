@@ -87,4 +87,12 @@ public interface ServiceRepositoryPort {
      * @return Mono vacío que completa cuando se elimina
      */
     Mono<Void> removeServiceFromRoom(Long roomId, Long serviceId);
+
+    /**
+     * Verifica si existe la relación entre una habitación y un servicio
+     * @param roomId ID de la habitación
+     * @param serviceId ID del servicio
+     * @return Mono con true si existe, false en caso contrario
+     */
+    Mono<Boolean> existsRoomServiceRelation(Long roomId, Long serviceId);
 }

@@ -118,6 +118,15 @@ public class ServiceService implements ServiceUseCasePort {
                     if (!serviceExists) {
                         return Mono.error(new RuntimeException("Servicio no encontrado con ID: " + serviceId));
                     }
+                    // Verificar si la relación ya existe
+                    return serviceRepositoryPort.existsRoomServiceRelation(roomId, serviceId);
+                })
+                .flatMap(relationExists -> {
+                    if (relationExists) {
+                        return Mono.error(new IllegalArgumentException(
+                                "El servicio con ID " + serviceId + " ya está asociado a la habitación con ID " + roomId));
+                    }
+                    // Si todo está bien, crear la relación
                     return serviceRepositoryPort.addServiceToRoom(roomId, serviceId);
                 });
     }
