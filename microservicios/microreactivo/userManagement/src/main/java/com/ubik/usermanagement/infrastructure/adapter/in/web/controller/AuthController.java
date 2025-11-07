@@ -51,8 +51,8 @@ public class AuthController {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<String> handleInvalidCredentials(RuntimeException ex) {
-        return Mono.just("Credenciales inválidas");
+        return Mono.just("Error"+ex.getMessage());
     }
 }

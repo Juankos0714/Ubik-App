@@ -15,6 +15,13 @@ spring:
               filters:
                 - StripPrefix=1
 
+            - id: userManagement-auth
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=0
+
           trusted-proxies: '127\.0\.0\.1|::1'
 
 management:

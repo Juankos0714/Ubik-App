@@ -24,9 +24,16 @@ public class JwtWebFilter {
 
     public WebFilter authenticationFilter() {
         return (ServerWebExchange exchange, WebFilterChain chain) -> {
-            String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+            String path = exchange.getRequest().getPath().value();
 
+            // 🔹 Evita aplicar el filtro a rutas públicas (registro, login, reset)
+            if (path.startsWith("/api/auth/")) {
+                return chain.filter(exchange);
+            }
+
+            String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                // 🔹 Si no hay token, continúa sin autenticación (no forzar 401)
                 return chain.filter(exchange);
             }
 
@@ -49,6 +56,7 @@ public class JwtWebFilter {
                 }
 
             } catch (Exception e) {
+                // 🔹 En caso de token inválido o expirado, simplemente continuar sin interrumpir
                 return chain.filter(exchange);
             }
 
@@ -56,3 +64,4 @@ public class JwtWebFilter {
         };
     }
 }
+
