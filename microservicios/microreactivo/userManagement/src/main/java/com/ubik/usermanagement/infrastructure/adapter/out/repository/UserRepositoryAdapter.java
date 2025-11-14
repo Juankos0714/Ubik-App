@@ -2,6 +2,7 @@ package com.ubik.usermanagement.infrastructure.adapter.out.repository;
 
 import com.ubik.usermanagement.application.port.out.UserRepositoryPort;
 import com.ubik.usermanagement.domain.model.User;
+import com.ubik.usermanagement.infrastructure.adapter.out.repository.entity.UserEntity;
 import com.ubik.usermanagement.infrastructure.adapter.out.repository.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -34,5 +35,25 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public Mono<User> save(User user) {
         return userRepository.save(mapper.toEntity(user)).map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<User> update(User user) {
+        return userRepository.findByUsername(user.username())
+                .flatMap(existing -> {
+                    UserEntity updatedEntity = new UserEntity(
+                            existing.id(),
+                            user.username(),
+                            user.password(),
+                            user.email(),
+                            user.phoneNumber(),
+                            user.createdAt(),
+                            user.anonymous(),
+                            user.role(),
+                            user.resetToken(),
+                            user.resetTokenExpiry()
+                    );
+            return userRepository.save(updatedEntity);
+        }).map(mapper::toDomain);
     }
 }

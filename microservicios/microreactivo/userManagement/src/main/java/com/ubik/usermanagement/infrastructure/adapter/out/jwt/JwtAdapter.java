@@ -55,7 +55,8 @@ public class JwtAdapter implements JwtPort {
             Map<String, Object> claims = extractClaims(token);
 
             String username = (String) claims.get("sub"); // 'sub' = subject en JWT
-            Date expiration = (Date) claims.get("exp");
+            Long expSeconds = ((Number) claims.get("exp")).longValue();
+            Date expiration = new Date(expSeconds * 1000);
 
             return username != null &&
                     username.equals(expectedUsername) &&

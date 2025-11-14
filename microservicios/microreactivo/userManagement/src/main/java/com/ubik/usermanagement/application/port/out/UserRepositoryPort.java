@@ -8,4 +8,6 @@ public interface UserRepositoryPort {
     Mono<User> findByEmail(String email);
     Mono<User> findByResetToken(String resetToken);
     Mono<User> save(User user);
+
+    Mono<User> update(User user);
 }
