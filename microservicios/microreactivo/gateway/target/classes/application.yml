@@ -29,6 +29,29 @@ spring:
               filters:
                 - StripPrefix=0
 
+            # Microservicio de Motel Management - Motels
+            - id: motel-management-motels
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/motels/**
+              filters:
+                - StripPrefix=0
+
+            # Microservicio de Motel Management - Rooms
+            - id: motel-management-rooms
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/rooms/**
+              filters:
+                - StripPrefix=0
+
+            # Microservicio de Motel Management - Services
+            - id: motel-management-services
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/services/**
+              filters:
+                - StripPrefix=0
 
           trusted-proxies: '127\.0\.0\.1|::1'
 
