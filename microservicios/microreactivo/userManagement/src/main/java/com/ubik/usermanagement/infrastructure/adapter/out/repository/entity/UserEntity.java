@@ -1,9 +1,14 @@
-package com.ubik.usermanagement.domain.model;
+package com.ubik.usermanagement.infrastructure.adapter.out.repository.entity;
+
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-public record User(
-        Long id,
+@Table("users")
+public record UserEntity(
+        @Id Long id,
         String username,
         String password,
         String email,
@@ -15,4 +20,3 @@ public record User(
         LocalDateTime resetTokenExpiry
 ) {
 }
-

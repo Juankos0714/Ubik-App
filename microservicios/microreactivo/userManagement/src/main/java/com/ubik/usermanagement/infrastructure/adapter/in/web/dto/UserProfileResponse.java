@@ -1,18 +1,14 @@
-package com.ubik.usermanagement.domain.model;
+package com.ubik.usermanagement.infrastructure.adapter.in.web.dto;
 
 import java.time.LocalDateTime;
 
-public record User(
+public record UserProfileResponse(
         Long id,
         String username,
-        String password,
         String email,
         String phoneNumber,
         LocalDateTime createdAt,
         boolean anonymous,
-        String role,
-        String resetToken,
-        LocalDateTime resetTokenExpiry
+        String role
 ) {
 }
-

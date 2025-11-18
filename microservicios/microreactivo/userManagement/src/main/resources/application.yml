@@ -8,7 +8,7 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/userManagement_db
     username: postgres
-    password:
+    password: tomas
 
   sql:
     init:
