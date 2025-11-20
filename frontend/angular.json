@@ -6,9 +6,11 @@
     "frontend": {
       "projectType": "application",
       "schematics": {
+
         "@schematics/angular:component": {
-          "style": "css"
+          "style": "css" 
         }
+        
       },
       "root": "",
       "sourceRoot": "src",
