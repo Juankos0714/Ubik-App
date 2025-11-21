@@ -9,7 +9,6 @@
         <module name="orders" />
         <module name="customers" />
         <module name="motel-management" />
-        <module name="user-management" />
         <module name="gateway" />
         <module name="products" />
       </profile>
