@@ -1,5 +1,8 @@
+*{box-sizing: border-box;}
+
 @import "tailwindcss";
 
-@theme{
-    --main-color-bg: #f00;
+
+body {
+  @apply bg-gradient-to-r from-[#17000B] to-[#350810];
 }
