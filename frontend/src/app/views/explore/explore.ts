@@ -8,4 +8,7 @@ import { Component } from '@angular/core';
 })
 export class Explore {
 
+  datosEstaticos = [
+    {id: 1, nameService: "Servicio"},
+  ]
 }

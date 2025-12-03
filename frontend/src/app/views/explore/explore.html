@@ -5,15 +5,15 @@
         <span id="clear">Limpiar todo</span>
     </section>
     <section class="includingServices">
-        @for (service of services; track service.id) {
+        @for (service of datosEstaticos; track service.id) {
 
             <input type="checkbox" name="{name}" id="{name}"><label for="{name}"></label>
         }@empty{
-            No se encontraron servicios 
+            No se encontraron servicios
         }
     </section>
     <section class="categories">
-         @for (categorie of categories; track categorie.id) {
+         @for (categorie of datosEstaticos; track categorie.id) {
 
             <input type="checkbox" name="{name}" id="{name}"><label for="{name}"></label>
         }@empty{
