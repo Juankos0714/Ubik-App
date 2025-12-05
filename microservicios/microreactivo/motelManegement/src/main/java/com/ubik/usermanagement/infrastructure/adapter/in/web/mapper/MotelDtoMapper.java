@@ -7,6 +7,8 @@ import com.ubik.usermanagement.infrastructure.adapter.in.web.dto.UpdateMotelRequ
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mapper para convertir entre DTOs web y modelo de dominio Motel
@@ -29,7 +31,8 @@ public class MotelDtoMapper {
                 request.description(),
                 request.city(),
                 request.propertyId(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                request.imageUrls() != null ? new ArrayList<>(request.imageUrls()) : new ArrayList<>()
         );
     }
 
@@ -48,7 +51,8 @@ public class MotelDtoMapper {
                 request.description(),
                 request.city(),
                 null, // Se mantendrá el existente
-                null  // Se mantendrá la existente
+                null,  // Se mantendrá la existente
+                request.imageUrls() != null ? new ArrayList<>(request.imageUrls()) : new ArrayList<>()
         );
     }
 
@@ -67,7 +71,8 @@ public class MotelDtoMapper {
                 motel.description(),
                 motel.city(),
                 motel.propertyId(),
-                motel.dateCreated()
+                motel.dateCreated(),
+                motel.imageUrls()
         );
     }
 }
