@@ -34,7 +34,7 @@ export class Home implements OnInit {
         id: 1,
         imagen: 'https://res.cloudinary.com/du4tcug9q/image/upload/v1763726311/image-habitation_mmy7ly.png',
         titulo: 'Aniversario especial',
-        descripcion: 'Celebra tu aniversario con nosotros y recibe una botella de vino espumoso y fresas con chocolate de cortesía.'
+        descripcion: 'Celebra tu aniversario con nosotros y recibe una botella de vino espumoso.'
       },
       {
         id: 2,
