@@ -8,14 +8,22 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
+                                                         JwtAuthenticationFilter jwtFilter) {
+
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchanges -> exchanges.anyExchange().permitAll())
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION) // <── Correcto
                 .build();
     }
 }
+

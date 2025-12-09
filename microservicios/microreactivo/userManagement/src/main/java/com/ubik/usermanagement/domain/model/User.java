@@ -10,7 +10,7 @@ public record User(
         String phoneNumber,
         LocalDateTime createdAt,
         boolean anonymous,
-        String role,
+        Integer roleId,
         String resetToken,
         LocalDateTime resetTokenExpiry
 ) {
