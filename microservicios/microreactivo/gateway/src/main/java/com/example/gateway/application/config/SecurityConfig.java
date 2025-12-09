@@ -3,6 +3,7 @@ package com.example.gateway.application.config;
 import com.example.gateway.application.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -19,10 +20,23 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        // ---- ENDPOINTS PUBLICOS ----
+                        .pathMatchers("/api/auth/login").permitAll()
+                        .pathMatchers("/api/auth/register").permitAll()
+                        .pathMatchers("/api/auth/reset-password-request").permitAll()
+                        .pathMatchers("/api/auth/reset-password").permitAll()
+
+                        // ---- ENDPOINTS PROTEGIDOS ----
+                        .pathMatchers(HttpMethod.GET, "/api/user").authenticated()
+                        .pathMatchers(HttpMethod.PUT, "/api/user").authenticated()
+
+                        // (Opcional) Endpoints admin:
+                        //.pathMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Todo lo demás requiere autenticación
                         .anyExchange().authenticated()
                 )
-                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION) // <── Correcto
+                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }

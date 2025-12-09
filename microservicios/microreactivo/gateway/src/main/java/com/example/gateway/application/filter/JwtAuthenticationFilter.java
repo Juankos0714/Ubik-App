@@ -3,12 +3,17 @@ package com.example.gateway.application.filter;
 import com.example.gateway.domain.port.out.JwtValidatorPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -25,12 +30,12 @@ public class JwtAuthenticationFilter implements WebFilter {
 
         String path = exchange.getRequest().getPath().value();
 
-        // 1. Rutas públicas
+        // 1. Rutas públicas (no requieren JWT)
         if (isPublicPath(path)) {
             return chain.filter(exchange);
         }
 
-        // 2. Extraer token
+        // 2. Extraer JWT del Authorization header
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -40,20 +45,32 @@ public class JwtAuthenticationFilter implements WebFilter {
         String token = authHeader.substring(7);
 
         try {
-            // 3. Validar token
+            // 3. Validar token y extraer claims
             Map<String, Object> claims = jwtValidatorPort.validateToken(token);
 
-            // 4. Propagar claims a los microservicios
+            String username = claims.get("sub").toString();
+            String role     = claims.get("role").toString();
+
+            // 4. Mutar request y agregar headers para microservicios
             ServerHttpRequest mutatedRequest = exchange.getRequest()
                     .mutate()
-                    .header("X-User-Id", claims.getOrDefault("id", "").toString())
-                    .header("X-User-Email", claims.getOrDefault("email", "").toString())
-                    .header("X-User-Roles", claims.getOrDefault("roles", "").toString())
+                    .header("X-User-Username", username)
+                    .header("X-User-Role", role) // <-- CORREGIDO
                     .build();
 
-            return chain.filter(
-                    exchange.mutate().request(mutatedRequest).build()
+            ServerWebExchange mutatedExchange = exchange.mutate()
+                    .request(mutatedRequest)
+                    .build();
+
+            // 5. Registrar Authentication (solo útil en el Gateway)
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    username,
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
             );
+
+            return chain.filter(mutatedExchange)
+                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
 
         } catch (Exception e) {
             return unauthorized(exchange);
@@ -69,4 +86,7 @@ public class JwtAuthenticationFilter implements WebFilter {
         return exchange.getResponse().setComplete();
     }
 }
+
+
+
 
