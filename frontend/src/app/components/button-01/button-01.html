@@ -1,5 +1,16 @@
-<div class="button bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg w-full text-center h-8 p-1">
-    <a routerLink="">
-             {{text}}
-    </a>
+<div class="button bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg w-full text-center h-8 p-1 hover:from-[#7E3A45] hover:to-[#B73037] transition-colors cursor-pointer">
+  <a [routerLink]="routerLink || ''" class="flex items-center justify-between h-full px-3">
+    
+    <div class="flex items-center gap-3 flex-1">
+      @if (iconLeft) {
+        <i [class]="iconLeft + ' text-lg'"></i>
+      }
+      <span>{{ text }}</span>
+    </div>
+    
+    @if (iconRight) {
+      <i [class]="iconRight + ' text-lg opacity-70'"></i>
+    }
+    
+  </a>
 </div>
