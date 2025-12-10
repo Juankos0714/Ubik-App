@@ -34,14 +34,13 @@ spring:
             - StripPrefix=1
             - name: AuthorizationFilter
 
-        # Motel Management - Motels
-        - id: motel-management-motels
-          uri: http://localhost:8084
-          predicates:
-            - Path=/api/motels/**
-          filters:
-            - StripPrefix=0
-            - name: AuthorizationFilter
+            # Microservicio de Motel Management - Motels
+            - id: motel-management-motels
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/motels/**
+              filters:
+                - StripPrefix=0
 
         # Motel Management - Rooms
         - id: motel-management-rooms
