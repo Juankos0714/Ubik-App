@@ -6,3 +6,8 @@
 body {
   @apply bg-gradient-to-r from-[#17000B] to-[#350810];
 }
+
+main{
+  height: 100vh;
+  color: #fff;
+}

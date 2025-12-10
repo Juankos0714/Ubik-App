@@ -1,24 +1,37 @@
-<!--
-<aside class="filter">
-    <section class="header">
-        <h2>Filtros</h2>
-        <span id="clear">Limpiar todo</span>
-    </section>
-    <section class="includingServices">
-        @for (service of datosEstaticos; track service.id) {
+<h1>Vista Explorar</h1>
 
-            <input type="checkbox" name="{name}" id="{name}"><label for="{name}"></label>
-        }@empty{
-            No se encontraron servicios
-        }
-    </section>
-    <section class="categories">
-         @for (categorie of datosEstaticos; track categorie.id) {
+<aside class="filter ">
+  <section class="services">
+    <h3>Servicios</h3>
 
-            <input type="checkbox" name="{name}" id="{name}"><label for="{name}"></label>
-        }@empty{
-            No se encontraron servicios 
-        }
-    </section>
+    @for (feat of motels; track feat.id) {
+    <label>
+      <input type="checkbox" [value]="feat" (change)="onFeatureChange($event)" />
+      {{ feat }}
+    </label>
+    }
+  </section>
 
+  <section class="results">
+    <br />
+    <h2>Todos los moteles</h2>
+    <br />
+    @for (motel of filteredMotels; track motel.id) {
+    <div class="card">
+      <h3>{{ motel.name }}</h3>
+      <p>{{ motel.location }} – {{ motel.category }}</p>
+      <p>Servicios: {{ motel.features.join(', ') }}</p>
+      <strong>${{ motel.price }}</strong>
+    </div>
+    <br />
+
+    }
+  </section>
 </aside>
+
+<!-- 
+  
+  ciudad gotica
+  Movimiento original
+
+-->
