@@ -7,4 +7,5 @@ import { Component, Input } from '@angular/core';
   styleUrl: './button-02.css',
 })
 export class Button02 {
+  @Input() text! : string;
 }
