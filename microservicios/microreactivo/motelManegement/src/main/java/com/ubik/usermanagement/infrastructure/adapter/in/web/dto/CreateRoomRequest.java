@@ -1,6 +1,7 @@
 package com.ubik.usermanagement.infrastructure.adapter.in.web.dto;
 
 import jakarta.validation.constraints.*;
+import java.util.List;
 
 /**
  * DTO para crear una nueva Room
@@ -22,6 +23,9 @@ public record CreateRoomRequest(
         Double price,
 
         @Size(max = 500, message = "La descripción no puede exceder 500 caracteres")
-        String description
+        String description,
+
+        @Size(max = 15, message = "No se pueden agregar más de 15 imágenes")
+        List<@Size(max = 500, message = "La URL de la imagen no puede exceder 500 caracteres") String> imageUrls
 ) {
 }
