@@ -2,6 +2,7 @@ package com.ubik.usermanagement.infrastructure.adapter.in.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 
 /**
  * DTO para crear un nuevo Motel
@@ -25,6 +26,9 @@ public record CreateMotelRequest(
         @Size(max = 100, message = "La ciudad no puede exceder 100 caracteres")
         String city,
 
-        Long propertyId
+        Long propertyId,
+
+        @Size(max = 10, message = "No se pueden agregar más de 10 imágenes")
+        List<@Size(max = 500, message = "La URL de la imagen no puede exceder 500 caracteres") String> imageUrls
 ) {
 }

@@ -56,7 +56,8 @@ public class MotelService implements MotelUseCasePort {
                             motel.description(),
                             motel.city(),
                             existingMotel.propertyId(),
-                            existingMotel.dateCreated()
+                            existingMotel.dateCreated(),
+                            motel.imageUrls()
                     );
                     return validateMotel(updatedMotel)
                             .then(motelRepositoryPort.update(updatedMotel));
@@ -86,6 +87,9 @@ public class MotelService implements MotelUseCasePort {
         }
         if (motel.city() == null || motel.city().trim().isEmpty()) {
             return Mono.error(new IllegalArgumentException("La ciudad del motel es requerida"));
+        }
+        if (motel.imageUrls() != null && motel.imageUrls().size() > 10) {
+            return Mono.error(new IllegalArgumentException("No se pueden agregar más de 10 imágenes"));
         }
         return Mono.empty();
     }

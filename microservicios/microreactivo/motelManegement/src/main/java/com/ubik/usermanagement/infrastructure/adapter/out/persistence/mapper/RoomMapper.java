@@ -4,6 +4,8 @@ import com.ubik.usermanagement.domain.model.Room;
 import com.ubik.usermanagement.infrastructure.adapter.out.persistence.entity.RoomEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Mapper para convertir entre el modelo de dominio Room y la entidad de persistencia RoomEntity
  */
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class RoomMapper {
 
     /**
-     * Convierte de entidad de persistencia a modelo de dominio
+     * Convierte de entidad de persistencia a modelo de dominio (sin imágenes)
      */
     public Room toDomain(RoomEntity entity) {
         if (entity == null) {
@@ -24,7 +26,27 @@ public class RoomMapper {
                 entity.roomType(),
                 entity.price(),
                 entity.description(),
-                entity.isAvailable()
+                entity.isAvailable(),
+                List.of() // Lista vacía por defecto
+        );
+    }
+
+    /**
+     * Convierte de entidad de persistencia a modelo de dominio (con imágenes)
+     */
+    public Room toDomain(RoomEntity entity, List<String> imageUrls) {
+        if (entity == null) {
+            return null;
+        }
+        return new Room(
+                entity.id(),
+                entity.motelId(),
+                entity.number(),
+                entity.roomType(),
+                entity.price(),
+                entity.description(),
+                entity.isAvailable(),
+                imageUrls != null ? imageUrls : List.of()
         );
     }
 

@@ -4,6 +4,9 @@ import com.ubik.usermanagement.domain.model.Motel;
 import com.ubik.usermanagement.infrastructure.adapter.out.persistence.entity.MotelEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * Mapper para convertir entre el modelo de dominio Motel y la entidad de persistencia MotelEntity
  */
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class MotelMapper {
 
     /**
-     * Convierte de entidad de persistencia a modelo de dominio
+     * Convierte de entidad de persistencia a modelo de dominio (sin imágenes)
      */
     public Motel toDomain(MotelEntity entity) {
         if (entity == null) {
@@ -25,7 +28,28 @@ public class MotelMapper {
                 entity.description(),
                 entity.city(),
                 entity.propertyId(),
-                entity.dateCreated()
+                entity.dateCreated(),
+                List.of() // Lista vacía por defecto
+        );
+    }
+
+    /**
+     * Convierte de entidad de persistencia a modelo de dominio (con imágenes)
+     */
+    public Motel toDomain(MotelEntity entity, List<String> imageUrls) {
+        if (entity == null) {
+            return null;
+        }
+        return new Motel(
+                entity.id(),
+                entity.name(),
+                entity.address(),
+                entity.phoneNumber(),
+                entity.description(),
+                entity.city(),
+                entity.propertyId(),
+                entity.dateCreated(),
+                imageUrls != null ? imageUrls : List.of()
         );
     }
 
