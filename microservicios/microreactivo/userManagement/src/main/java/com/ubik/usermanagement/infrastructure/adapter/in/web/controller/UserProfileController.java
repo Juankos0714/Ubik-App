@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -21,26 +22,23 @@ public class UserProfileController {
     }
 
     @GetMapping
-    public Mono<ResponseEntity<UserProfileResponse>> getProfile() {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(ctx -> ctx.getAuthentication())
-                .flatMap(auth -> {
-                    String username = auth.getName();
-                    return userProfileUseCase.getUserProfile(username)
-                            .map(ResponseEntity::ok)
-                            .defaultIfEmpty(ResponseEntity.notFound().build());
-                });
+    public Mono<ResponseEntity<UserProfileResponse>> getProfile(ServerWebExchange exchange) {
+        String username = exchange.getRequest().getHeaders().getFirst("X-User-Username");
+
+        return userProfileUseCase.getUserProfile(username)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping
-    public Mono<ResponseEntity<UserProfileResponse>> updateProfile(@RequestBody UpdateUserRequest request) {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(ctx -> ctx.getAuthentication())
-                .flatMap(auth -> {
-                    String username = auth.getName();
-                    return userProfileUseCase.updateUserProfile(username, request)
-                            .map(ResponseEntity::ok)
-                            .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-                });
+    public Mono<ResponseEntity<UserProfileResponse>> updateProfile(
+            @RequestBody UpdateUserRequest request,
+            ServerWebExchange exchange) {
+
+        String username = exchange.getRequest().getHeaders().getFirst("X-User-Username");
+
+        return userProfileUseCase.updateUserProfile(username, request)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

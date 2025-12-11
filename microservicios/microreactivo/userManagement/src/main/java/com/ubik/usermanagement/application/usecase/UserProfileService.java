@@ -37,7 +37,7 @@ public class UserProfileService implements UserProfileUseCase {
                             request.phoneNumber() != null ? request.phoneNumber() : existingUser.phoneNumber(),
                             existingUser.createdAt() != null ? existingUser.createdAt() : LocalDateTime.now(),
                             request.anonymous() != null ? request.anonymous() : existingUser.anonymous(),
-                            existingUser.role(),
+                            existingUser.roleId(),
                             existingUser.resetToken(),
                             existingUser.resetTokenExpiry()
                     );
@@ -54,7 +54,7 @@ public class UserProfileService implements UserProfileUseCase {
                 user.phoneNumber(),
                 user.createdAt(),
                 user.anonymous(),
-                user.role()
+                user.roleId()
         );
     }
 }
