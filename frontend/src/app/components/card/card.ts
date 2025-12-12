@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { Button01 } from "../button-01/button-01";
-import { Button02 } from "../button-02/button-02";
+import { Component, Input } from '@angular/core';
+import { Button01 } from '../button-01/button-01';
+import { Button02 } from '../button-02/button-02';
 
-interface CardInfo {
-  imagen: string;
-  titulo: string;
+export interface HabitacionInformacion {
+  id: number;
+  motelId: number;
+  numberHab: string;
+  tipo: string;
+  price: number;
   descripcion: string;
+  imagen: string;
 }
 
 @Component({
@@ -14,25 +18,11 @@ interface CardInfo {
   templateUrl: './card.html',
   styleUrl: './card.css',
 })
-export class Card implements OnInit{
+export class Card {
 
-  card: CardInfo = {
-    imagen: '',
-    titulo: '',
-    descripcion: ''
-  };
+  @Input() card!: HabitacionInformacion;
+  @Input() textButton1: string = 'Reservar';  
+  @Input() textButton2: string = 'Detalles'; 
+  @Input() showDescription: boolean = true;  
 
-    ngOnInit(): void {
-    // Aquí obtienes los datos de tu servicio/base de datos
-    this.cargarDatos();
-  }
-
-  cargarDatos(): void {
-    // Ejemplo - reemplaza con tu llamada al servicio
-    this.card = {
-      imagen: 'https://res.cloudinary.com/du4tcug9q/image/upload/v1763726311/image-habitation_mmy7ly.png',
-      titulo: 'Aniversario especial',
-      descripcion: 'Celebra tu aniversario con nosotros y recibe una botella de vino espumoso y fresas con chocolate de cortesía.'
-    };
-  }
 }
