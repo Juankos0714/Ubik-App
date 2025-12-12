@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ThreeButtons } from './three-buttons';
+import { ThreeButtom } from './three-buttom';
 
-describe('ThreeButtons', () => {
-  let component: ThreeButtons;
-  let fixture: ComponentFixture<ThreeButtons>;
+describe('ThreeButtom', () => {
+  let component: ThreeButtom;
+  let fixture: ComponentFixture<ThreeButtom>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ThreeButtons]
+      imports: [ThreeButtom]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ThreeButtons);
+    fixture = TestBed.createComponent(ThreeButtom);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

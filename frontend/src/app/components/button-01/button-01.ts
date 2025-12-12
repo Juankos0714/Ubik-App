@@ -10,4 +10,5 @@ import { text } from 'node:stream/consumers';
 })
 export class Button01 {
   @Input() text! : string;
+  @Input() routerLink: string = '';
 }

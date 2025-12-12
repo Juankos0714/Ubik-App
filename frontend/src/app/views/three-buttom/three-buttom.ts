@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { Button01 } from '../button-01/button-01';
 import { CommonModule } from '@angular/common';
+import { Button01 } from '../../components/button-01/button-01';
 
 @Component({
-  selector: 'app-three-buttons',
+  selector: 'app-three-buttom',
   imports: [Button01, CommonModule],
-  templateUrl: './three-buttons.html',
-  styleUrl: './three-buttons.css',
+  templateUrl: './three-buttom.html',
+  styleUrl: './three-buttom.css',
 })
-export class ThreeButtons {
+export class ThreeButtom {
   habitaciones: string = 'Habitaciones';
   Ofertas: string = 'Ofertas';
   Perfil: string = 'Perfil';

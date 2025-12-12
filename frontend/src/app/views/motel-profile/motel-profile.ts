@@ -3,7 +3,6 @@ import { Button01 } from '../../components/button-01/button-01';
 import { CommonModule } from '@angular/common';
 import { CardOffers } from "../../components/card-offers/card-offers";
 import { CardRoom } from '../../components/card-room/card-room';
-import { ThreeButtons } from '../../components/three-buttons/three-buttons';
 
 interface InfoPerfile {
   imageBack: string;
@@ -34,7 +33,7 @@ interface Oferta {
 @Component({
   selector: 'app-perfile-motel',
   standalone: true,
-  imports: [Button01, CommonModule, ThreeButtons, CardOffers, CardRoom],
+  imports: [Button01, CommonModule, CardOffers, CardRoom],
   templateUrl: './motel-profile.html',
   styleUrls: ['./motel-profile.css'],
 })
