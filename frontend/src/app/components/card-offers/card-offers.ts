@@ -2,8 +2,10 @@ import { Component, Input } from '@angular/core';
 import { Button01 } from '../button-01/button-01';
 
 interface CardOff {
+  id: number;
   image: string;
   nombre: string;
+  descripcion: string;
 }
 
 @Component({
@@ -17,8 +19,10 @@ export class CardOffers {
 
   // Ejemplo de oferta
    @Input() cardOferta: CardOff = {
+    id: 0,
     image: '',
-    nombre: ''
+    nombre: '',
+    descripcion:'',
   };
 
   constructor() {}

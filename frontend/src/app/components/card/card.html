@@ -7,14 +7,14 @@
         <div class="p-4">
 
             <!-- Tipo de habitación -->
-            <h2 class="text-white text-lg font-bold italic mb-1">
+            <h2 class="text-white text-base font-bold  mb-1">
                 {{ card.tipo }}
             </h2>
 
             
             <!-- Descripción (condicional) -->
             @if (showDescription) {
-                <p class="text-gray-300 text-xs mb-3 text-elipsis min-h-8">
+                <p class="text-gray-300 text-xs mb-3 min-h-8 line-clamp-2">
                     {{ card.descripcion }}
                 </p>
             }
