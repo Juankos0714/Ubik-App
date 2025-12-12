@@ -15,11 +15,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    private final JwtWebFilter jwtWebFilter;
+    /*private final JwtWebFilter jwtWebFilter;
 
     public SecurityConfig(JwtWebFilter jwtWebFilter) {
         this.jwtWebFilter = jwtWebFilter;
-    }
+    }*/
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -27,10 +27,10 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/auth/**").permitAll()
-                        .pathMatchers("/api/user/**").authenticated()
-                        .pathMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyExchange().authenticated())
-                .addFilterBefore(jwtWebFilter.authenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+                        //.pathMatchers("/api/user/**").authenticated()
+                        //.pathMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyExchange().permitAll())
+                //.addFilterBefore(jwtWebFilter.authenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 

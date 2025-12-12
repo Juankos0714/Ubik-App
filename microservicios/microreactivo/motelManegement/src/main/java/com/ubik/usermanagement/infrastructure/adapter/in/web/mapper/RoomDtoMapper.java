@@ -6,6 +6,9 @@ import com.ubik.usermanagement.infrastructure.adapter.in.web.dto.RoomResponse;
 import com.ubik.usermanagement.infrastructure.adapter.in.web.dto.UpdateRoomRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Mapper para convertir entre DTOs web y modelo de dominio Room
  */
@@ -26,7 +29,8 @@ public class RoomDtoMapper {
                 request.roomType(),
                 request.price(),
                 request.description(),
-                true // Por defecto disponible
+                true, // Por defecto disponible
+                request.imageUrls() != null ? new ArrayList<>(request.imageUrls()) : new ArrayList<>()
         );
     }
 
@@ -44,7 +48,8 @@ public class RoomDtoMapper {
                 request.roomType(),
                 request.price(),
                 request.description(),
-                request.isAvailable()
+                request.isAvailable(),
+                request.imageUrls() != null ? new ArrayList<>(request.imageUrls()) : new ArrayList<>()
         );
     }
 
@@ -62,7 +67,8 @@ public class RoomDtoMapper {
                 room.roomType(),
                 room.price(),
                 room.description(),
-                room.isAvailable()
+                room.isAvailable(),
+                room.imageUrls()
         );
     }
 }

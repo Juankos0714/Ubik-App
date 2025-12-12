@@ -49,7 +49,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                             user.phoneNumber(),
                             user.createdAt(),
                             user.anonymous(),
-                            user.role(),
+                            user.roleId(),
                             user.resetToken(),
                             user.resetTokenExpiry()
                     );

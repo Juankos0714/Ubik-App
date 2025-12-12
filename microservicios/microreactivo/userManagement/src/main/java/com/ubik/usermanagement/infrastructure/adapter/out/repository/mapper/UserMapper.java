@@ -16,7 +16,7 @@ public class UserMapper {
                 entity.phoneNumber(),
                 entity.createdAt(),
                 entity.anonymous(),
-                entity.role(),
+                entity.roleId(),
                 entity.resetToken(),
                 entity.resetTokenExpiry()
         );
@@ -31,7 +31,7 @@ public class UserMapper {
                 user.phoneNumber(),
                 user.createdAt(),
                 user.anonymous(),
-                user.role(),
+                user.roleId(),
                 user.resetToken(),
                 user.resetTokenExpiry()
         );

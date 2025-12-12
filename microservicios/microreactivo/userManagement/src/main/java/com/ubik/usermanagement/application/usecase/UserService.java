@@ -32,14 +32,31 @@ public class UserService implements UserUseCase {
 
         return userRepository.findByUsername(request.username())
                 .flatMap(existing -> Mono.<String>error(new RuntimeException("Username already exists")))
-                .switchIfEmpty(userRepository.findByEmail(request.email())
-                        .flatMap(existing -> Mono.<String>error(new RuntimeException("Email already exists")))
-                        .switchIfEmpty(Mono.defer(() -> {
-                            User user = new User(null, request.username(), passwordEncoder.encode(request.password()),
-                                    request.email(),null,null,request.anonymous(), request.role(), null, null);
-                            return userRepository.save(user)
-                                    .map(saved -> jwtAdapter.generateToken(saved.username(), saved.role()));
-                        })));
+                .switchIfEmpty(
+                        userRepository.findByEmail(request.email())
+                                .flatMap(existing -> Mono.<String>error(new RuntimeException("Email already exists")))
+                                .switchIfEmpty(Mono.defer(() -> {
+
+                                    User user = new User(
+                                            null,
+                                            request.username(),
+                                            passwordEncoder.encode(request.password()),
+                                            request.email(),
+                                            null,                    // phoneNumber
+                                            null,                    // createdAt
+                                            request.anonymous(),
+                                            request.roleId(),        // ahora es Integer
+                                            null,                    // resetToken
+                                            null                     // resetTokenExpiry
+                                    );
+
+                                    return userRepository.save(user)
+                                            .map(saved -> jwtAdapter.generateToken(
+                                                    saved.username(),
+                                                    saved.roleId()       // Integer, se envía al JWT
+                                            ));
+                                }))
+                );
     }
 
     @Override
@@ -47,17 +64,31 @@ public class UserService implements UserUseCase {
         return userRepository.findByUsername(request.username())
                 .filter(user -> passwordEncoder.matches(request.password(), user.password()))
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid credentials")))
-                .map(user -> jwtAdapter.generateToken(user.username(), user.role()));
+                .map(user -> jwtAdapter.generateToken(
+                        user.username(),
+                        user.roleId()      // Integer para JWT
+                ));
     }
 
     @Override
     public Mono<String> requestPasswordReset(String email) {
 
         String resetToken = UUID.randomUUID().toString();
+
         return userRepository.findByEmail(email)
                 .switchIfEmpty(Mono.error(new RuntimeException("Email not found")))
-                .flatMap(user -> userRepository.save(new User(user.id(), user.username(), user.password(), user.email(),
-                        user.phoneNumber(), user.createdAt(),user.anonymous(),user.role(), resetToken, LocalDateTime.now().plusHours(1))))
+                .flatMap(user -> userRepository.save(new User(
+                        user.id(),
+                        user.username(),
+                        user.password(),
+                        user.email(),
+                        user.phoneNumber(),
+                        user.createdAt(),
+                        user.anonymous(),
+                        user.roleId(),              // Integer
+                        resetToken,
+                        LocalDateTime.now().plusHours(1)
+                )))
                 .map(user -> resetToken);
     }
 
@@ -66,9 +97,19 @@ public class UserService implements UserUseCase {
         return userRepository.findByResetToken(request.token())
                 .filter(user -> user.resetTokenExpiry() != null && user.resetTokenExpiry().isAfter(LocalDateTime.now()))
                 .switchIfEmpty(Mono.error(new RuntimeException("Invalid or expired token")))
-                .flatMap(user -> userRepository.save(new User(user.id(), user.username(),
-                        passwordEncoder.encode(request.newPassword()), user.email(),user.phoneNumber(),user.createdAt(),user.anonymous(), user.role(),
-                        null, null)))
+                .flatMap(user -> userRepository.save(new User(
+                        user.id(),
+                        user.username(),
+                        passwordEncoder.encode(request.newPassword()),
+                        user.email(),
+                        user.phoneNumber(),
+                        user.createdAt(),
+                        user.anonymous(),
+                        user.roleId(),          // Integer
+                        null,
+                        null
+                )))
                 .map(user -> "Password reset successfully");
     }
 }
+
