@@ -16,6 +16,7 @@
     <br />
     <h2>Todos los moteles</h2>
     <br />
+    
     @for (motel of filteredMotels; track motel.id) {
     <div class="card">
       <h3>{{ motel.name }}</h3>
@@ -24,8 +25,8 @@
       <strong>${{ motel.price }}</strong>
     </div>
     <br />
-
     }
+
   </section>
 </aside>
 

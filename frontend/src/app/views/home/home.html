@@ -1,4 +1,8 @@
-<div class="w-full max-w-5xl mx-auto p-4 rounded-lg space-y-4 flex flex-col justify-center">
+<app-button-01 text="Probando boton" routerLink="explore"></app-button-01>
+
+
+
+<form class="w-full max-w-5xl mx-auto p-4 rounded-lg space-y-4 flex flex-col justify-center">
 
   <!-- Ubicación -->
   <div>
@@ -33,7 +37,7 @@
   <!-- Botón -->
   <app-button-01 [text]="'Buscar'"></app-button-01>
 
-</div>
+</form>
 
 <!-- CARRUSEL 1: Mejores Ofertas -->
 <div class="mb-12">
@@ -81,8 +85,8 @@
               <h2 class="text-white text-lg font-bold italic mb-1">{{ motel.titulo }}</h2>
               <p class="text-gray-300 text-xs leading-relaxed mb-3">{{ motel.descripcion }}</p>
               <div class="flex gap-3 justify-center">
-                <app-button-01 [text]="'Reservar ahora'" class="flex-1"></app-button-01>
-                <app-button-02 [text]="'Ver Detalles'" class="flex-1"></app-button-02>
+                <app-button-01 [text]="'Reservar ahora'"></app-button-01>
+                <app-button-02 [text]="'Ver Detalles'"></app-button-02>
               </div>
             </div>
           </div>
