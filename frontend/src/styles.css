@@ -10,4 +10,5 @@ body {
 main{
   height: 100vh;
   color: #fff;
+  max-width: 1400px;
 }

@@ -35,7 +35,7 @@
   </div>
 
   <!-- Botón -->
-  <app-button-01 [text]="'Buscar'"></app-button-01>
+  <app-button-01 text="Buscar" [fullWidth]="true"></app-button-01>
 
 </form>
 
@@ -50,7 +50,7 @@
   <div class="overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth">
     <div class="flex gap-4 pb-4">
       @for (oferta of mejoresOfertas; track oferta.id) {
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <div class="w-72 bg-[#1e2128] rounded-2xl overflow-hidden shadow-lg">
             <img [src]="oferta.imagen" [alt]="oferta.titulo" class="w-full h-48 object-cover">
             <div class="p-4">

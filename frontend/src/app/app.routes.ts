@@ -1,14 +1,11 @@
 import { Routes } from '@angular/router';
 import { Home } from './views/home/home';
 import { Explore } from './views/explore/explore';
-import { LoginComponent } from './views/login/login.component';
-import { RegisterUser } from './views/register/user/register-user/register-user';
-import { EstablishmentInfo } from './views/register/establishment/info/establishment-info/establishment-info';
-import { EstablishmentLocation } from './views/register/establishment/location/establishment-location/establishment-location';
-import { EstablishmentImages } from './views/register/establishment/confirm/establishment-images/establishment-images';
-import { EstablishmentConfirm } from './views/register/establishment/confirm/establishment-confirm/establishment-confirm';
+
 import { MotelProfile } from './views/motel-profile/motel-profile';
 import { ThreeButtom } from './views/three-buttom/three-buttom';
+import { RegisterUser } from './views/Forms/register/register-user/register-user';
+import { LoginComponent } from './views/Forms/login/login.component';
 
 export const routes: Routes = [
     {path: "", component: Home},
