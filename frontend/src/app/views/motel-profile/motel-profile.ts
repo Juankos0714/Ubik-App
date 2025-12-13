@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Button01 } from '../../components/button-01/button-01';
 import { CommonModule } from '@angular/common';
-import { CardOffers } from "../../components/card-offers/card-offers";
+import { CardOffers, CardOff } from "../../components/card-offers/card-offers";
 import { CardRoom } from '../../components/card-room/card-room';
 
 interface InfoPerfile {
@@ -24,11 +24,6 @@ interface CardHabitacion {
   price: number;
 }
 
-interface Oferta {
-  id: number;
-  image: string;
-  nombre: string;
-}
 
 @Component({
   selector: 'app-perfile-motel',
@@ -50,21 +45,24 @@ export class MotelProfile implements OnInit {
     address:'Km 1 via tebaida'
   };
 
-  ofertas: Oferta[] = [
+  ofertas: CardOff[] = [
     {
       id: 1,
       image: 'https://res.cloudinary.com/du4tcug9q/image/upload/v1764772908/103-3_ccb4iu.jpg',
-      nombre: 'Aniversario especial'
+      nombre: 'Aniversario especial',
+      descripcion: 'Celebra tu aniversario con nosotros y disfruta de una noche inolvidable llena de sorpresas y romanticismo.'
     },
     {
       id: 2,
       image: 'https://res.cloudinary.com/du4tcug9q/image/upload/v1764772908/103-3_ccb4iu.jpg',
-      nombre: 'Escapada romántica'
+      nombre: 'Escapada romántica',
+      descripcion: 'Disfruta de una escapada romántica con tu pareja en nuestras cómodas habitaciones y servicios exclusivos.'
     },
     {
       id: 3,
       image: 'https://res.cloudinary.com/du4tcug9q/image/upload/v1764772908/103-3_ccb4iu.jpg',
-      nombre: 'Fin de semana largo'
+      nombre: 'Fin de semana largo',
+      descripcion: 'Aprovecha el fin de semana largo para relajarte y desconectar en nuestro motel con tarifas especiales.' 
     }
   ];
 

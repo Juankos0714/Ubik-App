@@ -1,4 +1,4 @@
-<div class="w-sm h-40 flex flex-col gap-6 ">
+<div class="w-sm h-45 flex flex-col gap-6 ">
 
   <div class="flex bg-[#F7E8E3] rounded-xl overflow-hidden shadow-md w-full">
 
@@ -8,11 +8,11 @@
         {{ cardOferta.nombre }}
       </h2>
 
-      <p class="text-sm text-[#4A2A2A] text-base">
-        Ahorra Hasta un 20% con una oferta escapada
+      <p class="text-sm text-[#4A2A2A] text-base line-clamp-2">
+        {{cardOferta.descripcion}}
       </p>
 
-      <app-button-01 [text]="'Reservar ahora'" class="w-30"></app-button-01>
+      <app-button-01 [text]="'Reservar ahora'" class="w-30 mt-4"></app-button-01>
 
     </div>
 
