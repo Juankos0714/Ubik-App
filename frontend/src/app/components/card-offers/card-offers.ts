@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Button01 } from '../button-01/button-01';
 
-interface CardOff {
+export interface CardOff {
   id: number;
   image: string;
   nombre: string;
