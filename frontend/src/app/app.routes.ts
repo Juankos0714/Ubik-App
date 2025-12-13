@@ -7,8 +7,9 @@ import { EstablishmentInfo } from './views/register/establishment/info/establish
 import { EstablishmentLocation } from './views/register/establishment/location/establishment-location/establishment-location';
 import { EstablishmentImages } from './views/register/establishment/confirm/establishment-images/establishment-images';
 import { EstablishmentConfirm } from './views/register/establishment/confirm/establishment-confirm/establishment-confirm';
+import { RegisterSelect } from './views/register-select/register-select';
 
 export const routes: Routes = [
-    {path: "", component: EstablishmentConfirm}
+    {path: "", component: RegisterSelect}
     
 ];
