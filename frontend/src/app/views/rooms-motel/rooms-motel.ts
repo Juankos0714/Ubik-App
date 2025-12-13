@@ -3,10 +3,11 @@ import { Card } from "../../components/card/card";
 import { HabitacionInformacion } from '../../components/card/card';
 import { Button01 } from '../../components/button-01/button-01';
 import { Button02 } from '../../components/button-02/button-02';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-rooms-motel',
-  imports: [Card],
+  imports: [Card, RouterLink],
   templateUrl: './rooms-motel.html',
   styleUrl: './rooms-motel.css',
 })
