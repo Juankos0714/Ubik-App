@@ -1,41 +1,39 @@
-# Etapa 1: Build
+# =========================
+# BUILD STAGE
+# =========================
 FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
-# Copiar archivos de configuración de Maven
-COPY pom.xml .
+# Copiamos TODO el proyecto (incluye el pom padre)
+COPY . .
 
-# Copiar código fuente
-COPY src ./src
+# Compilamos SOLO el módulo userManagement
+RUN mvn clean package \
+    -pl userManagement \
+    -am \
+    -DskipTests
 
-# Compilar la aplicación (Maven descargará las dependencias automáticamente)
-RUN mvn clean package -DskipTests
-
-# Etapa 2: Runtime
+# =========================
+# RUNTIME STAGE
+# =========================
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Crear usuario no-root para ejecutar la aplicación
+# Usuario no-root
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-# Copiar el JAR desde la etapa de build
-COPY --from=build /app/target/*.jar app.jar
+# Copiar el JAR correcto
+COPY --from=build /app/userManagement/target/*.jar app.jar
 
-# Exponer el puerto
 EXPOSE 8081
 
-# Configurar JVM para contenedor
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
-
-# Usar el perfil docker
 ENV SPRING_PROFILES_ACTIVE=docker
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1
 
-# Ejecutar la aplicación
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
