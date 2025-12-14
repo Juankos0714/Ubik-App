@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-button-01',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './button-01.html',
   styleUrl: './button-01.css',
 })
