@@ -4,6 +4,7 @@ import { MotelProfile } from './views/motel-profile/motel-profile';
 import { ThreeButtom } from './views/three-buttom/three-buttom';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
+import { EditProfileMotelComponent } from './views/edit-profile-motel/edit-profile-motel';
 
 export const routes: Routes = [
     {path: "", component: Home},
@@ -11,5 +12,6 @@ export const routes: Routes = [
     {path: "three-buttons", component: ThreeButtom},
     {path: "rooms-motel", component: RoomsMotel},
     {path: "rooms-offerts", component: RoomsOfferts},
+    {path: "edit-profile-motel", component: EditProfileMotelComponent},
     
 ];
