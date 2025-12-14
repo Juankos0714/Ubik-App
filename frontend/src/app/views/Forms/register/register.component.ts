@@ -1,6 +1,5 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button01 } from '../../components/button-01/button-01';
 import { RegisterService } from './services/register.service';
 import { validateFileUpload } from './utils/validation.utils';
 import {
@@ -13,6 +12,7 @@ import {
   EstablishmentLocationData,
   EstablishmentImagesData,
 } from './types/register.types';
+import { Button01 } from '../../../components/button-01/button-01';
 
 @Component({
   selector: 'app-register',

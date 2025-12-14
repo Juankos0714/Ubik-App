@@ -55,54 +55,55 @@ const CATEGORIES: Category[] = [
 
 export class Explore {
 
-
+  FEATURES = FEATURES;
 
 /*========= SIMULACION DE TABLAS DE BASES DE DATOS Habitaciones del motel ===============*/
 
- motels: Motel[] = [
-  {
-    id: 1,
-    name: 'Oasis',
-    location: 'Bogotá',
-    rooms: [
-      {
-        id: 1,
-        name: 'Suite Jacuzzi',
-        category: CATEGORIES[0],
-        price: 150000,
-        features: [FEATURES[0], FEATURES[1], FEATURES[2]]
-      },
-      {
-        id: 2,
-        name: 'Habitación Estándar',
-        category: CATEGORIES[1],
-        price: 90000,
-        features: [FEATURES[1], FEATURES[2]]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Luna Azul',
-    location: 'Medellín',
-    rooms: [
-      {
-        id: 3,
-        name: 'Habitación Premium',
-        category: CATEGORIES[0],
-        price: 130000,
-        features: [FEATURES[0], FEATURES[2]]
-      },
-      {
-        id: 4,
-        name: 'Habitación Básica',
-        category: CATEGORIES[1],
-        price: 80000,
-        features: [FEATURES[1]]
-      }
-    ]
-  }
-];
+  motels: Motel[] = [
+
+    {
+      id: 1,
+      name: 'Oasis',
+      location: 'Bogotá',
+      rooms: [
+        {
+          id: 1,
+          name: 'Suite Jacuzzi',
+          category: CATEGORIES[0],
+          price: 150000,
+          features: [FEATURES[0], FEATURES[1], FEATURES[2]]
+        },
+        {
+          id: 2,
+          name: 'Habitación Estándar',
+          category: CATEGORIES[1],
+          price: 90000,
+          features: [FEATURES[1], FEATURES[2]]
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Luna Azul',
+      location: 'Medellín',
+      rooms: [
+        {
+          id: 3,
+          name: 'Habitación Premium',
+          category: CATEGORIES[0],
+          price: 130000,
+          features: [FEATURES[0], FEATURES[2]]
+        },
+        {
+          id: 4,
+          name: 'Habitación Básica',
+          category: CATEGORIES[1],
+          price: 80000,
+          features: [FEATURES[1]]
+        }
+      ]
+    }
+  ];
 
   filters = {
     categoryId: null as number | null,
@@ -130,19 +131,19 @@ export class Explore {
         location: motel.location,
         room
       }))
-  );
-}
-onFeatureChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const value = Number(input.value);
-
-  if (input.checked) {
-    this.filters.featureIds.push(value);
-  } else {
-    this.filters.featureIds =
-      this.filters.featureIds.filter(id => id !== value);
+    );
   }
-}
+  onFeatureChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = Number(input.value);
+
+    if (input.checked) {
+      this.filters.featureIds.push(value);
+    } else {
+      this.filters.featureIds =
+        this.filters.featureIds.filter(id => id !== value);
+    }
+  }
 
 
 }

@@ -1,31 +1,36 @@
-<h1>Vista Explorar</h1>
+<h2>Vista Explorar</h2>
 
-<aside class="filter ">
+<aside class="filter">
+  <!-- FILTROS -->
   <section class="services">
     <h3>Servicios</h3>
 
-    @for (feat of motels; track feat.id) {
-    <label>
-      <input type="checkbox" [value]="feat" (change)="onFeatureChange($event)" />
-      {{ feat }}
-    </label>
+    @for (feat of FEATURES; track feat.id) {
+      <label class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          [value]="feat.id"
+          (change)="onFeatureChange($event)"
+        />
+        {{ feat.name }}
+      </label>
     }
   </section>
 
+  <!-- RESULTADOS -->
   <section class="results">
     <br />
-    <h2>Todos los moteles</h2>
+    <h2>Habitaciones disponibles</h2>
     <br />
-    
+
     @for (item of filteredRooms; track item.room.id) {
-  <app-card-3
-    [title]="item.room.name"
-    [location]="item.location"
-    [price]="item.room.price"
-    [hours]="3"
-    [services]="item.room.features"
-  />
-}
+      <app-card-3
+        [title]="item.room.name"
+        [location]="item.location"
+        [price]="item.room.price"
+        [hours]="3"
+        [services]="item.room.features"
+      />
+    }
   </section>
 </aside>
-

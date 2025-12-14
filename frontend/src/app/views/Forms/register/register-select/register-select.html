@@ -105,12 +105,13 @@
                 class="hidden"
                 (change)="onFrontIdSelected($event)"
                 />
-                 @if (data.establishment.owner?.documentFront) {
-                <p class="text-green-400 text-sm mt-2">
+                 @if (data.establishment.owner.documentFront) {
+                    <div class="text-green-400 text-sm mt-2">
                     ✔ Archivo cargado:
-                    {{ data.establishment.owner?.documentFront?.name }}
-                </p>
-                }
+                    @if (data.establishment.owner.documentFront) {}
+                    </div>
+                  }
+                
 
               </label>
             </div>
@@ -127,10 +128,10 @@
                 class="hidden"
                 (change)="onBackIdSelected($event)"
                 />
-                @if (data.establishment.owner?.documentBack) {
+                @if (data.establishment.owner.documentBack) {
                 <p class="text-green-400 text-sm mt-2">
                     ✔ Archivo cargado:
-                    {{ data.establishment.owner?.documentBack?.name }}
+                    {{ data.establishment.owner.documentBack.name }}
                 </p>
                 }
 
