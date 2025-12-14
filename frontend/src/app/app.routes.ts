@@ -10,18 +10,34 @@ import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
+import { UserProfile } from './views/user-profile/user-profile';
+import { RegisterComponent } from './views/Forms/register/register.component';
+
 
 export const routes: Routes = [
 
     {path: "", component: Home},
     {path: "explore", component: Explore},
-    {path: "Profile", component: MotelProfile},
-    {path: "three-buttons", component: ThreeButtom},
-    {path: 'register', component: RegisterUser},
-    {path: 'login', component: LoginComponent},
+    {path: "Profile-motel", component: MotelProfile},
+    {path: "three-buttons", component: ThreeButtom},// 🔴 ESTO DEBERIA DE LLAMARSE DASHBORAD-MOTEL - Y DEBERIA DE FUNCIONAR COMO UN FILTRP AL DARLE EN UN BOTON DEBERIA DE APARECER ABAJO LO QUE SE SELECCIONONO - POR EJEMPLO LA LISTA DE LOS MOTELES.
+    
     {path: "rooms-motel", component: RoomsMotel},
     {path: "rooms-offerts", component: RoomsOfferts},
-    {path: "allc", component: TodosLosComponentes},
+    
+    /*========== ReGISTER / LOGUIN ==========*/
+
     {path: "select-register", component: RegisterSelect},
-    {path: "register", component: RegisterUser},
+    {path: 'register', component: RegisterComponent},
+    {path: "register-user", component: RegisterUser},
+    {path: 'login', component: LoginComponent},
+
+
+    /**==== PERFILES DE USURIOS ====== */
+
+    {path: "Profile-user", component: UserProfile},
+
+
+    /**⚠️ ESTA RUTA ES APARTE SOLO PARA VER TODOS LOS COMPONENTES DE LA PAGINA JUNTOS SOLO TENDREMOS CONOCIMIENTO DE ELLA NOSOTROS :v */
+    {path: "allc", component: TodosLosComponentes},
+
 ]
