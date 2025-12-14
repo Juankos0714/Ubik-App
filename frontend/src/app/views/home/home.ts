@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button01 } from '../../components/button-01/button-01';
 import { Card, HabitacionInformacion } from '../../components/card/card';
+import { Button02 } from "../../components/button-02/button-02";
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Button01, Card],
+  imports: [CommonModule, Button01, Card, Button02],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
