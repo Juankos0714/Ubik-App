@@ -8,7 +8,6 @@ import { Inputcomponent } from '../../../components/input/input';
   standalone: true,
   imports: [CommonModule, Button01, Inputcomponent],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
