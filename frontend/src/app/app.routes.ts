@@ -21,7 +21,8 @@ export const routes: Routes = [
     {path: 'login', component: LoginComponent},
     {path: "rooms-motel", component: RoomsMotel},
     {path: "rooms-offerts", component: RoomsOfferts},
-    {path: "allc", component: TodosLosComponentes}
+    {path: "allc", component: TodosLosComponentes},
+    {path: "register", component: RegisterUser},
 
 
     // ESTAS VISTAS SON LAS QUE HIZO SEBASTIAN -- COMO SE VAN A CAMBIAR LAS DEJO COMENTADAS
