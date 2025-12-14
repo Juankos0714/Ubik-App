@@ -17,22 +17,15 @@
     <h2>Todos los moteles</h2>
     <br />
     
-    @for (motel of filteredMotels; track motel.id) {
-    <div class="card">
-      <h3>{{ motel.name }}</h3>
-      <p>{{ motel.location }} – {{ motel.category }}</p>
-      <p>Servicios: {{ motel.features.join(', ') }}</p>
-      <strong>${{ motel.price }}</strong>
-    </div>
-    <br />
-    }
-
+    @for (item of filteredRooms; track item.room.id) {
+  <app-card-3
+    [title]="item.room.name"
+    [location]="item.location"
+    [price]="item.room.price"
+    [hours]="3"
+    [services]="item.room.features"
+  />
+}
   </section>
 </aside>
 
-<!-- 
-  
-  ciudad gotica
-  Movimiento original
-
--->

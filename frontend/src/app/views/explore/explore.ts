@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Card3 } from "../../components/card-3/card-3";
 
 /*========= SIMULACION DE MODELOS ============*/
 
@@ -47,7 +48,7 @@ const CATEGORIES: Category[] = [
 
 @Component({
   selector: 'app-explore',
-  imports: [],
+  imports: [Card3],
   templateUrl: './explore.html',
   styleUrl: './explore.css',
 })
@@ -111,27 +112,37 @@ export class Explore {
     featureIds: [] as number[]
   };
 
-
-  get filteredMotels(): Motel[] {
-  return this.motels.filter(m =>
-    (this.filters.category ? m.category === this.filters.category : true) &&
-    (this.filters.location ? m.location === this.filters.location : true) &&
-    m.price >= this.filters.priceMin &&
-    m.price <= this.filters.priceMax &&
-    this.filters.features.every(f => m.features.includes(f))
+  get filteredRooms() {
+  return this.motels.flatMap(motel =>
+    motel.rooms
+      .filter(room =>
+        (this.filters.categoryId
+          ? room.category.id === this.filters.categoryId
+          : true) &&
+        room.price >= this.filters.priceMin &&
+        room.price <= this.filters.priceMax &&
+        this.filters.featureIds.every(id =>
+          room.features.some(f => f.id === id)
+        )
+      )
+      .map(room => ({
+        motelName: motel.name,
+        location: motel.location,
+        room
+      }))
   );
-  
-  }
-
-  onFeatureChange(event: Event) {
+}
+onFeatureChange(event: Event) {
   const input = event.target as HTMLInputElement;
-  const value = input.value;
+  const value = Number(input.value);
 
-    if (input.checked) {
-      this.filters.features.push(value);
-    } else {
-      this.filters.features = this.filters.features.filter(f => f !== value);
-    }
+  if (input.checked) {
+    this.filters.featureIds.push(value);
+  } else {
+    this.filters.featureIds =
+      this.filters.featureIds.filter(id => id !== value);
   }
+}
+
 
 }
