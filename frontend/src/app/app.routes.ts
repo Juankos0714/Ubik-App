@@ -9,7 +9,7 @@ import { LoginComponent } from './views/Forms/login/login.component';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
-import { EditProfileMotelComponent } from './views/edit-profile-motel/edit-profile-motel';
+// import { EditProfileMotelComponent } from './views/edit-profile-motel/edit-profile-motel';
 
 export const routes: Routes = [
 
