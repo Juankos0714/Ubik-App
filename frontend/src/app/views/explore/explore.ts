@@ -1,13 +1,49 @@
 import { Component } from '@angular/core';
 
+/*========= SIMULACION DE MODELOS ============*/
+
+export interface Feature {
+  id: number;
+  name: string;
+  icon: string;
+};
+
+export interface Category {
+  id: number;
+  name: string;
+};
+
+
+export interface Room {
+  id: number;
+  name: string;
+  category: Category;
+  price: number;
+  features: Feature[];
+}
+
 export interface Motel {
   id: number;
   name: string;
-  category: string;
   location: string;
-  price: number;
-  features: string[]; // jacuzzi, sauna, etc.
+  rooms: Room[];
 }
+
+/*========= SIMULACION DE TABLAS DE BASES DE DATOS FEATURES Y CATEGOTIAS ===============*/
+
+const FEATURES: Feature[] = [
+  { id: 1, name: 'Jacuzzi', icon: 'pi pi-star' },
+  { id: 2, name: 'Parqueadero', icon: 'pi pi-car' },
+  { id: 3, name: 'TV', icon: 'pi pi-desktop' },
+  { id: 4, name: 'Aire acondicionado', icon: 'pi pi-snowflake' }
+];
+
+const CATEGORIES: Category[] = [
+  { id: 1, name: 'Premium' },
+  { id: 2, name: 'Económico' }
+];
+
+/**============ Configuracion del component ================ */
 
 @Component({
   selector: 'app-explore',
@@ -15,34 +51,66 @@ export interface Motel {
   templateUrl: './explore.html',
   styleUrl: './explore.css',
 })
+
 export class Explore {
 
-  motels: Motel[] = [
-    {
-      id: 1,
-      name: 'Oasis',
-      category: 'Premium',
-      location: 'Bogotá',
-      price: 150000,
-      features: ['Jacuzzi', 'Parqueadero', 'TV']
-    },
-    {
-      id: 2,
-      name: 'Luna Azul',
-      category: 'Económico',
-      location: 'Medellín',
-      price: 80000,
-      features: ['Parqueadero']
-    }
-  ];
+
+
+/*========= SIMULACION DE TABLAS DE BASES DE DATOS Habitaciones del motel ===============*/
+
+ motels: Motel[] = [
+  {
+    id: 1,
+    name: 'Oasis',
+    location: 'Bogotá',
+    rooms: [
+      {
+        id: 1,
+        name: 'Suite Jacuzzi',
+        category: CATEGORIES[0],
+        price: 150000,
+        features: [FEATURES[0], FEATURES[1], FEATURES[2]]
+      },
+      {
+        id: 2,
+        name: 'Habitación Estándar',
+        category: CATEGORIES[1],
+        price: 90000,
+        features: [FEATURES[1], FEATURES[2]]
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Luna Azul',
+    location: 'Medellín',
+    rooms: [
+      {
+        id: 3,
+        name: 'Habitación Premium',
+        category: CATEGORIES[0],
+        price: 130000,
+        features: [FEATURES[0], FEATURES[2]]
+      },
+      {
+        id: 4,
+        name: 'Habitación Básica',
+        category: CATEGORIES[1],
+        price: 80000,
+        features: [FEATURES[1]]
+      }
+    ]
+  }
+];
 
   filters = {
-    category: '',
+    categoryId: null as number | null,
     location: '',
     priceMin: 0,
     priceMax: 999999,
-    features: [] as string[] // checkboxes
+    featureIds: [] as number[]
   };
+
 
   get filteredMotels(): Motel[] {
   return this.motels.filter(m =>
