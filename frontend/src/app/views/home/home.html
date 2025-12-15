@@ -1,4 +1,4 @@
-<form method="get" class="w-full max-w-5xl mx-auto p-4 rounded-lg space-y-4 flex flex-col justify-center">
+<div class="w-full max-w-5xl mx-auto p-4 rounded-lg space-y-4 flex flex-col justify-center">
 
   <!-- Ubicación -->
   <div>
@@ -31,12 +31,12 @@
   </div>
 
   <!-- Botón -->
-  <app-button-01 text="Buscar" [fullWidth]="true"></app-button-01>
+  <app-button-01 [text]="'Buscar'"></app-button-01>
 
-</form>
+</div>
 
 <!-- CARRUSEL 1: Mejores Ofertas -->
-<section class="mb-12">
+<div class="mb-12">
   <div class="flex justify-between items-center px-6 py-4">
     <p class="text-xl text-white font-bold">Mejores ofertas</p>
     <a href="#" class="text-sm text-white hover:underline">Ver todas las ofertas ></a>
@@ -46,26 +46,19 @@
   <div class="overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth">
     <div class="flex gap-4 pb-4">
       @for (oferta of mejoresOfertas; track oferta.id) {
-        <div class="shrink-0">
-          <div class="w-72 rounded-2xl overflow-hidden shadow-lg">
-            <img [src]="oferta.imagen" alt="oferta.tipo" class="w-full h-48 object-cover">
-            <div class="p-4">
-              <h2 class="text-white text-lg font-bold italic mb-1">{{ oferta.tipo }}</h2>
-              <p class="text-gray-300 text-xs leading-relaxed mb-3">{{ oferta.descripcion }}</p>
-              <div class="flex gap-3 justify-center">
-                <app-button-01 [text]="'Reservar ahora'" class="flex-1"></app-button-01>
-                <app-button-02 [text]="'Ver Detalles'" class="flex-1"></app-button-02>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-card 
+        [card]="oferta"
+        class=""
+        >
+
+        </app-card>
       }
     </div>
   </div>
-</section>
+</div>
 
 <!-- CARRUSEL 2: Moteles Cercanos -->
-<section class="mb-12">
+<div class="mb-12">
   <div class="flex justify-between items-center px-6 py-4">
     <p class="text-xl text-white font-bold">Moteles más cercanos</p>
     <a href="#" class="text-sm text-white hover:underline">Ver todos ></a>
@@ -74,27 +67,14 @@
   <div class="overflow-x-auto px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth">
     <div class="flex gap-4 pb-4">
       @for (motel of motelesCercanos; track motel.id) {
-        <div class="shrink-0">
-          <div class="w-72 bg-[#1e2128] rounded-2xl overflow-hidden shadow-lg">
-            <img [src]="motel.imagen" alt="motel.titulo" class="w-full h-48 object-cover">
-            <div class="p-4">
-              <h2 class="text-white text-lg font-bold italic mb-1">{{ motel.titulo }}</h2>
-              <p class="text-gray-300 text-xs leading-relaxed mb-3">{{ motel.descripcion }}</p>
-              <div class="flex gap-3 justify-center">
-                <app-button-01 text='Reservar ahora'></app-button-01>
-                <app-button-02 text='Ver Detalles'></app-button-02>
-                
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-card [card]="motel"></app-card>
       }
     </div>
   </div>
-</section>
+</div>
 
 <!-- CARRUSEL 3: Destinos Populares -->
-<section class="mb-12">
+<div class="mb-12">
   <div class="flex justify-between items-center px-6 py-4">
     <p class="text-xl text-white font-bold">Destinos Populares</p>
     <a href="#" class="text-sm text-white hover:underline">Ver todos ></a>
@@ -107,4 +87,4 @@
       }
     </div>
   </div>
-</section>
+</div>

@@ -9,13 +9,14 @@ import { LoginComponent } from './views/Forms/login/login.component';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
+import { ProductComponent } from './views/product-room/product-room';
 // import { EditProfileMotelComponent } from './views/edit-profile-motel/edit-profile-motel';
 
 export const routes: Routes = [
 
     {path: "", component: Home},
     {path: "explore", component: Explore},
-    {path: "Profile", component: MotelProfile},
+    {path: "Profile-motel", component: MotelProfile},
     {path: "three-buttons", component: ThreeButtom},
     {path: 'register', component: RegisterUser},
     {path: 'login', component: LoginComponent},
@@ -23,6 +24,7 @@ export const routes: Routes = [
     {path: "rooms-offerts", component: RoomsOfferts},
     {path: "allc", component: TodosLosComponentes},
     {path: "register", component: RegisterUser},
+    {path: "product-room/:id", component: ProductComponent},
 
 
     // ESTAS VISTAS SON LAS QUE HIZO SEBASTIAN -- COMO SE VAN A CAMBIAR LAS DEJO COMENTADAS

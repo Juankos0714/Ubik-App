@@ -20,8 +20,11 @@
             }
 
             <div class="flex gap-3 justify-center">
-                <app-button-01 [text]="textButton1" class="flex-1"></app-button-01>
-                <app-button-02 [text]="textButton2" class="flex-1"></app-button-02>
+                <app-button-01 text="Reserva"></app-button-01>
+                <app-button-02
+                    [text]="textButton2"
+                    [routerLink]="['/product-room', card.id]"
+                ></app-button-02>
             </div>
         </div>
     </div>

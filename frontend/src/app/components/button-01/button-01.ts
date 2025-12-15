@@ -10,9 +10,11 @@ import { Router } from '@angular/router';
 })
 export class Button01 {
   @Input() text!: string;
-  @Input() routerLink?: string;
+  @Input() routerLink?: string | (string | number)[];
   @Input() iconLeft?: string;
   @Input() iconRight?: string;
+  @Input() id!: number; 
+  @Input() action!: 'reservar' | 'detalles';
 
   // si es true el botón ocupará el 100%
   @Input() fullWidth: boolean = false;
@@ -20,7 +22,11 @@ export class Button01 {
   constructor(private router: Router) {}
 
   navigate() {
-    if (this.routerLink) {
+  if (!this.routerLink) return;
+
+    if (Array.isArray(this.routerLink)) {
+      this.router.navigate(this.routerLink);
+    } else {
       this.router.navigate([this.routerLink]);
     }
   }
