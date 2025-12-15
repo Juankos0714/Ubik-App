@@ -1,28 +1,28 @@
 server:
-  port: 8084
+  port: 8083
 
 spring:
   application:
     name: motel-management-service
 
-  # PostgreSQL R2DBC
+  # PostgreSQL R2DBC (valores inyectados desde .env o perfil docker)
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/motel_management_db
-    username: postgres
-    password: carlosmanuel
+    url: ${SPRING_R2DBC_URL}
+    username: ${SPRING_R2DBC_USERNAME}
+    password: ${SPRING_R2DBC_PASSWORD}
     pool:
-      initial-size: 10
-      max-size: 20
+      initial-size: 5
+      max-size: 15
       max-idle-time: 30m
+      max-acquire-time: 3m
 
-  # Configuración para inicialización de esquema
+  # Inicialización de esquema
+  # En Azure NO ejecutamos scripts automáticamente
   sql:
     init:
-      mode: always
-      platform: postgresql
+      mode: never
 
 logging:
   level:
-    com.ubik.usermanagement: DEBUG
-    org.springframework.r2dbc: DEBUG
-    io.r2dbc.postgresql: DEBUG
+    org.springframework.r2dbc: INFO
+    io.r2dbc.postgresql: INFO
