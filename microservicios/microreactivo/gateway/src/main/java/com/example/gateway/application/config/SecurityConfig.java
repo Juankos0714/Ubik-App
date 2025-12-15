@@ -20,6 +20,7 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/actuator/**").permitAll()
                         // ---- ENDPOINTS PUBLICOS ----
                         .pathMatchers("/api/auth/login").permitAll()
                         .pathMatchers("/api/auth/register").permitAll()
