@@ -14,7 +14,6 @@ export interface CardOff {
   standalone: true,
   imports: [Button01, Button02],
   templateUrl: './card-offers.html',
-  styleUrl: './card-offers.css',
 })
 export class CardOffers {
 

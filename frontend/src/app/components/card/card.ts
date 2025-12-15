@@ -16,7 +16,6 @@ export interface HabitacionInformacion {
   selector: 'app-card',
   imports: [Button01, Button02],
   templateUrl: './card.html',
-  styleUrl: './card.css',
 })
 export class Card {
 

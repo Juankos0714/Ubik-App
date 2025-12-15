@@ -5,7 +5,6 @@ import { Button01 } from "../button-01/button-01";
   selector: 'app-card-3',
   imports: [Button01],
   templateUrl: './card-3.html',
-  styleUrl: './card-3.css',
 })
 export class Card3 {
 
