@@ -7,7 +7,7 @@ import { Button02 } from "../../components/button-02/button-02";
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Button01, Card],
+  imports: [CommonModule, Button01, Card, Button02],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
