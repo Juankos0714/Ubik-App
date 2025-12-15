@@ -1,11 +1,31 @@
-<article class="flex flex-col bg-balck">
-    <img src="" alt="Imagen de prueba">
-    
-    <p>
-        Descripcion sa
-    </p>
+<div class="flex-shrink-0">
+    <div class="w-auto h-auto bg-[#1e2128] rounded-2xl overflow-hidden shadow-lg">
+        
+        <!-- Imagen -->
+        <img [src]="card.imagen" [alt]="card.tipo" class="w-full h-48 object-cover">
 
-    <app-button-02></app-button-02>
-    <app-button-01></app-button-01>
+        <div class="p-4">
 
-</article>
+            <!-- Tipo de habitación -->
+            <h2 class="text-white text-base font-bold  mb-1">
+                {{ card.tipo }}
+            </h2>
+
+            
+            <!-- Descripción (condicional) -->
+            @if (showDescription) {
+                <p class="text-gray-300 text-xs mb-3 min-h-8 line-clamp-2">
+                    {{ card.descripcion }}
+                </p>
+            }
+
+            <div class="flex gap-3 justify-center">
+                <app-button-01 text="Reserva"></app-button-01>
+                <app-button-02
+                    text="textButton2"
+                    routerLink="['/product-room', card.id]"
+                ></app-button-02>
+            </div>
+        </div>
+    </div>
+</div>

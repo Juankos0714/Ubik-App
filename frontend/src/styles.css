@@ -1,5 +1,27 @@
+*{box-sizing: border-box;}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
 @import "tailwindcss";
 
-@theme{
-    --main-color-bg: #f00;
+
+body {
+  @apply bg-gradient-to-r from-[#17000B] to-[#350810];
+}
+
+main{
+  min-height: 100vh;
+  color: #fff;
+  max-width: 1400px;
+  padding: 10px 0px 10px 10px;
+}
+
+h1,h2,h3,h4,h5,h6{
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
 }

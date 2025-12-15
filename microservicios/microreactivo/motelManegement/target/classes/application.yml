@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8084
 
 spring:
   application:
@@ -20,6 +20,20 @@ spring:
     init:
       mode: always
       platform: postgresql
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
 
 logging:
   level:

@@ -69,7 +69,8 @@ public class RoomService implements RoomUseCasePort {
                             room.roomType(),
                             room.price(),
                             room.description(),
-                            room.isAvailable()
+                            room.isAvailable(),
+                            room.imageUrls()
                     );
                     return validateRoom(updatedRoom)
                             .then(roomRepositoryPort.update(updatedRoom));
@@ -99,6 +100,9 @@ public class RoomService implements RoomUseCasePort {
         }
         if (room.price() == null || room.price() <= 0) {
             return Mono.error(new IllegalArgumentException("El precio debe ser mayor que cero"));
+        }
+        if (room.imageUrls() != null && room.imageUrls().size() > 15) {
+            return Mono.error(new IllegalArgumentException("No se pueden agregar más de 15 imágenes"));
         }
         return Mono.empty();
     }

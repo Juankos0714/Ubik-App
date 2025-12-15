@@ -9,6 +9,6 @@ public record UserProfileResponse(
         String phoneNumber,
         LocalDateTime createdAt,
         boolean anonymous,
-        String role
+        Integer roleId
 ) {
 }

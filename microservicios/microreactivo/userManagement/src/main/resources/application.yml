@@ -8,7 +8,7 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/userManagement_db
     username: postgres
-    password: tomas
+    password: "12345"
 
   sql:
     init:
@@ -18,6 +18,14 @@ spring:
   security:
     bcrypt:
       strength: 12  # Fuerza del hash para contraseñas
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
 
 jwt:
   secret: mySecretKey1234567890abcdef1234567890abcdef

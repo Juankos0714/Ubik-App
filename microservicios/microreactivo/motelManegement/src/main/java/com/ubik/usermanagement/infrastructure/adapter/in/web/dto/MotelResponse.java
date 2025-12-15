@@ -1,6 +1,7 @@
 package com.ubik.usermanagement.infrastructure.adapter.in.web.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * DTO de respuesta para Motel
@@ -13,6 +14,7 @@ public record MotelResponse(
         String description,
         String city,
         Long propertyId,
-        LocalDateTime dateCreated
+        LocalDateTime dateCreated,
+        List<String> imageUrls
 ) {
 }
