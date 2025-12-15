@@ -1,36 +1,86 @@
 <h2>Vista Explorar</h2>
 
-<aside class="filter">
-  <!-- FILTROS -->
-  <section class="services">
-    <h3>Servicios</h3>
+<app-button-02 text="Filtrar" (click)="toggle()"></app-button-02>
 
-    @for (feat of FEATURES; track feat.id) {
-      <label class="flex items-center gap-2">
-        <input
-          type="checkbox"
-          [value]="feat.id"
-          (change)="onFeatureChange($event)"
-        />
-        {{ feat.name }}
-      </label>
-    }
-  </section>
+@if(isOpen){
+  <aside class="filter bg-gray-800 flex flex-col p-2.5">
+    <!-- FILTROS -->
+    <section class="services">
+      <h3>Servicios</h3>
 
-  <!-- RESULTADOS -->
-  <section class="results">
-    <br />
-    <h2>Habitaciones disponibles</h2>
-    <br />
+      @for (feat of FEATURES; track feat.id) {
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [value]="feat.id"
+            (change)="onFeatureChange($event)"
+          />
+          {{ feat.name }}
+        </label>
+      }
+    </section>
 
-    @for (item of filteredRooms; track item.room.id) {
-      <app-card-3
-        [title]="item.room.name"
-        [location]="item.location"
-        [price]="item.room.price"
-        [hours]="3"
-        [services]="item.room.features"
-      />
-    }
-  </section>
-</aside>
+    <section class="categories">
+      <h3>Categorias</h3>
+
+      @for (category of CATEGORIES; track category.id) {
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [value]="category.id"
+            (change)="onCategoryChange($event)"
+          />
+          {{ category.name }}
+        </label>
+      }
+    </section>
+
+    <section class="location">
+      <h3>Ubicaciones</h3>
+
+      @for (city of LOCATIONS; track city.id) {
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            [value]="city.id"
+            (change)="onLocationChange($event)"
+          />
+          {{ city.city }}
+        </label>
+      }
+    </section>
+
+    <section class="price">
+    <h3>Precio máximo</h3>
+
+    <input
+      type="range"
+      min="20000"
+      max="50000"
+      step="5000"
+      [value]="filters.priceMax"
+      (input)="onPriceChange($event)"
+      title="price"
+    />
+
+    <p>$ {{ filters.priceMax | number }}</p>
+    </section>
+
+  </aside>
+}
+<!-- RESULTADOS -->
+<section class="results flex flex-col gap-10">
+  
+  <h2>Habitaciones disponibles</h2>
+
+  @for (item of filteredRooms; track item.room.id) {
+    <app-card-3
+      [title]="item.room.name"
+      [location]="item.location[0].city"
+      [adress]="item.adress"
+      [price]="item.room.price"
+      [hours]="4"
+      [services]="item.room.features"
+    />
+  }
+</section>

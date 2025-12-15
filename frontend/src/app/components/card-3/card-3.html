@@ -18,7 +18,7 @@
 
       <p class="text-sm text-gray-300 flex items-center gap-1">
         <i class="pi pi-map-marker"></i>
-        {{ location }}
+        {{ location }}, {{adress}}
       </p>
 
       <!-- Servicios -->
@@ -38,11 +38,14 @@
 
   <!-- Precio -->
   <div class="flex items-end gap-2">
-    <span class="text-3xl font-bold text-red-600">
+    <span class=" font-bold text-red-600">
       {{ price }}
     </span>
     <span class="text-sm text-gray-300">
       Por {{ hours }} Horas
     </span>
   </div>
+
+  <app-button-01 text="Reservar Ahora" routerLink="/"></app-button-01>
+
 </article>

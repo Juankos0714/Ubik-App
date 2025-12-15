@@ -34,7 +34,7 @@ export const routes: Routes = [
 
     /**==== PERFILES DE USURIOS ====== */
 
-    {path: "Profile-user", component: UserProfile},
+    {path: "profile-user", component: UserProfile},
 
 
     /**⚠️ ESTA RUTA ES APARTE SOLO PARA VER TODOS LOS COMPONENTES DE LA PAGINA JUNTOS SOLO TENDREMOS CONOCIMIENTO DE ELLA NOSOTROS :v */

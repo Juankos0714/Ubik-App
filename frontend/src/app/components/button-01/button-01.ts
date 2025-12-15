@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-button-01',
   imports: [CommonModule],
-  templateUrl: './button-01.html',
-  styleUrl: './button-01.css',
+  templateUrl: './button-01.html', 
 })
 export class Button01 {
   @Input() text!: string;

@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
+import { Button01 } from "../button-01/button-01";
 
 @Component({
   selector: 'app-card-3',
-  imports: [],
+  imports: [Button01],
   templateUrl: './card-3.html',
   styleUrl: './card-3.css',
 })
@@ -11,7 +12,8 @@ export class Card3 {
   @Input() image!: string;
   @Input() title!: string;
   @Input() location!: string;
-
+  @Input() adress!: string;
+ 
   @Input() price!: number | string;
   @Input() hours!: number;
 
