@@ -16,6 +16,7 @@ services:
       SPRING_R2DBC_PASSWORD: ${SPRING_R2DBC_PASSWORD}
     networks:
       - ubik-network
+    restart: unless-stopped
 
   gateway:
     build:
@@ -32,23 +33,24 @@ services:
       - usermanagement
     networks:
       - ubik-network
+    restart: unless-stopped
 
-  motel-management:
-    build:
-      context: .
-      dockerfile: motelManegement/Dockerfile
-    container_name: motel-management-service
-    ports:
-      - "8083:8083"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_R2DBC_URL: ${SPRING_R2DBC_URL}
-      SPRING_R2DBC_USERNAME: ${SPRING_R2DBC_USERNAME}
-      SPRING_R2DBC_PASSWORD: ${SPRING_R2DBC_PASSWORD}
-    networks:
-      - ubik-network
-    depends_on:
-      - usermanagement
+#  motel-management:
+#    build:
+ #     context: .
+  #    dockerfile: motelManegement/Dockerfile
+   # container_name: motel-management-service
+    #ports:
+     # - "8083:8083"
+#    environment:
+ #     SPRING_PROFILES_ACTIVE: docker
+  #    SPRING_R2DBC_URL: ${SPRING_R2DBC_URL}
+   #   SPRING_R2DBC_USERNAME: ${SPRING_R2DBC_USERNAME}
+    #  SPRING_R2DBC_PASSWORD: ${SPRING_R2DBC_PASSWORD}
+#    networks:
+ #     - ubik-network
+  #  depends_on:
+   #   - usermanagement
 
 networks:
   ubik-network:
