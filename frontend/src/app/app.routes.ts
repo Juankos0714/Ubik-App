@@ -18,7 +18,7 @@ export const routes: Routes = [
 
     {path: "", component: Home},
     {path: "explore", component: Explore},
-    {path: "Profile-motel", component: MotelProfile},
+    {path: "profile-motel", component: MotelProfile},
     {path: "three-buttons", component: ThreeButtom},// 🔴 ESTO DEBERIA DE LLAMARSE DASHBORAD-MOTEL - Y DEBERIA DE FUNCIONAR COMO UN FILTRP AL DARLE EN UN BOTON DEBERIA DE APARECER ABAJO LO QUE SE SELECCIONONO - POR EJEMPLO LA LISTA DE LOS MOTELES.
     
     {path: "rooms-motel", component: RoomsMotel},
