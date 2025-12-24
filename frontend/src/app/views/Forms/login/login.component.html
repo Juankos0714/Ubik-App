@@ -1,4 +1,4 @@
-<div class="min-h-screen flex items-center justify-center px-5 text-white">
+<div class= "flex gap-2 px-5 text-white">
 
   <div class="w-full max-w-md text-center">
 
@@ -19,7 +19,6 @@
 
     <form class="flex flex-col gap-4" (submit)="onFormSubmit($event)">
 
-      <app-button-01 text="Ingresar" [fullWidth]="true"></app-button-01>
       <!-- Email Input -->
       <div class="text-left">
         <label class="block text-sm font-medium mb-2 text-gray-300">
@@ -74,18 +73,8 @@
           ¿Olvidaste tu contraseña?
         </a>
       </div>
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="w-full py-3 rounded font-bold transition"
-        [class]="isSubmitting() 
-          ? 'bg-gray-600 cursor-not-allowed' 
-          : 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600'"
-        [disabled]="isSubmitting()"
-      >
-        {{ isSubmitting() ? 'Ingresando...' : 'Ingresar' }}
-      </button>
+      
+      <app-button-01 text="Ingresar" [fullWidth]="true"></app-button-01>
 
     </form>
 

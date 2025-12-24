@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from "./layout/header/header";
 import { Footer } from "./layout/footer/footer";
-import { NavBarBottom } from "./components/nav-bar-bottom/nav-bar-bottom";
+import { NavBarBottom } from "./layout/nav-bar-bottom/nav-bar-bottom";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
