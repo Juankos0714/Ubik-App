@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Logo01 } from "../../components/logo-01/logo-01";
 import { RouterLink } from "@angular/router";
+import { Button01 } from "../../components/button-01/button-01";
 
 @Component({
   selector: 'app-header',
-  imports: [Logo01, RouterLink],
+  imports: [Logo01, RouterLink, Button01],
   templateUrl: './header.html',
 })
 

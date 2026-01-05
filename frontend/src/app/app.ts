@@ -9,7 +9,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   selector: 'app-root',
   imports: [RouterOutlet, Header, Footer, NavBarBottom, FontAwesomeModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
 })
 export class App {
   protected readonly title = signal('frontend');

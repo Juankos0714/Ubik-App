@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button01 } from '../../components/button-01/button-01';
 import { Card, HabitacionInformacion } from '../../components/card/card';
 
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Button01, Card],
+  imports: [CommonModule, Card],
   templateUrl: './home.html',
-  styleUrl: './home.css',
 })
 export class Home implements OnInit {
 
@@ -62,6 +60,7 @@ export class Home implements OnInit {
       },
       {
         id: 2,
+        
         motelId: 12,
         numberHab: "300",
         tipo: "Motel Venus",

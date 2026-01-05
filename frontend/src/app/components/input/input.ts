@@ -5,7 +5,6 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './input.html',
-  styleUrl: './input.css',
 })
 export class Inputcomponent {
   @Input() label?: string;
