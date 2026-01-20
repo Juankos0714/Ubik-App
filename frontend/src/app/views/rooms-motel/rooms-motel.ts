@@ -29,7 +29,7 @@ export class RoomsMotel implements OnInit {
         id: 1,
         motelId: 10,
         numberHab: "101",
-        tipo: "Suite Premium",
+        type: "Suite Premium",
         price: 150000,
         descripcion: "Jacuzzi, luces led y parqueadero privado.",
         imagen: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
@@ -38,7 +38,7 @@ export class RoomsMotel implements OnInit {
         id: 2,
         motelId: 10,
         numberHab: "102",
-        tipo: "Habitación Deluxe",
+        type: "Habitación Deluxe",
         price: 120000,
         descripcion: "Ambiente moderno, minibar y aire acondicionado.",
         imagen: "https://images.unsplash.com/photo-1600585154154-1c1af7c8c3dc"
@@ -47,7 +47,7 @@ export class RoomsMotel implements OnInit {
         id: 3,
         motelId: 10,
         numberHab: "103",
-        tipo: "Suite Ejecutiva",
+        type: "Suite Ejecutiva",
         price: 180000,
         descripcion: "Ideal para ocasiones especiales, incluye botella.",
         imagen: "https://images.unsplash.com/photo-1551776235-dde6d4829808"

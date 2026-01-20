@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card, HabitacionInformacion } from '../../components/card/card';
+import { RoomService } from '../../services/room/room';
 
 
 @Component({
@@ -12,84 +13,42 @@ export class Home implements OnInit {
 
   // Aquí guardamos todo lo que viene del backend
   mejoresOfertas: HabitacionInformacion[] = [];
-  motelesCercanos: any[] = [];
-  destinosPopulares: any[] = [];
+  motelesCercanos: HabitacionInformacion[] = [];
+  destinosPopulares: HabitacionInformacion[] = [];
 
-  constructor() {}
+  constructor(private roomService: RoomService) {}
 
   ngOnInit(): void {
-    // Cuando cargue la pantalla, llamamos la función para simular datos del backend
-    this.cargarDatosEjemplo();
+    this.cargarRooms();
   }
 
   /** -----------------------------------------------------------
-   *  🔥 EJEMPLO: Simulando respuestas del backend
+   *      Cargar habitaciones desde el backend
    *  -----------------------------------------------------------
    */
-  cargarDatosEjemplo(): void {
-    this.mejoresOfertas = [
-      {
-        id: 1,
-        motelId: 10,
-        numberHab: "301",
-        tipo: "Suite Premium",
-        price: 120000,
-        descripcion: "Habitación con jacuzzi y ambiente romántico.",
-        imagen: "https://res.cloudinary.com/du4tcug9q/image/upload/v1763726311/image-habitation_mmy7ly.png"
-      },
-      {
-        id: 2,
-        motelId: 12,
-        numberHab: "205",
-        tipo: "Habitación Deluxe",
-        price: 95000,
-        descripcion: "Incluye parqueadero privado y minibar.",
-        imagen: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-      }
-    ];
+  cargarRooms(): void {
+  this.roomService.getRooms().subscribe({
+    next: (rooms) => {
+      console.log('Rooms desde backend:', rooms);
 
-    this.motelesCercanos = [
-      {
-        id: 1,
-        motelId: 10,
-        numberHab: "200",
-        tipo: "Motel Sol & Luna",
-        price: 100000,
-        descripcion: "A solo 5 minutos de tu ubicación.",
-        imagen: "https://images.unsplash.com/photo-1576678927484-cc907957088c"
-      },
-      {
-        id: 2,
-        
-        motelId: 12,
-        numberHab: "300",
-        tipo: "Motel Venus",
-        price: 140000,
-        descripcion: "Ambiente romántico con parqueadero privado.",
-        imagen: "https://images.unsplash.com/photo-1522706604294-ff2386f00c90"
-      }
-    ];
+      const cards: HabitacionInformacion[] = rooms.map(room => ({
+        id: room.id,
+        motelId: room.motelId,
+        numberHab: room.numberHab || room.number || '',
+        type: room.tipo || room.type || '',
+        price: room.price,
+        descripcion: room.descripcion || room.description || '',
+        imagen: room.imagen || room.imageUrl || 'assets/no-image.png'
+      }));
 
-    this.destinosPopulares = [
-      {
-        id: 1,
-        motelId: 15,
-        numberHab: "101",
-        tipo: "Suite Caribe",
-        price: 180000,
-        descripcion: "Ambiente tropical con jacuzzi privado para ocasión.",
-        imagen: "https://images.unsplash.com/photo-1501117716987-c8e1ecb2103a"
-      },
-      {
-        id: 2,
-        motelId: 18,
-        numberHab: "102",
-        tipo: "Oasis Room",
-        price: 160000,
-        descripcion: "Decoración temática, ideal para ocasión especial.",
-        imagen: "https://images.unsplash.com/photo-1551776235-dde6d4829808"
-      }
-    ];
-  }
+      this.mejoresOfertas = cards;
+      this.motelesCercanos = cards;
+      this.destinosPopulares = cards;
+    },
+    error: (error) => {
+      console.error('Error cargando rooms', error);
+    }
+  });
+}
 
 }
