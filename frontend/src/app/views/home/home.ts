@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+
 import { Card, HabitacionInformacion } from '../../components/card/card';
 import { RoomService } from '../../services/room/room';
 
-
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [CommonModule, Card],
   templateUrl: './home.html',
 })
 export class Home implements OnInit {
 
-  // Aquí guardamos todo lo que viene del backend
+  private platformId = inject(PLATFORM_ID);
+
   mejoresOfertas: HabitacionInformacion[] = [];
   motelesCercanos: HabitacionInformacion[] = [];
   destinosPopulares: HabitacionInformacion[] = [];
@@ -19,36 +21,40 @@ export class Home implements OnInit {
   constructor(private roomService: RoomService) {}
 
   ngOnInit(): void {
-    this.cargarRooms();
+    if (isPlatformBrowser(this.platformId)) {
+      this.cargarRooms();
+    }
   }
 
-  /** -----------------------------------------------------------
-   *      Cargar habitaciones desde el backend
-   *  -----------------------------------------------------------
-   */
   cargarRooms(): void {
-  this.roomService.getRooms().subscribe({
-    next: (rooms) => {
-      console.log('Rooms desde backend:', rooms);
+    this.roomService.getRooms().subscribe({
+      next: (rooms) => {
+        console.log('Rooms desde backend:', rooms);
 
-      const cards: HabitacionInformacion[] = rooms.map(room => ({
-        id: room.id,
-        motelId: room.motelId,
-        numberHab: room.numberHab || room.number || '',
-        type: room.tipo || room.type || '',
-        price: room.price,
-        descripcion: room.descripcion || room.description || '',
-        imagen: room.imagen || room.imageUrl || 'assets/no-image.png'
-      }));
+        const cards: HabitacionInformacion[] = rooms
+          .filter(room => room.isAvailable)
+          .map(room => ({
+            id: room.id,
+            motelId: room.motelId,
+            numberHab: room.number,
+            type: room.roomType,
+            descripcion: room.description,
+            imagen: room.imageUrls?.[0] || 'assets/no-image.jpg',
+            price: room.price,
+            isAvailable: room.isAvailable
+          }));
 
-      this.mejoresOfertas = cards;
-      this.motelesCercanos = cards;
-      this.destinosPopulares = cards;
-    },
-    error: (error) => {
-      console.error('Error cargando rooms', error);
-    }
-  });
-}
+        this.mejoresOfertas = [...cards]
+          .sort((a, b) => a.price - b.price)
+          .slice(0, 5);
 
+        this.motelesCercanos = cards.filter(c => c.id <= 4);
+
+        this.destinosPopulares = cards.slice(0, 5);
+      },
+      error: (error) => {
+        console.error('Error cargando rooms', error);
+      }
+    });
+  }
 }

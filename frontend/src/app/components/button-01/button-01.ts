@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -14,11 +14,14 @@ export class Button01 {
   @Input() iconRight?: string;
   @Input() id!: number; 
   @Input() action!: 'reservar' | 'detalles';
+  @Input() disabled = false;
 
   // si es true el botón ocupará el 100%
   @Input() fullWidth: boolean = false;
 
+
   constructor(private router: Router) {}
+    
 
   navigate() {
   if (!this.routerLink) return;

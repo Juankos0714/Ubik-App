@@ -1,5 +1,5 @@
 <!-- CARRUSEL 1: Mejores Ofertas -->
-<div class="mb-8 sm:mb-12 w-full" id="offers">
+<div class="mb-8 sm:mb-12" id="offers">
 
   <div class="flex justify-between items-center px-4 sm:px-6 py-4">
     <p class="text-lg sm:text-xl text-white font-bold">Mejores ofertas</p>
@@ -7,15 +7,16 @@
   </div>
   
   <!-- Scroll Horizontal -->
- 
-    <div class="flex overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth gap-2.5 px-4 sm:px-6">
+  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
+    <div class="flex gap-2.5 w-max">
       @for (oferta of mejoresOfertas; track oferta.id) {
         <app-card 
           [card]="oferta"
-          class=""
+          class="flex-shrink-0 w-64 sm:w-72"
         ></app-card>
       }
     </div>
+  </div>
 
 </div>
 
@@ -26,12 +27,16 @@
     <a href="#" class="text-xs sm:text-sm text-white hover:underline">Ver todos ></a>
   </div>
   
-
-    <div class="flex overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth gap-2.5 px-4 sm:px-6">
+  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
+    <div class="flex gap-2.5 w-max">
       @for (motel of motelesCercanos; track motel.id) {
-        <app-card [card]="motel"></app-card>
+        <app-card 
+          [card]="motel"
+          class="flex-shrink-0 w-64 sm:w-72"
+        ></app-card>
       }
     </div>
+  </div>
 
 </div>
 
@@ -42,11 +47,15 @@
     <a href="#" class="text-xs sm:text-sm text-white hover:underline">Ver todos ></a>
   </div>
   
-
-    <div class="flex overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth gap-2.5 px-4 sm:px-6">
-       @for (destino of destinosPopulares; track destino.id) {
-        <app-card [card]="destino"></app-card>
+  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
+    <div class="flex gap-2.5 w-max">
+      @for (destino of destinosPopulares; track destino.id) {
+        <app-card 
+          [card]="destino"
+          class="flex-shrink-0 w-64 sm:w-72"
+        ></app-card>
       }
     </div>
+  </div>
 
 </div>
