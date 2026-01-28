@@ -6,7 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="aba1757a-4faa-4717-9366-e778d7beeae9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/ed09b4ef-258b-4edb-932b-d8ffe3aebf27.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/ed09b4ef-258b-4edb-932b-d8ffe3aebf27.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/ProductsApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/ProductsApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/domain/Product.class" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/domain/Product.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/repo/ProductRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/repo/ProductRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/web/ProductHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/web/ProductHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/web/ProductRouter.class" beforeDir="false" afterPath="$PROJECT_DIR$/microservicios/microreactivo/products/target/classes/com/example/products/web/ProductRouter.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +45,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -51,14 +62,18 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "SHELLCHECK.PATH": "C:\\Users\\jucar\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe",
-    "git-widget-placeholder": "develop",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "feature/resolve-problems-home",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/jucar/Documentos/Software_Development/U(BIK/UBIK/Ubik-App",
+    "last_opened_file_path": "/home/miguel-a-vn/Documents/repositories/Ubik-App",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -67,7 +82,8 @@
     "project.structure.last.edited": "Global Libraries",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "swagger",
+    "settings.editor.selected.configurable": "settings.sync",
+    "show.migrate.to.gradle.popup": "false",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   },
@@ -80,8 +96,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28238.7" />
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28238.7" />
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.240" />
       </set>
     </attachedChunks>
   </component>
