@@ -9,7 +9,7 @@ html {
 
 
 body {
-  @apply bg-gradient-to-r from-[#17000B] to-[#350810];
+  @apply bg-linear-to-r from-[#0B0608] to-[#501521];
 }
 
 main{
