@@ -46,7 +46,8 @@ login(data: LoginFormData, rememberMe: boolean): Observable<string> {
       console.log('🔥 TOKEN RECIBIDO:', token);
 
       // Guardar siempre en localStorage para persistencia
-      localStorage.setItem('auth_token', token);
+      localStorage.setItem(this.TOKEN_KEY, token);
+      sessionStorage.setItem(this.TOKEN_KEY, token);
 
     }),
     catchError((error) =>
