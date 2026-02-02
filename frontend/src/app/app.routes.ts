@@ -4,14 +4,22 @@ import { Explore } from './views/explore/explore';
 
 import { MotelProfile } from './views/motel-profile/motel-profile';
 import { ThreeButtom } from './views/three-buttom/three-buttom';
-import { RegisterUser } from './views/Forms/register/register-user/register-user';
-import { LoginComponent } from './views/Forms/login/login.component';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
-import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 import { UserProfile } from './views/user-profile/user-profile';
-import { RegisterComponent } from './views/Forms/register/register.component';
+
+/* login */
+import { LoginComponent } from './views/Forms/login/login.component';
+
+
+/** Register  */
+import { RegisterUser } from './views/Forms/register/register-user/components/register-user';
+import { RegisterSelect } from './views/Forms/register/register-select/register-select';
+import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
+
+
+
 
 
 export const routes: Routes = [
@@ -27,9 +35,10 @@ export const routes: Routes = [
     /*========== ReGISTER / LOGUIN ==========*/
 
     {path: "select-register", component: RegisterSelect},
-    {path: 'register', component: RegisterComponent},
+    /*{path: 'register', component: RegisterComponent},*/
     {path: "register-user", component: RegisterUser},
     {path: 'login', component: LoginComponent},
+    {path: "register-establishment", component: RegisterEstablishmentComponent},
 
 
     /**==== PERFILES DE USURIOS ====== */

@@ -9,7 +9,7 @@ import { Button01 } from '../../../components/button-01/button-01';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Button01],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {

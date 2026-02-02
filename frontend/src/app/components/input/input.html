@@ -1,4 +1,4 @@
-<div class="input-container flex flex-col w-full max-w-md mx-auto  ">
+<div class="input-container flex flex-col w-full max-w-md mx-auto">
   @if (label) {
     <label class="mb-1 text-white text-sm">{{ label }}</label>
   }
@@ -6,6 +6,10 @@
   <input
     [type]="type"
     [placeholder]="placeholder"
+    [value]="value"
+    [disabled]="disabled"
+    (input)="onChange($event.target.value)"
+    (blur)="onTouched()"
     class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
   />
 </div>

@@ -2,15 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Button01 } from '../../../../components/button-01/button-01';
-import { Inputcomponent } from '../../../../components/input/input';
-import { RegisterService } from '../services/register.service';
-import { ClientFormData, ValidationError } from '../types/register.types';
+import { Button01 } from '../../../../../components/button-01/button-01';
+import { Inputcomponent } from '../../../../../components/input/input';
+import { RegisterService } from '../services/services';
+import { ValidationError } from '../types/register-user.types';
+import { RegisterUserPayload } from '../types/register-user-payload.types';
+import { RegisterFormData } from '../types/register-user.types';
 
 @Component({
   selector: 'app-register-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button01, Inputcomponent],
+  imports: [CommonModule, ReactiveFormsModule,Inputcomponent],
   templateUrl: './register-user.html',
   styleUrl: './register-user.css',
 })
@@ -26,11 +28,12 @@ export class RegisterUser implements OnInit {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      fullName: [''],
+      username: [''],
       email: [''],
       birthDate: [''],
       password: [''],
-      confirmPassword: ['']
+      confirmPassword: [''],
+      anonymous: [false]
     });
   }
 
@@ -49,7 +52,7 @@ export class RegisterUser implements OnInit {
     let completed = 0;
     const totalFields = 5;
 
-    if (values.fullName?.trim()) completed++;
+    if (values.username?.trim()) completed++;
     if (values.email?.trim()) completed++;
     if (values.birthDate) completed++;
     if (values.password?.trim()) completed++;
@@ -83,63 +86,80 @@ export class RegisterUser implements OnInit {
   /**
    * Maneja el envío del formulario
    */
-  onSubmit(): void {
-    if (this.isSubmitting) return;
 
-    // Limpiar errores previos
+  onSubmit(): void {
+    console.log('SUBMIT', this.registerForm.value);
+
+    if (this.isSubmitting) return;
     this.validationErrors = [];
 
-    // Parsear fecha de nacimiento
-    const birthDate = this.parseBirthDate(this.registerForm.value.birthDate);
+    // 🚫 validar mayoría de edad SOLO frontend
+    if (!this.isAdult(this.registerForm.value.birthDate)) {
+      this.validationErrors.push({
+        field: 'birthDate',
+        message: 'Debes ser mayor de 18 años',
+      });
+      return;
+    }
 
-    // Preparar datos del formulario
-    const formData: ClientFormData = {
-      fullName: this.registerForm.value.fullName?.trim() || '',
-      email: this.registerForm.value.email?.trim() || '',
-      birthDay: birthDate.day,
-      birthMonth: birthDate.month,
-      birthYear: birthDate.year,
-      password: this.registerForm.value.password || '',
-      confirmPassword: this.registerForm.value.confirmPassword || ''
+    const formData: RegisterFormData = {
+      username: this.registerForm.value.username.trim(),
+      email: this.registerForm.value.email.trim(),
+      password: this.registerForm.value.password,
+      confirmPassword: this.registerForm.value.confirmPassword,
+      anonymous: this.registerForm.value.anonymous ?? false,
+      roleId: 3,
     };
 
-    // Validar formulario
+    // ✅ validar frontend
     const errors = this.registerService.validateClientForm(formData);
-    
+    console.log('VALIDATION ERRORS', errors);
     if (errors.length > 0) {
       this.validationErrors = errors;
       return;
     }
 
-    // Enviar registro
     this.isSubmitting = true;
 
+    // 🚀 ÚNICO request al backend
     this.registerService.submitClientRegistration(formData).subscribe({
-      next: (result) => {
-        if (result.success) {
-          console.log('Registro exitoso:', result);
-          // Redirigir al login después del registro exitoso
-          this.router.navigate(['/login']);
-        }
+      next: token => {
+        console.log('🟢 REGISTER OK - TOKEN', token);
+        this.router.navigate(['/login']);
       },
-      error: (error) => {
-        console.error('Error en registro:', error);
-        this.validationErrors = [{
-          field: 'form',
-          message: 'Error al procesar el registro. Intente nuevamente.'
-        }];
-        this.isSubmitting = false;
-      },
-      complete: () => {
-        this.isSubmitting = false;
+      error: err => {
+        console.error('🔴 REGISTER ERROR', err);
       }
     });
   }
 
   /**
    * Limpia el error de un campo específico
-   */
+  */
+ 
   clearFieldError(fieldName: string): void {
     this.validationErrors = this.validationErrors.filter(e => e.field !== fieldName);
   }
+
+  /** Verifica si la fecha de nacimiento indica mayoría de edad */
+
+  isAdult(birthDateString: string): boolean {
+    if (!birthDateString) return false;
+
+    const birthDate = new Date(birthDateString);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= 18;
+  }
+
 }

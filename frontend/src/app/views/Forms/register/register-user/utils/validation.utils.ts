@@ -4,7 +4,7 @@
  * Uses early returns to reduce nesting
  */
 
-import { ValidationError } from '../types/register.types';
+import { ValidationError } from '../types/register-user.types';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
