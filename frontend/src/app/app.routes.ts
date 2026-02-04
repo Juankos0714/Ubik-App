@@ -7,7 +7,7 @@ import { ThreeButtom } from './views/three-buttom/three-buttom';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
-import { UserProfile } from './views/user-profile/user-profile';
+import { UserProfilePage } from './views/user-profile/user-profile';
 
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
@@ -43,7 +43,7 @@ export const routes: Routes = [
 
     /**==== PERFILES DE USURIOS ====== */
 
-    {path: "profile-user", component: UserProfile},
+    {path: "userProfile", component: UserProfilePage},
 
 
     /**⚠️ ESTA RUTA ES APARTE SOLO PARA VER TODOS LOS COMPONENTES DE LA PAGINA JUNTOS SOLO TENDREMOS CONOCIMIENTO DE ELLA NOSOTROS :v */
