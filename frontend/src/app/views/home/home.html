@@ -1,61 +1,63 @@
 <!-- CARRUSEL 1: Mejores Ofertas -->
-<div class="mb-8 sm:mb-12" id="offers">
+ <div class="w-full">
+    <div class="mb-8 sm:mb-12" id="offers">
 
-  <div class="flex justify-between items-center px-4 sm:px-6 py-4">
-    <p class="text-lg sm:text-xl text-white font-bold">Mejores ofertas</p>
-    <a href="#" class="text-xs sm:text-sm text-white hover:underline">Ver todas las ofertas ></a>
-  </div>
-  
-  <!-- Scroll Horizontal -->
-  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
-    <div class="flex gap-2.5 w-max">
-      @for (oferta of mejoresOfertas; track oferta.id) {
-        <app-card 
-          [card]="oferta"
-          class="flex-shrink-0 w-64 sm:w-72"
-        ></app-card>
-      }
+      <div class="max-w-100 mx-auto mb-6 flex justify-between items-center">
+        <p class="text-2xl md:text-2xl font-bold">Mejores ofertas</p>
+        <a href="#" class="text-sm underline hover:text-gray-300 transition">Ver todos</a>
+      </div>
+      
+      <!-- Scroll Horizontal -->
+      <div class="max-w-100 mx-auto overflow-x-auto scrollbar-hide">
+        <div class="flex gap-4 pb-4">
+          @for (oferta of mejoresOfertas; track oferta.id) {
+            <app-card 
+              [card]="oferta"
+              class="flex-shrink-0 w-64 sm:w-72"
+            ></app-card>
+          }
+        </div>
+      </div>
+
     </div>
-  </div>
 
-</div>
+    <!-- CARRUSEL 2: Moteles Cercanos -->
+    <div class="mb-8 sm:mb-12">
+      <div class="max-w-100 mx-auto mb-6 flex justify-between items-center">
+        <p class="text-2xl md:text-2xl font-bold">Moteles más cercanos</p>
+        <a href="#" class="text-sm underline hover:text-gray-300 transition">Ver todos ></a>
+      </div>
+      
+      <div class="max-w-100 mx-auto overflow-x-auto scrollbar-hide">
+        <div class="flex gap-4 pb-4">
+          @for (motel of motelesCercanos; track motel.id) {
+            <app-card 
+              [card]="motel"
+              class="flex-shrink-0 w-64 sm:w-72"
+            ></app-card>
+          }
+        </div>
+      </div>
 
-<!-- CARRUSEL 2: Moteles Cercanos -->
-<div class="mb-8 sm:mb-12">
-  <div class="flex justify-between items-center px-4 sm:px-6 py-4">
-    <p class="text-lg sm:text-xl text-white font-bold">Moteles más cercanos</p>
-    <a href="#" class="text-xs sm:text-sm text-white hover:underline">Ver todos ></a>
-  </div>
-  
-  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
-    <div class="flex gap-2.5 w-max">
-      @for (motel of motelesCercanos; track motel.id) {
-        <app-card 
-          [card]="motel"
-          class="flex-shrink-0 w-64 sm:w-72"
-        ></app-card>
-      }
     </div>
-  </div>
 
-</div>
+    <!-- CARRUSEL 3: Destinos Populares -->
+    <div class="mb-8 sm:mb-12" id="destines">
+      <div class="max-w-100 mx-auto mb-6 flex justify-between items-center">
+        <p class="text-2xl md:text-2xl font-bold">Destinos Populares</p>
+        <a href="#" class="text-sm underline hover:text-gray-300 transition">Ver todos ></a>
+      </div>
+      
+      <div class="max-w-100 mx-auto overflow-x-auto scrollbar-hide">
+        <div class="flex gap-4 pb-4">
+          @for (destino of destinosPopulares; track destino.id) {
+            <app-card 
+              [card]="destino"
+              class="flex-shrink-0 w-64 sm:w-72"
+            ></app-card>
+          }
+        </div>
+      </div>
 
-<!-- CARRUSEL 3: Destinos Populares -->
-<div class="mb-8 sm:mb-12" id="destines">
-  <div class="flex justify-between items-center px-4 sm:px-6 py-4">
-    <p class="text-lg sm:text-xl text-white font-bold">Destinos Populares</p>
-    <a href="#" class="text-xs sm:text-sm text-white hover:underline">Ver todos ></a>
-  </div>
-  
-  <div class="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6">
-    <div class="flex gap-2.5 w-max">
-      @for (destino of destinosPopulares; track destino.id) {
-        <app-card 
-          [card]="destino"
-          class="flex-shrink-0 w-64 sm:w-72"
-        ></app-card>
-      }
     </div>
-  </div>
-
-</div>
+ </div>

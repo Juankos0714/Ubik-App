@@ -6,8 +6,20 @@
 
 import { ValidationError } from '../types/register-user.types';
 
+/* =======================
+   Constants & Regex
+======================= */
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
+
+const UPPERCASE_REGEX = /[A-Z]/;
+const NUMBER_REGEX = /[0-9]/;
+const SPECIAL_CHAR_REGEX = /[^A-Za-z0-9]/;
+
+/* =======================
+   Email validation
+======================= */
 
 /**
  * Validates email format
@@ -25,6 +37,10 @@ export function validateEmail(email: string): string | null {
   return null;
 }
 
+/* =======================
+   Password validation
+======================= */
+
 /**
  * Validates password strength
  * @returns error message if invalid, null if valid
@@ -38,8 +54,24 @@ export function validatePassword(password: string): string | null {
     return `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres`;
   }
 
+  if (!UPPERCASE_REGEX.test(password)) {
+    return 'La contraseña debe contener al menos una letra mayúscula';
+  }
+
+  if (!NUMBER_REGEX.test(password)) {
+    return 'La contraseña debe contener al menos un número';
+  }
+
+  if (!SPECIAL_CHAR_REGEX.test(password)) {
+    return 'La contraseña debe contener al menos un carácter especial';
+  }
+
   return null;
 }
+
+/* =======================
+   Password confirmation
+======================= */
 
 /**
  * Validates password confirmation matches
@@ -60,11 +92,18 @@ export function validatePasswordConfirmation(
   return null;
 }
 
+/* =======================
+   Generic field validation
+======================= */
+
 /**
  * Validates required text field
  * @returns error message if invalid, null if valid
  */
-export function validateRequiredField(value: string, fieldName: string): string | null {
+export function validateRequiredField(
+  value: string,
+  fieldName: string
+): string | null {
   if (!value || value.trim().length === 0) {
     return `${fieldName} es requerido`;
   }
@@ -72,11 +111,19 @@ export function validateRequiredField(value: string, fieldName: string): string 
   return null;
 }
 
+/* =======================
+   Birth date validation
+======================= */
+
 /**
  * Validates date of birth (day, month, year)
  * @returns error message if invalid, null if valid
  */
-export function validateBirthDate(day: string, month: string, year: string): string | null {
+export function validateBirthDate(
+  day: string,
+  month: string,
+  year: string
+): string | null {
   if (!day || !month || !year) {
     return 'La fecha de nacimiento es requerida';
   }
@@ -98,7 +145,6 @@ export function validateBirthDate(day: string, month: string, year: string): str
     return `El año debe estar entre 1900 y ${currentYear}`;
   }
 
-  // Check if date is valid
   const date = new Date(yearNum, monthNum - 1, dayNum);
   if (
     date.getDate() !== dayNum ||
@@ -108,17 +154,19 @@ export function validateBirthDate(day: string, month: string, year: string): str
     return 'La fecha no es válida';
   }
 
-  // Check if user is at least 18 years old
   const today = new Date();
   const birthDate = new Date(yearNum, monthNum - 1, dayNum);
+
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  
-  // Adjust age if birthday hasn't occurred yet this year
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
     age--;
   }
-  
+
   if (age < 18) {
     return 'Debe ser mayor de 18 años';
   }
@@ -126,11 +174,18 @@ export function validateBirthDate(day: string, month: string, year: string): str
   return null;
 }
 
+/* =======================
+   File upload validation
+======================= */
+
 /**
  * Validates file upload
  * @returns error message if invalid, null if valid
  */
-export function validateFileUpload(file: File | null, fieldName: string): string | null {
+export function validateFileUpload(
+  file: File | null,
+  fieldName: string
+): string | null {
   if (!file) {
     return `${fieldName} es requerido`;
   }
@@ -148,6 +203,10 @@ export function validateFileUpload(file: File | null, fieldName: string): string
   return null;
 }
 
+/* =======================
+   Error collector
+======================= */
+
 /**
  * Collects all validation errors into an array
  * Uses early returns to exit as soon as errors are found if stopOnFirstError is true
@@ -162,6 +221,7 @@ export function collectValidationErrors(
     const error = validator();
     if (error) {
       errors.push({ field, message: error });
+
       if (stopOnFirstError) {
         return errors;
       }

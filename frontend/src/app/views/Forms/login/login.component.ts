@@ -9,7 +9,7 @@ import { Button01 } from '../../../components/button-01/button-01';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, Button01],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -103,7 +103,7 @@ export class LoginComponent {
      ======================= */
 
   navigateToRegister(): void {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/']);
   }
 
   navigateToPasswordReset(): void {

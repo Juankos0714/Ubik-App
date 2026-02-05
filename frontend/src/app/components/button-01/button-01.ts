@@ -15,6 +15,7 @@ export class Button01 {
   @Input() id!: number; 
   @Input() action!: 'reservar' | 'detalles';
   @Input() disabled = false;
+  @Input() type!: 'submit' | 'button';
 
   // si es true el botón ocupará el 100%
   @Input() fullWidth: boolean = false;

@@ -1,22 +1,57 @@
-<nav class="w-dvw bg-[#2d2f35] text-white min-h-15 max-h-15 fixed bottom-0 left-0 flex justify-center items-center shadow-white z-40 font-bold lg:hidden">
-    <ul class="flex">
-        <li class="home-icon">
-            <a routerLink="/" class="flex flex-col items-center justify-center gap-1 py-2 px-4">
-                <fa-icon [icon]="faHouse" class="text-[20px]"/>
-                <p class="text-[0.8rem]">Inicio</p>
-            </a>
-        </li>
-         <li class="explora-icon">
-            <a routerLink="/explore" class="flex flex-col items-center justify-center gap-1 py-2 px-4">
-                <fa-icon [icon]="faCompass" class="text-[20px]"/>
-                <p class="text-[0.8rem]">Explora</p>
-            </a>
-        </li>
-         <li class="profile-icon">
-            <a routerLink="/login" class="flex flex-col items-center justify-center gap-1 py-2 px-4">
-                <fa-icon [icon]="faCircleUser" class="text-[20px]"/>
-                <p class="text-[0.8rem]">Perfil</p>
-            </a>
-        </li>
-    </ul>
+<nav
+  class="w-dvw bg-[#2d2f35] text-white min-h-15 max-h-15 fixed bottom-0 left-0
+         flex justify-center items-center shadow-white z-40 font-bold lg:hidden"
+>
+  <ul class="flex">
+
+    <!-- INICIO -->
+    <li class="home-icon">
+      <a
+        (click)="goHome()"
+        class="flex flex-col items-center justify-center gap-1 py-2 px-4"
+      >
+        <fa-icon [icon]="faHouse" class="text-[20px]" />
+        <p class="text-[0.8rem]">Inicio</p>
+      </a>
+    </li>
+
+    <!-- EXPLORA -->
+    <li class="explora-icon">
+      <a
+        (click)="goExplore()"
+        class="flex flex-col items-center justify-center gap-1 py-2 px-4"
+      >
+        <fa-icon [icon]="faCompass" class="text-[20px]" />
+        <p class="text-[0.8rem]">Explora</p>
+      </a>
+    </li>
+
+    <!-- PERFIL / LOGIN -->
+    <li class="profile-icon">
+      <a
+        (click)="goToProfileOrLogin()"
+        class="flex flex-col items-center justify-center gap-1 py-2 px-4 cursor-pointer"
+      >
+        <fa-icon [icon]="faCircleUser" class="text-[20px]" />
+        <p class="text-[0.8rem]">
+          {{ isLogged ? 'Perfil' : 'Login' }}
+        </p>
+      </a>
+    </li>
+
+    <!-- LOGOUT (Angular Control Flow) -->
+    @if (isLogged) {
+      <li class="logout-icon">
+        <a
+          (click)="logout()"
+          class="flex flex-col items-center justify-center gap-1 py-2 px-4
+                 cursor-pointer text-red-400"
+        >
+          <fa-icon [icon]="faRightFromBracket" class="text-[20px]" />
+          <p class="text-[0.8rem]">Salir</p>
+        </a>
+      </li>
+    }
+
+  </ul>
 </nav>
