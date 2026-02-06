@@ -1,9 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { Card3 } from "../../components/card-3/card-3";
-import { CommonModule } from '@angular/common';
-import { Button02 } from "../../components/button-02/button-02";
 import { Dialog } from '@angular/cdk/dialog';
-import { Filter } from '../../components/filter/filter';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+
 
 /*========= SIMULACION DE MODELOS ============*/
 
@@ -60,34 +58,13 @@ const LOCATIONS: Location[] = [
 
 ]
 
-/**============ Configuracion del component ================ */
-
 @Component({
-  selector: 'app-explore',
-  imports: [CommonModule, Card3, Button02],
-  templateUrl: './explore.html',
-  styleUrl: './explore.css',
+  selector: 'app-filter',
+  imports: [CommonModule],
+  templateUrl: './filter.html',
 })
+export class Filter{
 
-export class Explore {
-
-  private dialog = inject(Dialog);
-  protected openModal() {
-    this.dialog.open(Filter);
-  }
-
-
-  isOpen = false;
-
-  toggle() {
-    this.isOpen = !this.isOpen;
-  }
-
-
-
-
-
-  
 
   FEATURES = FEATURES;
   CATEGORIES = CATEGORIES;

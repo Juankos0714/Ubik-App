@@ -39,7 +39,7 @@ export class Home implements OnInit {
             numberHab: room.number,
             type: room.roomType,
             descripcion: room.description,
-            imagen: room.imageUrls?.[0] || 'assets/no-image.jpg',
+            imagen: room.imageUrls?.[0] || 'assets/ubikLogo.jpg',
             price: room.price,
             isAvailable: room.isAvailable
           }));
