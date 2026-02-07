@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 
-import { ValidationError } from '../types/register-user.types';
-import { RegisterFormData } from '../types/register-user.types';
-import { RegisterUserPayload } from '../types/register-user-payload.types';
+import { ValidationError } from '../../register-user/types/register-user.types';
+import { RegisterFormData } from '../../register-user/types/register-user.types';
+import { RegisterUserPayload } from '../../register-user/types/register-user-payload.types';
 
 import {
   validateEmail,
@@ -12,7 +12,7 @@ import {
   validatePasswordConfirmation,
   validateRequiredField,
   collectValidationErrors,
-} from '../utils/validation.utils';
+} from '../../register-user/utils/validation.utils';
 
 import { environment } from '../../../../../../environments/environment';
 
@@ -72,7 +72,7 @@ export class RegisterService {
       comfirmPassword: data.comfirmPassword?.trim(),
       phoneNumber: data.phoneNumber?.trim(),
       anonymous: data.anonymous ?? false,
-      roleId: data.roleId ?? 3,
+      roleId: data.roleId ?? 2,
       birthDate: data.birthDate,
       latitude: data.latitude ?? 4.6097,
       longitude: data.longitude ?? -74.0721

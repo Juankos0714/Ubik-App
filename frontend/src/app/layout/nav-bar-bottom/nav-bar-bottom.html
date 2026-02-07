@@ -1,57 +1,82 @@
+@if (menuOpen) {
+  <div 
+    class="fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px]" 
+    (click)="closeMenu()">
+  </div>
+}
+
 <nav
-  class="w-dvw bg-[#2d2f35] text-white min-h-15 max-h-15 fixed bottom-0 left-0
-         flex justify-center items-center shadow-white z-40 font-bold lg:hidden"
+  class="w-dvw bg-[#2d2f35] text-white min-h-60px fixed bottom-0 left-0
+         flex justify-center items-center shadow-white z-50 font-bold lg:hidden"
 >
-  <ul class="flex">
+  <ul class="flex w-full justify-around items-end">
 
-    <!-- INICIO -->
     <li class="home-icon">
-      <a
-        (click)="goHome()"
-        class="flex flex-col items-center justify-center gap-1 py-2 px-4"
-      >
-        <fa-icon [icon]="faHouse" class="text-[20px]" />
-        <p class="text-[0.8rem]">Inicio</p>
+      <a (click)="navigateTo(AppRoutes.HOME)" class="flex flex-col items-center justify-center gap-1 py-2 px-4 cursor-pointer">
+        <fa-icon [icon]="icons.house" class="text-[20px]" />
+        <p class="text-[0.7rem]">Inicio</p>
       </a>
     </li>
 
-    <!-- EXPLORA -->
     <li class="explora-icon">
-      <a
-        (click)="goExplore()"
-        class="flex flex-col items-center justify-center gap-1 py-2 px-4"
-      >
-        <fa-icon [icon]="faCompass" class="text-[20px]" />
-        <p class="text-[0.8rem]">Explora</p>
+      <a (click)="navigateTo(AppRoutes.EXPLORE)" class="flex flex-col items-center justify-center gap-1 py-2 px-4 cursor-pointer">
+        <fa-icon [icon]="icons.compass" class="text-[20px]" />
+        <p class="text-[0.7rem]">Explora</p>
       </a>
     </li>
 
-    <!-- PERFIL / LOGIN -->
-    <li class="profile-icon">
-      <a
-        (click)="goToProfileOrLogin()"
-        class="flex flex-col items-center justify-center gap-1 py-2 px-4 cursor-pointer"
-      >
-        <fa-icon [icon]="faCircleUser" class="text-[20px]" />
-        <p class="text-[0.8rem]">
-          {{ isLogged ? 'Perfil' : 'Login' }}
-        </p>
-      </a>
-    </li>
-
-    <!-- LOGOUT (Angular Control Flow) -->
-    @if (isLogged) {
-      <li class="logout-icon">
-        <a
-          (click)="logout()"
-          class="flex flex-col items-center justify-center gap-1 py-2 px-4
-                 cursor-pointer text-red-400"
+    <li class="menu-icon relative flex justify-center">
+      
+      @if (menuOpen) {
+        <div 
+          class="absolute bottom-full mb-4 w-40 bg-[#3a3d45] rounded-xl shadow-2xl 
+                 overflow-hidden border border-gray-600 flex flex-col animation-fade-in"
         >
-          <fa-icon [icon]="faRightFromBracket" class="text-[20px]" />
-          <p class="text-[0.8rem]">Salir</p>
-        </a>
-      </li>
-    }
+          @if (!isLogged) {
+            <button 
+              (click)="navigateTo(AppRoutes.LOGIN)" 
+              class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors"
+            >
+              Iniciar Sesión
+            </button>
+            <button 
+              (click)="navigateTo(AppRoutes.REGISTER)" 
+              class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] transition-colors"
+            >
+              Registrarse
+            </button>
+          }
+
+          @if (isLogged) {
+            
+            <button 
+              (click)="navigateTo(AppRoutes.PROFILE)" 
+              class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors"
+            >
+              <fa-icon [icon]="icons.user" class="text-[20px]" />
+              Mi Perfil
+            </button>
+             <button 
+              (click)="logout()" 
+              class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#4a4d55] transition-colors"
+            >
+              <fa-icon [icon]="icons.logout" class="text-[20px]" />
+              Cerrar Sesión
+            </button>
+          }
+        </div>
+        
+        <div class="absolute bottom-full mb-2 w-3 h-3 bg-[#3a3d45] border-r border-b border-gray-600 rotate-45"></div>
+      }
+
+      <a
+        (click)="toggleMenu()"
+        class="flex flex-col items-center justify-center gap-1 py-2 px-4 cursor-pointer z-50 relative"
+      >
+        <fa-icon [icon]="icons.menu" class="text-[20px] transition-transform duration-200" [class.rotate-90]="menuOpen" />
+        <p class="text-[0.7rem]">Menu</p>
+      </a>
+    </li>
 
   </ul>
 </nav>

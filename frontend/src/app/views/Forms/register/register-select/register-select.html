@@ -1,438 +1,51 @@
-<!-- registro.component.html -->
-<div class="min-h-screen flex items-center justify-center px-5 text-white ">
-  <div [class]="'w-full ' + (currentStep === 0 ? 'max-w-md' : 'max-w-2xl')">
+
+<div class="min-h-90 flex items-center justify-center">
+
+  <div class="flex gap-10 mb-8 flex-col justify-center w-full max-w-md px-4">
     
-    <h1 class="text-4xl font-bold mb-8 tracking-wider text-center">{{ getStepTitle() }}</h1>
+    <button 
+      (click)="onSelectEstablishment()"
+      class="
+      bg-gradient-to-r
+      from-[#6E2A35] 
+      to-[#A72027] 
+      hover:from-[#7E3A45] 
+      hover:to-[#B73037] 
+      rounded-lg 
+      p-4 
+      flex 
+      items-center 
+      justify-between 
+      transition-all 
+      group">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-home text-xl"></i>
+        <span class="font-semibold">Establecimiento</span>
+      </div>
+      <i class="fas fa-arrow-right text-xl opacity-70 group-hover:translate-x-1 transition-transform"></i>
+    </button>
     
-    <!-- Barra de progreso -->
-    @if (currentStep > 0) {
-      <div class="mb-8">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-sm">{{ getProgress() | number:'1.0-0' }}%</span>
-        </div>
-        <div class="w-full bg-gray-700 rounded-full h-2">
-          <div 
-            class="bg-red-600 h-2 rounded-full transition-all duration-500" 
-            [style.width.%]="getProgress()">
-          </div>
-        </div>
+    <button 
+      (click)="onSelectClient()"
+      class="
+      bg-gradient-to-r 
+      from-[#6E2A35] 
+      to-[#A72027] 
+      hover:from-[#7E3A45] 
+      hover:to-[#B73037] 
+      rounded-lg 
+      p-4 
+      flex 
+      items-center 
+      justify-between 
+      transition-all 
+      group">    
+      <div class="flex items-center gap-3">
+        <i class="fas fa-user text-xl"></i>
+        <span class="font-semibold">Cliente</span>
       </div>
-    }
-
-    <!-- STEP 0: Selector -->
-    @if (currentStep === 0) {
-      <div class="animate-fadeIn text-center">
-        <div class="flex gap-4 mb-8">
-          
-          <button 
-            (click)="selectType('establecimiento')"
-            class="flex-1 bg-gradient-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45] hover:to-[#B73037] rounded-lg p-4 flex items-center justify-between transition-all group">
-            <div class="flex items-center gap-3">
-              <i class="fas fa-home text-xl"></i>
-              <span class="font-semibold">Establecimiento</span>
-            </div>
-            <i class="fas fa-arrow-right text-xl opacity-70 group-hover:translate-x-1 transition-transform"></i>
-          </button>
-          
-          <button 
-            (click)="selectType('cliente')"
-            class="flex-1 bg-gradient-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45] hover:to-[#B73037] rounded-lg p-4 flex items-center justify-between transition-all group">
-            <div class="flex items-center gap-3">
-              <i class="fas fa-user text-xl"></i>
-              <span class="font-semibold">Cliente</span>
-            </div>
-            <i class="fas fa-arrow-right text-xl opacity-70 group-hover:translate-x-1 transition-transform"></i>
-          </button>
-          
-        </div>
-        
-        <div class="flex items-start gap-3 text-left text-sm text-gray-300 bg-black bg-opacity-20 rounded-lg p-4">
-          <i class="fas fa-lock text-lg mt-0.5 flex-shrink-0"></i>
-          <p>
-            Tu información personal será tratada con estricta confidencialidad y protegida conforme a la ley de protección de datos vigente.
-          </p>
-        </div>
-      </div>
-    }
-
-    <!-- ESTABLECIMIENTO STEP 1 -->
-    @if (type === 'establecimiento' && currentStep === 1) {
-      <div class="animate-fadeIn">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <div class="flex flex-col gap-5">
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Nombre del dueño del establecimiento</label>
-              <input 
-                type="text" 
-                placeholder="Ingrese el nombre completo"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                (input)="setOwnerField('fullName', $event.target.value)"
-              />
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Correo del dueño del establecimiento</label>
-              <input 
-                type="email" 
-                placeholder="Ingrese el correo"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                (input)="setOwnerField('email', $event.target.value)"
-              />
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Numero De identificación CC</label>
-              <input 
-                type="text" 
-                placeholder="Ingrese el número de CC"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                (input)="setOwnerField('documentId', $event.target.value)"
-              />
-            </div>
-          </div>
-          
-          <div class="flex flex-col gap-5">
-            <div>
-              <label class="mb-2 text-white text-sm block text-right">Foto frontal del documento de identidad CC</label>
-              <label class="bg-white rounded-lg p-8 flex items-center justify-center h-32 cursor-pointer hover:bg-gray-100 transition-colors block">
-                <div class="text-center text-gray-400">
-                  <i class="fas fa-image text-5xl mb-2"></i>
-                </div>
-                <input
-                type="file"
-                accept="image/*"
-                class="hidden"
-                (change)="onFrontIdSelected($event)"
-                />
-                 @if (data.establishment.owner.documentFront) {
-                    <div class="text-green-400 text-sm mt-2">
-                    ✔ Archivo cargado:
-                    @if (data.establishment.owner.documentFront) {}
-                    </div>
-                  }
-                
-
-              </label>
-            </div>
-            
-            <div>
-              <label class="mb-2 text-white text-sm block text-right">Foto Trasera del documento de identidad CC</label>
-              <label class="bg-white rounded-lg p-8 flex items-center justify-center h-32 cursor-pointer hover:bg-gray-100 transition-colors block">
-                <div class="text-center text-gray-400">
-                  <i class="fas fa-image text-5xl mb-2"></i>
-                </div>
-                <input
-                type="file"
-                accept="image/*"
-                class="hidden"
-                (change)="onBackIdSelected($event)"
-                />
-                @if (data.establishment.owner.documentBack) {
-                <p class="text-green-400 text-sm mt-2">
-                    ✔ Archivo cargado:
-                    {{ data.establishment.owner.documentBack.name }}
-                </p>
-                }
-
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- ESTABLECIMIENTO STEP 2 -->
-    @if (type === 'establecimiento' && currentStep === 2) {
-      <div class="animate-fadeIn">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <div class="flex flex-col gap-5">
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Nombre del establecimiento</label>
-              <input 
-                type="text" 
-                placeholder="Ingrese el nombre"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                (input)="setEstablishmentField('name', $any($event.target).value)"
-              />
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Correo del establecimiento</label>
-              <input 
-                type="email" 
-                placeholder="Ingrese el correo"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                (input)="setEstablishmentField('email', $any($event.target).value)"
-              />
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3">
-              <div class="flex flex-col">
-                <label class="mb-1 text-white text-sm">RUES</label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    (input)="setEstablishmentField('rues', $any($event.target).value)"
-                    
-                    class="rounded-full p-3 pr-10 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                  />
-                  <i class="fas fa-id-card absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-              </div>
-              
-              <div class="flex flex-col">
-                <label class="mb-1 text-white text-sm">NIT</label>
-                <div class="relative">
-                  <input 
-                    type="text" 
-                    (input)="setEstablishmentField('rnt', $any($event.target).value)"
-                    class="rounded-full p-3 pr-10 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-                  />
-                  <i class="fas fa-id-card absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-              </div>
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Contraseña</label>
-              <input 
-              (input)="setEstablishmentField('password', $any($event.target).value)"
-                type="password" 
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-              />
-            </div>
-          </div>
-          
-          <div class="flex flex-col gap-5">
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Ubicación</label>
-              <div class="relative">
-                <select 
-                (change)="setEstablishmentField('country', $any($event.target).value)"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white appearance-none pr-10">
-                  <option value="">País</option>
-                  <option value="colombia">Colombia</option>
-                  <option value="otro">Otro</option>
-                </select>
-                <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-              </div>
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Departamento</label>
-              <div class="relative">
-                <select 
-                (change)="setEstablishmentField('department', $any($event.target).value)"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white appearance-none pr-10">
-                  <option value="">Seleccione</option>
-                  <option value="antioquia">Quindio</option>
-                  <option value="cundinamarca">Risaralda</option>
-                  <option value="valle">Valle del Cauca</option>
-                </select>
-                <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-              </div>
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Municipio</label>
-              <div class="relative">
-                <select 
-                (change)="setEstablishmentField('city', $any($event.target).value)"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white appearance-none pr-10">
-                  <option value="">Seleccione</option>
-                  <option value="medellin">Montenegro</option>
-                  <option value="bogota">Pijao</option>
-                  <option value="cali">Circasia</option>
-                </select>
-                <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-              </div>
-            </div>
-            
-            <div class="flex flex-col">
-              <label class="mb-1 text-white text-sm">Confirma contraseña</label>
-              <input 
-              (input)="setEstablishmentField('password', $any($event.target).value)"
-                type="password" 
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- ESTABLECIMIENTO STEP 3 -->
-    @if (type === 'establecimiento' && currentStep === 3) {
-      <div class="animate-fadeIn">
-        <p class="text-center text-gray-300 mb-8 text-sm">
-          Subir imagenes y videos reales del sitio actualmente
-        </p>
-        
-        <div class="grid grid-cols-2 gap-6 mb-8">
-          <label class="bg-white rounded-2xl p-12 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors group min-h-[200px] block">
-            <div class="text-center">
-              <div class="bg-gray-800 rounded-xl p-8 inline-block group-hover:scale-105 transition-transform">
-                <i class="fas fa-image text-white text-5xl"></i>
-              </div>
-            </div>
-            <input
-                type="file"
-                accept="image/*,video/*"
-                multiple
-                class="hidden"
-                (change)="onEstablishmentImagesSelected($event)"
-                />
-
-          </label>
-          
-          <label class="bg-white rounded-2xl p-12 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors group min-h-[200px] block">
-            <div class="text-center">
-              <div class="bg-gray-800 rounded-xl p-8 inline-block group-hover:scale-105 transition-transform">
-                <i class="fas fa-image text-white text-5xl"></i>
-              </div>
-            </div>
-            <input type="file" accept="image/*,video/*" multiple class="hidden" />
-          </label>
-        </div>
-      </div>
-    }
-
-    <!-- ESTABLECIMIENTO STEP 4: Términos -->
-    @if (type === 'establecimiento' && currentStep === 4) {
-      <div class="animate-fadeIn">
-        <h2 class="text-2xl font-bold mb-6 text-center">Terminos y condiciones</h2>
-        
-        <div class="bg-black bg-opacity-30 rounded-2xl p-6 mb-8 max-h-[400px] overflow-y-auto text-sm leading-relaxed">
-          <p class="text-gray-200 mb-4">
-            Los párrafos cortos son aquellos párrafos que tienen entre tres y seis líneas. Si bien existen párrafos más extensos, que pueden llegar hasta las veinte líneas, lo recomendable es que un párrafo no tenga más de cuatro o cinco oraciones.
-          </p>
-          <p class="text-gray-200 mb-4">
-            Un párrafo es una unidad de un texto compuesta por una o varias oraciones, que comienza con una mayúscula y que termina con un punto y aparte. Los textos se organizan de manera tal que cada párrafo trata sobre una idea central. Generalmente, la primera oración de cada párrafo suele explicar cuál es el punto principal.
-          </p>
-          <p class="text-gray-200 mb-4">
-            Los párrafos cortos son aquellos párrafos que tienen entre tres y seis líneas. Si bien existen párrafos más extensos, que pueden llegar hasta las veinte líneas, lo recomendable es que un párrafo no tenga más de cuatro o cinco oraciones.
-          </p>
-          <p class="text-gray-200">
-            Un párrafo es una unidad de un texto compuesta por una o varias oraciones, que comienza con una mayúscula y que termina con un punto y aparte. Los textos se organizan de manera tal que cada párrafo trata sobre una idea central.
-          </p>
-        </div>
-      </div>
-    }
-
-    <!-- CLIENTE STEP 1 -->
-    @if (type === 'cliente' && currentStep === 1) {
-      <div class="animate-fadeIn max-w-md mx-auto">
-        <form class="flex flex-col gap-5">
-          
-          <div class="flex flex-col">
-            <label class="mb-1 text-white text-sm">Nombre completo</label>
-            <input 
-              type="text" 
-              placeholder="Ingrese su nombre completo"
-              class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-            />
-          </div>
-          
-          <div class="flex flex-col">
-            <label class="mb-1 text-white text-sm">Correo electrónico</label>
-            <input 
-              type="email" 
-              placeholder="Ingrese su correo"
-              class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-            />
-          </div>
-          
-          <div>
-            <label class="mb-1 text-white text-sm block">Fecha de nacimiento</label>
-            <div class="flex gap-3">
-              <input 
-                type="text" 
-                placeholder="DD"
-                maxlength="2"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white text-center" 
-              />
-              <input 
-                type="text" 
-                placeholder="MM"
-                maxlength="2"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white text-center" 
-              />
-              <input 
-                type="text" 
-                placeholder="AAAA"
-                maxlength="4"
-                class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white text-center" 
-              />
-            </div>
-          </div>
-          
-          <div class="flex flex-col">
-            <label class="mb-1 text-white text-sm">Contraseña</label>
-            <input 
-              type="password" 
-              placeholder="Ingrese su contraseña"
-              class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-            />
-          </div>
-          
-          <div class="flex flex-col">
-            <label class="mb-1 text-white text-sm">Confirmar contraseña</label>
-            <input 
-              type="password" 
-              placeholder="Confirme su contraseña"
-              class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
-            />
-          </div>
-          
-        </form>
-      </div>
-    }
-
-    <!-- CLIENTE STEP 2: Términos -->
-    @if (type === 'cliente' && currentStep === 2) {
-      <div class="animate-fadeIn">
-        <h2 class="text-2xl font-bold mb-6 text-center">Terminos y condiciones</h2>
-        
-        <div class="bg-black bg-opacity-30 rounded-2xl p-6 mb-8 max-h-[400px] overflow-y-auto text-sm leading-relaxed">
-          <p class="text-gray-200 mb-4">
-            Los párrafos cortos son aquellos párrafos que tienen entre tres y seis líneas. Si bien existen párrafos más extensos, que pueden llegar hasta las veinte líneas, lo recomendable es que un párrafo no tenga más de cuatro o cinco oraciones.
-          </p>
-          <p class="text-gray-200 mb-4">
-            Un párrafo es una unidad de un texto compuesta por una o varias oraciones, que comienza con una mayúscula y que termina con un punto y aparte. Los textos se organizan de manera tal que cada párrafo trata sobre una idea central. Generalmente, la primera oración de cada párrafo suele explicar cuál es el punto principal.
-          </p>
-          <p class="text-gray-200 mb-4">
-            Los párrafos cortos son aquellos párrafos que tienen entre tres y seis líneas. Si bien existen párrafos más extensos, que pueden llegar hasta las veinte líneas, lo recomendable es que un párrafo no tenga más de cuatro o cinco oraciones.
-          </p>
-          <p class="text-gray-200">
-            Un párrafo es una unidad de un texto compuesta por una o varias oraciones, que comienza con una mayúscula y que termina con un punto y aparte. Los textos se organizan de manera tal que cada párrafo trata sobre una idea central.
-          </p>
-        </div>
-      </div>
-    }
-
-    <!-- Botones de navegación -->
-    @if (currentStep > 0) {
-      <div class="flex gap-4 mt-8">
-        <button 
-          (click)="prevStep()"
-          class="flex-1 bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg h-12 transition-all hover:from-[#7E3A45] hover:to-[#B73037] cursor-pointer">
-          Volver
-        </button>
-        
-        <button 
-  (click)="nextStep()"
-  [disabled]="!isStepValid()"
-  [class]="'flex-1 bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg h-12 transition-all ' + 
-    (!isStepValid() 
-      ? 'opacity-50 cursor-not-allowed' 
-      : 'hover:from-[#7E3A45] hover:to-[#B73037] cursor-pointer')">
-  {{ currentStep === getTotalSteps() ? 'Finalizar' : 'Siguiente' }}
-</button>
-
-      </div>
-    }
+      <i class="fas fa-arrow-right text-xl opacity-70 group-hover:translate-x-1 transition-transform"></i>
+    </button>
     
   </div>
 </div>

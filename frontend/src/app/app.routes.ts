@@ -17,6 +17,7 @@ import { LoginComponent } from './views/Forms/login/login.component';
 import { RegisterUser } from './views/Forms/register/register-user/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
+import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
 
 
 
@@ -35,8 +36,11 @@ export const routes: Routes = [
     /*========== ReGISTER / LOGUIN ==========*/
 
     {path: "select-register", component: RegisterSelect},
-    /*{path: 'register', component: RegisterComponent},*/
+    
     {path: "register-user", component: RegisterUser},
+    {path: "register-propertyEst", component: RegisterPropertyEst},
+
+
     {path: 'login', component: LoginComponent},
     {path: "register-establishment", component: RegisterEstablishmentComponent},
 

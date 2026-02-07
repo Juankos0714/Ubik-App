@@ -20,7 +20,7 @@ export class RegisterUser implements OnInit {
   registerForm: FormGroup;
   validationErrors: ValidationError[] = [];
   isSubmitting = false;
-  progress = 10;
+  progress = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -30,71 +30,51 @@ export class RegisterUser implements OnInit {
     this.registerForm = this.fb.group({
       username: [''],
       email: [''],
+      phoneNumber: [''],   
       birthDate: [''],
       password: [''],
-      confirmPassword: [''],
+      comfirmPassword: [''],
       anonymous: [false]
     });
   }
 
   ngOnInit(): void {
-    // Calcular progreso basado en campos completados
     this.registerForm.valueChanges.subscribe(() => {
       this.updateProgress();
     });
   }
 
-  /**
-   * Actualiza la barra de progreso según campos completados
-   */
+  /** Progreso del formulario */
   updateProgress(): void {
     const values = this.registerForm.value;
     let completed = 0;
-    const totalFields = 5;
+    const totalFields = 6; // ✅ FIX
 
     if (values.username?.trim()) completed++;
     if (values.email?.trim()) completed++;
+    if (values.phoneNumber?.trim()) completed++;
     if (values.birthDate) completed++;
     if (values.password?.trim()) completed++;
-    if (values.confirmPassword?.trim()) completed++;
+    if (values.confirmPassword?.trim()) completed++; // ✅ FIX
 
     this.progress = Math.round((completed / totalFields) * 100);
   }
 
-  /**
-   * Obtiene error para un campo específico
-   */
+  /** Obtener error por campo */
   getFieldError(fieldName: string): string | null {
     const error = this.validationErrors.find(e => e.field === fieldName);
     return error ? error.message : null;
   }
 
-  /**
-   * Convierte fecha de input date a día, mes, año separados
-   */
-  parseBirthDate(dateString: string): { day: string; month: string; year: string } {
-    if (!dateString) return { day: '', month: '', year: '' };
-    
-    const date = new Date(dateString);
-    return {
-      day: String(date.getDate()).padStart(2, '0'),
-      month: String(date.getMonth() + 1).padStart(2, '0'),
-      year: String(date.getFullYear())
-    };
-  }
-
-  /**
-   * Maneja el envío del formulario
-   */
-
+  /** Submit */
   onSubmit(): void {
-    console.log('SUBMIT', this.registerForm.value);
-
     if (this.isSubmitting) return;
     this.validationErrors = [];
 
-    // 🚫 validar mayoría de edad SOLO frontend
-    if (!this.isAdult(this.registerForm.value.birthDate)) {
+    const form = this.registerForm.value;
+
+    // 🚫 Mayor de edad
+    if (!this.isAdult(form.birthDate)) {
       this.validationErrors.push({
         field: 'birthDate',
         message: 'Debes ser mayor de 18 años',
@@ -102,47 +82,41 @@ export class RegisterUser implements OnInit {
       return;
     }
 
-    const formData: RegisterFormData = {
-      username: this.registerForm.value.username.trim(),
-      email: this.registerForm.value.email.trim(),
-      password: this.registerForm.value.password,
-      confirmPassword: this.registerForm.value.confirmPassword,
-      anonymous: this.registerForm.value.anonymous ?? false,
+    const payload = {
+      username: form.username?.trim(),
+      email: form.email?.trim(),
+      password: form.password,
+      comfirmPassword: form.comfirmPassword,
+      phoneNumber: form.phoneNumber?.trim(),
+      anonymous: false,
       roleId: 3,
+      birthDate: form.birthDate,
+      latitude: 4.6097,
+      longitude: -74.0721
     };
 
-    // ✅ validar frontend
-    const errors = this.registerService.validateClientForm(formData);
-    console.log('VALIDATION ERRORS', errors);
-    if (errors.length > 0) {
-      this.validationErrors = errors;
-      return;
-    }
+    console.log('🚀 PAYLOAD', payload);
 
     this.isSubmitting = true;
 
-    // 🚀 ÚNICO request al backend
-    this.registerService.submitClientRegistration(formData).subscribe({
-      next: token => {
-        console.log('🟢 REGISTER OK - TOKEN', token);
+    this.registerService.submitClientRegistration(payload).subscribe({
+      next: () => {
+        console.log('🟢 REGISTER OK');
         this.router.navigate(['/login']);
       },
       error: err => {
         console.error('🔴 REGISTER ERROR', err);
+        this.isSubmitting = false;
       }
     });
   }
 
-  /**
-   * Limpia el error de un campo específico
-  */
- 
+  /** Limpiar error */
   clearFieldError(fieldName: string): void {
     this.validationErrors = this.validationErrors.filter(e => e.field !== fieldName);
   }
 
-  /** Verifica si la fecha de nacimiento indica mayoría de edad */
-
+  /** Validar +18 */
   isAdult(birthDateString: string): boolean {
     if (!birthDateString) return false;
 
@@ -152,14 +126,10 @@ export class RegisterUser implements OnInit {
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
 
     return age >= 18;
   }
-
 }

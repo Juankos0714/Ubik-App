@@ -2,7 +2,7 @@
 <div class="flex items-center justify-center px-5 text-white">
   <div class="w-full max-w-md">
     
-    <h1 class="text-4xl font-bold mb-8 tracking-wider text-center">CUENTA CLIENTE</h1>
+    <h1 class="text-4xl font-bold mb-8 tracking-wider text-center">CUENTA PROPIETARIO</h1>
     
     
     <!-- Formulario -->
@@ -12,7 +12,7 @@
         class="flex flex-col gap-5"
       >
       
-      <!-- Usuario -->
+      <!-- Nombre Usuario -->
       <app-input 
         label="Nombre de Usuario" 
         placeholder="Ingrese su nombre de usuario"
@@ -35,12 +35,11 @@
         type="tel"
         formControlName="phoneNumber">
       </app-input>
-
+      
       <!-- Fecha de nacimiento (3 campos) -->
 
-          <label class="mb-1 text-white text-sm">Fecha de nacimiento</label>
+          <p class="mb-1 text-white text-sm">Fecha de nacimiento</p>
           <input 
-            label="Fecha de nacimiento"
             type="date" 
             formControlName="birthDate"
             placeholder="DD"

@@ -1,10 +1,14 @@
 export interface RegisterFormData {
   username: string;
-  email: string;
   password: string;
-  confirmPassword: string;
+  comfirmPassword: string;
+  email: string;
+  phoneNumber: string;
   anonymous: boolean;
   roleId: number;
+  longitude: number;
+  latitude: number;
+  birthDate: string;
 }
 
 export interface ValidationError {
