@@ -30,15 +30,18 @@
       @if (menuOpen) {
         <div 
           class="absolute bottom-full mb-4 w-40 bg-[#3a3d45] rounded-xl shadow-2xl 
-                 overflow-hidden border border-gray-600 flex flex-col animation-fade-in"
+                overflow-hidden border border-gray-600 flex flex-col animation-fade-in"
         >
-          @if (!isLogged) {
+
+          <!-- 🔓 NO LOGUEADO -->
+          @if (!isLogged()) {
             <button 
               (click)="navigateTo(AppRoutes.LOGIN)" 
               class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors"
             >
               Iniciar Sesión
             </button>
+
             <button 
               (click)="navigateTo(AppRoutes.REGISTER)" 
               class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] transition-colors"
@@ -47,26 +50,59 @@
             </button>
           }
 
-          @if (isLogged) {
-            
+          <!-- 🔐 LOGUEADO -->
+          @if (isLogged()) {
+
+            @switch (role()) {
+
+              @case (1) {
+                <button 
+                  (click)="navigateTo(AppRoutes.ADMIN)" 
+                  class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors flex items-center gap-2"
+                >
+                  <fa-icon [icon]="icons.admin" class="text-[18px]" />
+                  Panel Admin
+                </button>
+              }
+
+              @case (2) {
+                <button 
+                  (click)="navigateTo(AppRoutes.OWNER)" 
+                  class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors flex items-center gap-2"
+                >
+                  <fa-icon [icon]="icons.owner" class="text-[18px]" />
+                  Propiedades
+                </button>
+                <button 
+                  (click)="navigateTo(AppRoutes.PROFILE)" 
+                  class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors flex items-center gap-2"
+                >
+                  <fa-icon [icon]="icons.user" class="text-[18px]" />
+                  Mi Perfil
+                </button>
+              }
+
+              @default {
+                <button 
+                  (click)="navigateTo(AppRoutes.PROFILE)" 
+                  class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors flex items-center gap-2"
+                >
+                  <fa-icon [icon]="icons.user" class="text-[18px]" />
+                  Mi Perfil
+                </button>
+              }
+            }
+
             <button 
-              (click)="navigateTo(AppRoutes.PROFILE)" 
-              class="w-full text-left px-4 py-3 text-sm hover:bg-[#4a4d55] border-b border-gray-600 transition-colors"
-            >
-              <fa-icon [icon]="icons.user" class="text-[20px]" />
-              Mi Perfil
-            </button>
-             <button 
               (click)="logout()" 
-              class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#4a4d55] transition-colors"
+              class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-[#4a4d55] transition-colors flex items-center gap-2"
             >
-              <fa-icon [icon]="icons.logout" class="text-[20px]" />
+              <fa-icon [icon]="icons.logout" class="text-[18px]" />
               Cerrar Sesión
             </button>
           }
+
         </div>
-        
-        <div class="absolute bottom-full mb-2 w-3 h-3 bg-[#3a3d45] border-r border-b border-gray-600 rotate-45"></div>
       }
 
       <a

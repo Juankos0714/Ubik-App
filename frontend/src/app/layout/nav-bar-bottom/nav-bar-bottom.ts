@@ -1,25 +1,38 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+  inject
+} from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { isPlatformBrowser, CommonModule } from '@angular/common'; // Agregamos CommonModule
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// 1. IMPORTAR NUEVOS ÍCONOS
 import {
   faHouse,
   faCompass,
   faCircleUser,
   faRightFromBracket,
   faBars,
+  faBuilding,
+  faEye,      
   IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
 
-// Definimos las rutas como constantes para evitar "Magic Strings"
+import { AuthService } from '../../core/auth.service'; 
+
 const ROUTES = {
   HOME: '/',
   EXPLORE: '/explore',
   LOGIN: '/login',
   REGISTER: '/select-register',
-  PROFILE: '/userProfile'
+  PROFILE: '/userProfile', 
+  OWNER: '/', 
+  ADMIN: '/'  
 };
 
 @Component({
@@ -30,24 +43,27 @@ const ROUTES = {
 })
 export class NavBarBottomComponent implements OnInit, OnDestroy {
 
-  // Estado
-  isLogged = false;
+  auth = inject(AuthService);
+
+  isLogged = this.auth.isLogged;
+  role = this.auth.role; 
+
   menuOpen = false;
 
-  // Iconos (Tipados)
   readonly icons: Record<
-    'house' | 'compass' | 'user' | 'logout' | 'menu',
+    'house' | 'compass' | 'user' | 'logout' | 'menu' | 'owner' | 'admin',
     IconDefinition
   > = {
     house: faHouse,
     compass: faCompass,
     user: faCircleUser,
     logout: faRightFromBracket,
-    menu: faBars
+    menu: faBars,
+    owner: faBuilding,
+    admin: faEye
   };
 
-  // Suscripción para limpieza de memoria
-  private routerSubscription: Subscription | undefined;
+  private routerSubscription?: Subscription;
 
   constructor(
     private router: Router,
@@ -57,26 +73,16 @@ export class NavBarBottomComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.checkLogin();
-
-    // Asignamos la suscripción a una variable
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.checkLogin();
-        // Opcional: Cerrar menú automáticamente al cambiar de ruta
-        this.menuOpen = false; 
+        this.menuOpen = false;
       });
   }
 
   ngOnDestroy(): void {
-    // IMPORTANTE: Evita fugas de memoria al destruir el componente
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
+    this.routerSubscription?.unsubscribe();
   }
-
-  // --- LÓGICA DE UI ---
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
@@ -86,46 +92,15 @@ export class NavBarBottomComponent implements OnInit, OnDestroy {
     this.menuOpen = false;
   }
 
-  /**
-   * Método centralizado de navegación.
-   * Cierra el menú y navega, evitando repetir lógica.
-   */
   navigateTo(path: string): void {
     this.closeMenu();
     this.router.navigate([path]);
   }
 
-  /**
-   * Lógica inteligente para el botón de perfil
-   */
-  handleProfileClick(): void {
-    const target = this.isLogged ? ROUTES.PROFILE : ROUTES.LOGIN;
-    this.navigateTo(target);
-  }
-
   logout(): void {
-    // Idealmente esto debería estar en un AuthService
-    this.removeAuthToken();
-    this.isLogged = false;
+    this.auth.logout();
     this.navigateTo(ROUTES.LOGIN);
   }
 
-  // --- MÉTODOS PRIVADOS / HELPERS ---
-
-  private checkLogin(): void {
-    // Encapsulamos la lógica de localStorage
-    this.isLogged = !!this.getAuthToken();
-  }
-
-  private getAuthToken(): string | null {
-    return localStorage.getItem('auth_token');
-  }
-
-  private removeAuthToken(): void {
-    localStorage.removeItem('auth_token');
-    sessionStorage.removeItem('auth_token');
-  }
-
-  // Exponemos las rutas al template para usarlas allí si es necesario
   public readonly AppRoutes = ROUTES;
 }

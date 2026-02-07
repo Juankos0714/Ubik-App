@@ -3,9 +3,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Inputcomponent } from '../../../../../components/input/input';
-import { RegisterService } from '../services/services';
+import { RegisterServiceOwner } from '../services/services';
 import { ValidationError } from '../../register-user/types/register-user.types';
-import { RegisterUserPayload } from '../../register-user/types/register-user-payload.types';
 import { RegisterFormData } from '../../register-user/types/register-user.types';
 
 @Component({
@@ -23,7 +22,7 @@ export class RegisterPropertyEst implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private registerService: RegisterService,
+    private registerService: RegisterServiceOwner,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
@@ -111,7 +110,7 @@ export class RegisterPropertyEst implements OnInit {
       phoneNumber: form.phoneNumber?.trim(),
       birthDate: form.birthDate,
       anonymous: form.anonymous ?? false,
-      roleId: 3,
+      roleId: 2,
       latitude: 4.6097,
       longitude: -74.0721
     };

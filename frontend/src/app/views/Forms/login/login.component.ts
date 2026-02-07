@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginService } from './services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/auth.service';
 import { Button01 } from '../../../components/button-01/button-01';
 
 @Component({
@@ -24,8 +25,8 @@ export class LoginComponent {
   rememberMe = signal(false);
 
   constructor(
-    
     private loginService: LoginService,
+    private auth: AuthService,
     private router: Router
   ) {}
 
@@ -67,24 +68,31 @@ export class LoginComponent {
 
     this.isSubmitting.set(true);
 
-    this.loginService
-      .login(
-        {
-          username: data.username,
-          password: data.password,
-        },
-        this.rememberMe()
-      )
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.router.navigateByUrl('');
-        },
-        error: (err: unknown) => {
-          console.error('❌ Error en login:', err);
-          this.isSubmitting.set(false);
-        },
-      });
+    this.loginService.login(
+      {
+        username: data.username,
+        password: data.password,
+      },
+      this.rememberMe()
+    ).subscribe({
+      next: () => {
+        // 🔥 ahora pedimos el perfil
+        this.loginService.getProfile().subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.router.navigate(['/']);
+          },
+          error: (err: any) => {
+            console.error('Error cargando perfil', err);
+            this.isSubmitting.set(false);
+          },
+        });
+      },
+      error: (err: any) => {
+        console.error('Error login', err);
+        this.isSubmitting.set(false);
+      },
+    });
   }
   /* =======================
      ERRORS

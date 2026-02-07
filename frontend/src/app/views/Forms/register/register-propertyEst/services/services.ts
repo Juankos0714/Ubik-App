@@ -4,7 +4,6 @@ import { Observable, throwError } from 'rxjs';
 
 import { ValidationError } from '../../register-user/types/register-user.types';
 import { RegisterFormData } from '../../register-user/types/register-user.types';
-import { RegisterUserPayload } from '../../register-user/types/register-user-payload.types';
 
 import {
   validateEmail,
@@ -23,7 +22,7 @@ export interface RegistrationResult {
 }
 
 @Injectable({ providedIn: 'root' })
-export class RegisterService {
+export class RegisterServiceOwner {
 
   private readonly REGISTER_URL = `${environment.apiUrl}/auth/register`;
 
@@ -87,3 +86,4 @@ export class RegisterService {
     );
   }
 }
+

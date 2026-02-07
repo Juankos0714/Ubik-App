@@ -1,9 +1,11 @@
 export interface UserProfile {
-  id: number;
   username: string;
+  password: string;
   email: string;
-  phoneNumber: string | null;
-  createdAt: string;
+  phoneNumber: string;
   anonymous: boolean;
   roleId: number;
+  longitude: number;
+  latitude: number;
+  birthDate: string;
 }

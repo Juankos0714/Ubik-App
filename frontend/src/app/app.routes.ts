@@ -33,7 +33,7 @@ export const routes: Routes = [
     {path: "rooms-motel", component: RoomsMotel},
     {path: "rooms-offerts", component: RoomsOfferts},
     
-    /*========== ReGISTER / LOGUIN ==========*/
+    /*========== REGISTER / LOGUIN ==========*/
 
     {path: "select-register", component: RegisterSelect},
     
