@@ -66,7 +66,6 @@ const LOCATIONS: Location[] = [
   selector: 'app-explore',
   imports: [CommonModule, Card3, Button02],
   templateUrl: './explore.html',
-  styleUrl: './explore.css',
 })
 
 export class Explore {

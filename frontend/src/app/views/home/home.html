@@ -1,60 +1,42 @@
- <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
-   <!-- Ofertas -->
-    <div class="mx-auto mb-8 sm:mb-12 lg:w-full" id="offers">
+<div class="w-full px-3 sm:px-4 md:px-6 lg:max-w-[1400px] lg:mx-auto">
 
-      <div class="max-w-100 mx-auto mb-6 flex justify-between items-center">
-        <h3 class="text-2xl md:text-2xl font-bold">Mejores ofertas</h3>
-      </div>
-      
-      <!-- Scroll Horizontal -->
-      <div class="mx-auto overflow-x-auto scrollbar-hide">
-        <div class="flex gap-4 pb-4">
-          @for (oferta of mejoresOfertas; track oferta.id) {
-            <app-card 
-              [card]="oferta"
-              class="shrink-0 w-64 sm:w-72"
-            ></app-card>
-          }
-        </div>
-      </div>
+  <!-- Ofertas -->
+  <section class="mb-10" id="offers">
+    <h3 class="mb-6 text-2xl font-bold">Mejores ofertas</h3>
 
+    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
+      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
+        @for (oferta of mejoresOfertas; track oferta.id) {
+          <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+        }
+      </div>
     </div>
+  </section>
 
-    <!-- Moteles Cercanos -->
-    <div class="mx-auto mb-8 sm:mb-12 lg:w-full" id="motels">
-      <div class="flex max-w-100 mx-auto mb-6">
-        <h3 class="text-2xl md:text-2xl font-bold">Moteles más cercanos</h3>
-      </div>
-      
-      <div class="mx-auto overflow-x-auto scrollbar-hide lg:w-full">
-        <div class="flex gap-4 pb-4">
-          @for (motel of motelesCercanos; track motel.id) {
-            <app-card 
-              [card]="motel"
-              class="shrink-0 w-64 sm:w-72"
-            ></app-card>
-          }
-        </div>
-      </div>
+  <!-- Moteles Cercanos -->
+  <section class="mb-10" id="motels">
+    <h3 class="mb-6 text-2xl font-bold">Moteles más cercanos</h3>
 
+    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
+      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
+        @for (motel of motelesCercanos; track motel.id) {
+          <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+        }
+      </div>
     </div>
+  </section>
 
-    <!-- Destinos Populares -->
-    <div class="mx-auto mb-8 sm:mb-12 lg:w-full" id="destines">
-      <div class="mx-auto mb-6 flex justify-between items-center lg:w-full">
-        <h3 class="text-2xl md:text-2xl font-bold">Destinos Populares</h3>
-      </div>
-      
-      <div class="overflow-x-auto scrollbar-hide">
-        <div class="flex gap-4 pb-4">
-          @for (destino of destinosPopulares; track destino.id) {
-            <app-card 
-              [card]="destino"
-              class="shrink-0 w-64 sm:w-72"
-            ></app-card>
-          }
-        </div>
-      </div>
+  <!-- Destinos Populares -->
+  <section class="mb-10" id="destines">
+    <h3 class="mb-6 text-2xl font-bold">Destinos Populares</h3>
 
+    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
+      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
+        @for (destino of destinosPopulares; track destino.id) {
+          <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+        }
+      </div>
     </div>
- </div>
+  </section>
+
+</div>

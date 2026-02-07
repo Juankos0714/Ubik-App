@@ -12,12 +12,14 @@ body {
   @apply bg-linear-to-r from-[#0B0608] to-[#501521];
 }
 
-main{
-  /*-height: 100vh;*/
+main {
   color: #fff;
+  width: 100%;
   max-width: 1400px;
-  padding: 10px 0px 10px 10px;
+  margin: 0 auto;
+  padding: 0; /* el padding se maneja con Tailwind en los componentes */
 }
+
 
 h1,h2,h3,h4,h5,h6{
   font-family: "Montserrat", sans-serif;

@@ -1,6 +1,5 @@
 import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-
 import { Card, HabitacionInformacion } from '../../components/card/card';
 import { RoomService } from '../../services/room/room';
 
@@ -10,6 +9,7 @@ import { RoomService } from '../../services/room/room';
   imports: [CommonModule, Card],
   templateUrl: './home.html',
 })
+
 export class Home implements OnInit {
 
   private platformId = inject(PLATFORM_ID);
@@ -39,7 +39,7 @@ export class Home implements OnInit {
             numberHab: room.number,
             type: room.roomType,
             descripcion: room.description,
-            imagen: room.imageUrls?.[0] || 'assets/ubikLogo.jpg',
+            imagen: room.imageUrls?.[0] || 'assets/images/ubikLogo.jpg',
             price: room.price,
             isAvailable: room.isAvailable
           }));
