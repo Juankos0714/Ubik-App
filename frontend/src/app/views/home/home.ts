@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Card, HabitacionInformacion } from '../../components/card/card';
-import { RoomService } from '../../services/room/room';
+import { RoomService } from '../../core/services/room/room';
 
 @Component({
   selector: 'app-home',

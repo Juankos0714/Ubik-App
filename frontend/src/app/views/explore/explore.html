@@ -1,12 +1,9 @@
 <!-- HEADER -->
-<div class="px-4 sm:px-6 py-4">
-  <h2 class="text-xl sm:text-2xl font-bold mb-4">Vista Explorar</h2>
+<div class="flex px-4 sm:px-6 py-4">
+    
+  <h2>Moteles y Habitaciones</h2>
+  <app-button-02 text="Filtro" (click)="openModal()"></app-button-02>
 
-  <!-- Botón solo útil en mobile -->
-  <app-button-02
-    text="Filtro"
-    (click)="openModal()"
-  ></app-button-02>
 </div>
 
 <!-- LAYOUT PRINCIPAL -->
@@ -27,19 +24,24 @@
       Habitaciones disponibles
     </h2>
 
-    @for (item of filteredRooms; track item.room.id) {
-      <app-card-3
-        [title]="item.room.name"
-        [location]="item.location[0].city"
-        [adress]="item.adress"
-        [price]="item.room.price"
-        [hours]="4"
-        [services]="item.room.features"
-      />
-    }
+    <div class="cards max-h-[90vh] max-w-[70%] overflow-y-auto flex flex-col gap-4">
+
+      @for (item of filteredRooms; track item.room.id) {
+        <app-card-3
+          [title]="item.room.name"
+          [location]="item.location[0].city"
+          [adress]="item.adress"
+          [price]="item.room.price"
+          [hours]="4"
+          [services]="item.room.features"
+        />
+      } 
+    </div>
+  
   </section>
 
-  <div class="map" id="map">
-    
+  <div class="map-section max-w-2xs max-h-[90vh]">
+    <app-map ></app-map>
   </div>
+
 </div>
