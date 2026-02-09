@@ -1,47 +1,24 @@
-<!-- HEADER -->
-<div class="flex px-4 sm:px-6 py-4">
-    
-  <h2>Moteles y Habitaciones</h2>
-  <app-button-02 text="Filtro" (click)="openModal()"></app-button-02>
-
-</div>
-
-<!-- LAYOUT PRINCIPAL -->
-<div class="flex flex-col lg:flex-row gap-6 px-4 sm:px-6 py-4">
-
+<div class="flex mt-16 flex-col lg:flex-row justify-between gap-6">
 
   <!-- RESULTADOS -->
-  <section
-    class="
-      results
-      flex flex-col
-      gap-6 sm:gap-10
-      w-full
-      flex-1
-    "
-  >
-    <h2 class="text-xl sm:text-2xl font-bold">
-      Habitaciones disponibles
-    </h2>
+  <div class="results-section flex-1 flex flex-col gap-6 max-h-[800px] max-w-full lg:max-w-[60%] rounded-xl overflow-hidden border border-white/10">
 
-    <div class="cards max-h-[90vh] max-w-[70%] overflow-y-auto flex flex-col gap-4">
-
-      @for (item of filteredRooms; track item.room.id) {
-        <app-card-3
-          [title]="item.room.name"
-          [location]="item.location[0].city"
-          [adress]="item.adress"
-          [price]="item.room.price"
-          [hours]="4"
-          [services]="item.room.features"
-        />
-      } 
+    <div class="title flex px-4 sm:px-6 py-4 justify-between items-center">
+      <h2 class="text-2xl font-semibold">Moteles y Habitaciones</h2>
+      <app-button-02 text="Filtro" (click)="openModal()"></app-button-02>
     </div>
-  
-  </section>
 
-  <div class="map-section max-w-2xs max-h-[90vh]">
-    <app-map ></app-map>
+    <section class="results flex flex-col gap-6 sm:gap-10 w-full flex-1 overflow-y-auto">
+      <div class="cards overflow-y-auto flex flex-col gap-4 pr-2">
+        @for (card of cards; track card.id) {
+          <app-card-3 [card]="card" [services]="[]" />
+        }
+      </div>
+    </section>
   </div>
 
+  <!-- MAPA -->
+<div class="flex-1 h-[800px] min-h-[400px] rounded-xl overflow-hidden">
+    <app-map></app-map>
+  </div>
 </div>
