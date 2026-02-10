@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Filter } from './filter';
+import { Filter } from './filter-modal';
 
 describe('Filter', () => {
   let component: Filter;
@@ -8,9 +8,8 @@ describe('Filter', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Filter]
-    })
-    .compileComponents();
+      imports: [Filter],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Filter);
     component = fixture.componentInstance;

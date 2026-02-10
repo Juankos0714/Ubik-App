@@ -61,9 +61,9 @@ const LOCATIONS: Location[] = [
 @Component({
   selector: 'app-filter',
   imports: [CommonModule],
-  templateUrl: './filter.html',
+  templateUrl: './filter-modal.html',
 })
-export class Filter{
+export class FilterModal{
 
 
   FEATURES = FEATURES;
