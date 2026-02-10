@@ -3,21 +3,104 @@
   <!-- Top bar -->
   <div class="flex items-center justify-center lg:justify-between w-full">
     <app-logo-01></app-logo-01>
+      <nav class="hidden lg:flex items-center gap-6">
 
-    <nav class="hidden lg:flex items-center gap-6">
-      <a routerLink="explore" class="text-white hover:text-red-500 transition">
-        Explora
-      </a>
-      <a href="#destines" class="text-white hover:text-red-500 transition">
-        Destinos
-      </a>
-      <a href="#offers" class="text-white hover:text-red-500 transition">
-        Ofertas
-      </a>
-      <a routerLink="login" class="text-white hover:text-red-500 transition">
+    <!-- Públicas -->
+    <a
+      (click)="navigateTo(ROUTES.HOME)"
+      class="text-white hover:text-red-500 transition cursor-pointer"
+    >
+      Inicio
+    </a>
+
+    <a
+      (click)="navigateTo(ROUTES.EXPLORE)"
+      class="text-white hover:text-red-500 transition"
+    >
+      Explorar
+    </a>
+
+    <a
+      (click)="navigateTo(ROUTES.OFFERTS)"
+      class="text-white hover:text-red-500 transition"
+    >
+      Ofertas
+    </a>
+
+    <!-- 🔓 NO LOGUEADO -->
+    @if (!isLogged()) {
+
+      <a
+        (click)="navigateTo(ROUTES.LOGIN)"
+        class="text-white hover:text-red-500 transition cursor-pointer"
+      >
         Inicia sesión
       </a>
-    </nav>
+
+      <a
+        (click)="navigateTo(ROUTES.REGISTER)"
+        class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white"
+      >
+        Registrarse
+      </a>
+
+    }
+
+    <!-- 🔐 LOGUEADO -->
+    @if (isLogged()) {
+
+      @switch (role()) {
+
+        <!-- ADMIN -->
+        @case (1) {
+          <a
+            (click)="navigateTo(ROUTES.ADMIN)"
+            class="text-white hover:text-red-400 transition cursor-pointer"
+          >
+            Panel Admin
+          </a>
+        }
+
+        <!-- OWNER -->
+        @case (2) {
+          <a
+            (click)="navigateTo(ROUTES.OWNER)"
+            class="text-white hover:text-red-400 transition cursor-pointer"
+          >
+            Propiedades
+          </a>
+
+          <a
+            (click)="navigateTo(ROUTES.PROFILE)"
+            class="text-white hover:text-red-400 transition cursor-pointer"
+          >
+            Mi Perfil
+          </a>
+        }
+
+        <!-- USER -->
+        @default {
+          <a
+            (click)="navigateTo(ROUTES.PROFILE)"
+            class="text-white hover:text-red-400 transition cursor-pointer"
+          >
+            Mi Perfil
+          </a>
+        }
+      }
+
+      <!-- LOGOUT -->
+      <button
+        (click)="logout()"
+        class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white "
+      >
+        Cerrar sesión
+      </button>
+
+    }
+
+  </nav>
+
   </div>
 
   <!-- Search form (SOLO DESKTOP) -->
