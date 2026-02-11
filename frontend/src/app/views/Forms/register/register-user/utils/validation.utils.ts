@@ -4,6 +4,7 @@
  * Uses early returns to reduce nesting
  */
 
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ValidationError } from '../types/register-user.types';
 
 /* =======================
@@ -229,4 +230,18 @@ export function collectValidationErrors(
   }
 
   return errors;
+}
+
+/**
+  Verifica el email verdadero de la cuenta registrada en la base de datos
+ */
+
+export function toValidatorFn(
+  fn: (value: string) => string | null,
+    errorKey: string
+  ): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const error = fn(control.value);
+      return error ? { [errorKey]: error } : null;
+    };
 }

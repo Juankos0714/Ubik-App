@@ -24,4 +24,4 @@ export class UserProfileService {
 
     return this.http.get<UserProfile>(this.baseUrl);
   }
-}
+} 

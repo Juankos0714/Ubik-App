@@ -11,6 +11,7 @@ import { UserProfilePage } from './views/user-profile/user-profile';
 
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
+import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
 
 
 /** Register  */
@@ -18,6 +19,8 @@ import { RegisterUser } from './views/Forms/register/register-user/components/re
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
 import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
+import { PropertyUser } from './views/Propertys-user/models/property-user.model';
+import { PropertyUserComponent } from './views/Propertys-user/components/property-user.component';
 
 
 
@@ -43,11 +46,13 @@ export const routes: Routes = [
 
     {path: 'login', component: LoginComponent},
     {path: "register-establishment", component: RegisterEstablishmentComponent},
+    {path: "forgot-password", component: ForgotPasswordComponent},
 
 
     /**==== PERFILES DE USURIOS ====== */
 
     {path: "userProfile", component: UserProfilePage},
+    {path: "property", component: PropertyUserComponent},
 
 
     /**⚠️ ESTA RUTA ES APARTE SOLO PARA VER TODOS LOS COMPONENTES DE LA PAGINA JUNTOS SOLO TENDREMOS CONOCIMIENTO DE ELLA NOSOTROS :v */

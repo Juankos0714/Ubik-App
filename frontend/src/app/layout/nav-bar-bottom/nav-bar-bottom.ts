@@ -31,7 +31,7 @@ const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/select-register',
   PROFILE: '/userProfile', 
-  OWNER: '/', 
+  OWNER: '/property', 
   ADMIN: '/'  
 };
 

@@ -115,6 +115,6 @@ export class LoginComponent {
   }
 
   navigateToPasswordReset(): void {
-    this.router.navigate(['/forgot-password']);
+    this.router.navigate(['/forgot-password']);// Recuperacion de contraseña
   }
 }
