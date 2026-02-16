@@ -1,204 +1,122 @@
-import { Component } from '@angular/core';
-import { Card3 } from "../../components/card-3/card-3";
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Card3, Card3Informacion } from "../../components/card-3/card-3";
 import { Button02 } from "../../components/button-02/button-02";
+import { Map } from "../../components/map/map";
+import { Filter } from '../../components/filter/filter';
+import { Dialog } from '@angular/cdk/dialog';
+import { RoomService } from '../../core/services/room/room';
 
-/*========= SIMULACION DE MODELOS ============*/
-
-export interface Feature {
+interface MotelMapPoint {
   id: number;
   name: string;
-  icon: string;
-};
-
-export interface Category {
-  id: number;
-  name: string;
-};
-
-export interface Location {
-  id: number;
-  city: string;
-};
-
-export interface Room {
-  id: number;
-  name: string;
-  category: Category;
-  price: number;
-  features: Feature[];
-}
-
-export interface Motel {
-  id: number;
-  name: string;
+  lat: number;
+  lng: number;
   adress: string;
-  location: Location[];
-  rooms: Room[];
 }
-
-/*========= SIMULACION DE TABLAS DE BASES DE DATOS FEATURES Y CATEGOTIAS ===============*/
-
-const FEATURES: Feature[] = [
-  { id: 1, name: 'Jacuzzi', icon: 'pi pi-star' },
-  { id: 2, name: 'Parqueadero', icon: 'pi pi-car' },
-  { id: 3, name: 'TV', icon: 'pi pi-desktop' },
-  { id: 4, name: 'Aire acondicionado', icon: 'pi pi-snowflake' }
-];
-
-const CATEGORIES: Category[] = [
-  { id: 1, name: 'Premium' },
-  { id: 2, name: 'Económico' }
-];
-
-const LOCATIONS: Location[] = [
-  {id:1, city: 'Bogota'},
-  {id: 2,  city: 'Medellin'},
-  {id: 3,  city: 'Armenia'},
-
-]
-
-/**============ Configuracion del component ================ */
 
 @Component({
   selector: 'app-explore',
-  imports: [CommonModule, Card3, Button02],
+  standalone: true,
+  imports: [CommonModule, Card3, Button02, Map],
   templateUrl: './explore.html',
-  styleUrl: './explore.css',
 })
+export class Explore implements OnInit {
 
-export class Explore {
+  private dialog = inject(Dialog);
+  private roomService = inject(RoomService);
 
-
-  isOpen = false;
-
-  toggle() {
-    this.isOpen = !this.isOpen;
-  }
-
-
-
-
-
-  
-
-  FEATURES = FEATURES;
-  CATEGORIES = CATEGORIES;
-  LOCATIONS = LOCATIONS;
-
-/*========= SIMULACION DE TABLAS DE BASES DE DATOS Habitaciones del motel ===============*/
-
-  motels: Motel[] = [
-
-    { id: 1,
-      name: 'Oasis',
-      location: [LOCATIONS[1]],
-      adress: 'Los naranjos',
-      rooms: [
-        {
-          id: 1,
-          name: 'Suite Jacuzzi',
-          category: CATEGORIES[0],
-          price: 35000,
-          features: [FEATURES[0], FEATURES[1], FEATURES[2]]
-        },
-        {
-          id: 2,
-          name: 'Habitación Estándar',
-          category: CATEGORIES[1],
-          price: 50000,
-          features: [FEATURES[1], FEATURES[2]]
+  openModal() {
+    this.dialog.open(Filter, {
+      data: {
+        onChange: (filters: any) => {
+          this.applyFilters(filters);
         }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Luna Azul',
-      location: [LOCATIONS[2]],
-      adress: 'Barrio del bajo mundo',
-      rooms: [
-        {
-          id: 3,
-          name: 'Habitación Premium',
-          category: CATEGORIES[0],
-          price: 45000,
-          features: [FEATURES[0], FEATURES[2]]
-        },
-        {
-          id: 4,
-          name: 'Habitación Básica',
-          category: CATEGORIES[1],
-          price: 45000,
-          features: [FEATURES[1]]
-        }
-      ]
-    }
-  ];
-
-  /** Logica de los filtros */
-
-  filters = {
-    categoryId: null as number | null,
-    locationId: null as number | null,
-    priceMin: 0,
-    priceMax: 50000,
-    featureIds: [] as number[]
-  };
-
-  onFeatureChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const value = Number(input.value);
-
-  if (input.checked) {
-    this.filters.featureIds.push(value);
-  } else {
-    this.filters.featureIds =
-      this.filters.featureIds.filter(id => id !== value);
-  }
-  }
-  onCategoryChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.filters.categoryId = input.checked
-      ? Number(input.value)
-      : null;
-  }
-  onLocationChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  this.filters.locationId = input.checked
-    ? Number(input.value)
-    : null;
-  }
-  onPriceChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  this.filters.priceMax = Number(input.value);
+      }
+    });
   }
 
-  get filteredRooms() {
-  return this.motels.flatMap(motel =>
+  /** Cards */
+  cards: Card3Informacion[] = [];
 
-    motel.rooms
-      .filter(room =>
+  /** Datos base del backend */
+  roomsRaw: any[] = [];
 
-        (this.filters.categoryId
-          ? room.category.id === this.filters.categoryId
-          : true) &&
+  /** Puntos que se muestran en el mapa */
+  mapPoints: MotelMapPoint[] = [];
 
-        (this.filters.locationId
-          ? motel.location.some(l => l.id === this.filters.locationId)
-          : true) &&
+  ngOnInit() {
+    this.cargarRooms();
+  }
 
-        room.price === this.filters.priceMax &&
+  cargarRooms() {
+    this.roomService.getRooms().subscribe({
+      next: (rooms) => {
+        this.roomsRaw = rooms;
 
-        this.filters.featureIds.every(id =>
-          room.features.some(f => f.id === id)
+        this.cards = rooms
+          .filter(r => r.isAvailable)
+          .map(room => ({
+            id: room.id,
+            motelId: room.motelId,
+            numberHab: room.number,
+            type: room.roomType,
+            descripcion: room.description,
+            image: room.imageUrls?.[0] || 'assets/images/ubikLogo.jpg',
+            title: room.roomType,
+            location: room.city ?? 'Bogotá',
+            adress: room.address ?? '',
+            price: room.price,
+            hours: 4
+          }));
+
+        // 👉 Al inicio: mapa con todos los moteles cercanos
+        this.mapPoints = rooms.map(room => ({
+          id: room.id,
+          name: room.roomType,
+          lat: room.lat ?? 4.6097,
+          lng: room.lng ?? -74.0817,
+          adress: room.address ?? ''
+        }));
+      },
+      error: (err) => console.error('Error cargando rooms', err)
+    });
+  }
+
+  applyFilters(filters: any) {
+    const filtered = this.roomsRaw.filter(room => {
+      if (filters.categoryId && room.categoryId !== filters.categoryId) return false;
+      if (filters.locationId && room.locationId !== filters.locationId) return false;
+      if (room.price > filters.priceMax) return false;
+      if (
+        filters.featureIds?.length &&
+        !filters.featureIds.every((id: number) =>
+          room.features?.some((f: any) => f.id === id)
         )
-      )
-      .map(room => ({
-        motelName: motel.name,
-        location: motel.location,
-        adress: motel.adress,
-        room
-      }))
-  );
-  }  
+      ) return false;
+      return true;
+    });
+
+    this.cards = filtered.map(room => ({
+      id: room.id,
+      motelId: room.motelId,
+      numberHab: room.number,
+      type: room.roomType,
+      descripcion: room.description,
+      image: room.imageUrls?.[0] || 'assets/images/ubikLogo.jpg',
+      title: room.roomType,
+      location: room.city ?? 'Bogotá',
+      adress: room.address ?? '',
+      price: room.price,
+      hours: 4
+    }));
+
+    this.mapPoints = filtered.map(room => ({
+      id: room.id,
+      name: room.roomType,
+      lat: room.lat ?? 4.6097,
+      lng: room.lng ?? -74.0817,
+      adress: room.address ?? ''
+    }));
+  }
 }

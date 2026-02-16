@@ -1,27 +1,22 @@
-<article
-  class="bg-[#14090C] rounded-2xl p-4 text-white shadow-lg flex flex-col gap-4"
->
-  <!-- Imagen + info -->
+<article class="bg-[#14090C] rounded-2xl p-4 text-white shadow-lg flex flex-col gap-4">
+
   <div class="flex gap-4">
-    <!-- Imagen -->
     <img
-      src="image"
-      alt="title"
+      [src]="card.image"
+      [alt]="card.title"
       class="w-32 h-32 object-cover rounded-xl"
     />
 
-    <!-- Información -->
     <div class="flex flex-col gap-2 flex-1">
       <h3 class="text-lg font-semibold uppercase">
-        {{ title }}
+        {{ card.title }}
       </h3>
 
       <p class="text-sm text-gray-300 flex items-center gap-1">
         <i class="pi pi-map-marker"></i>
-        {{ location }}, {{adress}}
+        {{ card.location }}, {{ card.adress }}
       </p>
 
-      <!-- Servicios -->
       <div class="flex flex-wrap gap-3 text-sm mt-1">
         @for (service of services; track service.id) {
           <span class="flex items-center gap-1 text-gray-200">
@@ -33,16 +28,14 @@
     </div>
   </div>
 
-  <!-- Separador -->
   <hr class="border-white/10" />
 
-  <!-- Precio -->
   <div class="flex items-end gap-2">
-    <span class=" font-bold text-red-600">
-      {{ price }}
+    <span class="font-bold text-red-600">
+      {{ card.price | currency:'COP' }}
     </span>
     <span class="text-sm text-gray-300">
-      Por {{ hours }} Horas
+      Por {{ card.hours }} Horas
     </span>
   </div>
 

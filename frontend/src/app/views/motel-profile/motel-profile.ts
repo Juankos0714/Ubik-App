@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Button01 } from '../../components/button-01/button-01';
 import { CardOffers, CardOff } from '../../components/card-offers/card-offers';
 import { CardRoom } from '../../components/card-room/card-room';
-import { MotelMockService } from '../../services/motel/motel-mock';
-import { InfoPerfile, CardHabitacion } from '../../services/motel/motel-mock';
+import { MotelMockService } from '../../core/services/motel/motel-mock';
+import { InfoPerfile, CardHabitacion } from '../../core/services/motel/motel-mock';
 
 
 

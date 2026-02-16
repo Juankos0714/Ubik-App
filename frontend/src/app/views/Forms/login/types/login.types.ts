@@ -1,13 +1,14 @@
 /**
  * Type definitions for the login view
- * Follows Interface Segregation Principle (ISP) - each interface is focused and minimal
+ * Follows Interface Segregation Principle (ISP)
  */
 
 /**
  * Login form data structure
+ * Must match backend LoginRequest
  */
 export interface LoginFormData {
-  email: string;
+  username: string;
   password: string;
 }
 

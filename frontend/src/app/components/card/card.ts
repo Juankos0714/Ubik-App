@@ -6,7 +6,7 @@ export interface HabitacionInformacion {
   id: number;
   motelId: number;
   numberHab: string;
-  tipo: string;
+  type: string;
   price: number;
   descripcion: string;
   imagen: string;

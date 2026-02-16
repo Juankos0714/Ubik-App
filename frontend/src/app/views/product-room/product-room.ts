@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MotelMockService, Room } from '../../services/motel/motel-mock';
+import { MotelMockService, Room } from '../../core/services/motel/motel-mock';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-product',
   imports: [CommonModule, RouterModule], 
   templateUrl: './product-room.html',
-  styleUrls: ['./product-room.css']
 })
 export class ProductComponent implements OnInit {
   product: Room | null = null;

@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Inputcomponent } from '../../components/input/input';
 
-import { MotelMockService, InfoPerfile } from '../../services/motel/motel-mock';
+import { MotelMockService, InfoPerfile } from '../../core/services/motel/motel-mock';
 import { Button01 } from '../../components/button-01/button-01';
 
 @Component({

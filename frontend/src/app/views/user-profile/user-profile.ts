@@ -1,23 +1,23 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Button01 } from '../../components/button-01/button-01';
-import { UserMock, UserProfile as UserProfileData } from '../../services/user/user-mock';
+import { Component, OnInit } from '@angular/core';
+import { UserProfileService } from './services/user-profile.service';
+import { ModelProfileComponent } from './components/model-profile/model-profile.component';
+import { UserProfile } from './models/user-profile.model';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [Button01, CommonModule],
+  imports: [ModelProfileComponent],
   templateUrl: './user-profile.html',
-  styleUrl: './user-profile.css',
 })
-export class UserProfile implements OnInit {
-  private userService = inject(UserMock);
+export class UserProfilePage implements OnInit {
+  profile!: UserProfile;
 
-  profile!: UserProfileData;
+  constructor(private userProfileService: UserProfileService) {}
 
   ngOnInit(): void {
-    this.userService.getProfile().subscribe((data) => {
-      this.profile = data;
+    this.userProfileService.getProfile().subscribe({
+      next: (profile) => (this.profile = profile),
+      error: (err) => console.error('Error cargando perfil', err),
     });
   }
 }
