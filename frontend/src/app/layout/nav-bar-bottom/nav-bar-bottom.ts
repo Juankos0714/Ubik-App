@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  Inject,
-  PLATFORM_ID,
-  inject
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -19,34 +12,33 @@ import {
   faRightFromBracket,
   faBars,
   faBuilding,
-  faEye,      
-  IconDefinition
+  faEye,
+  IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { AuthService } from '../../core/auth.service'; 
+import { AuthService } from '../../core/middleware/auth.service';
 
 const ROUTES = {
   HOME: '/',
   EXPLORE: '/explore',
   LOGIN: '/login',
   REGISTER: '/select-register',
-  PROFILE: '/userProfile', 
-  OWNER: '/property', 
-  ADMIN: '/'  
+  PROFILE: '/userProfile',
+  OWNER: '/',
+  ADMIN: '/',
 };
 
 @Component({
   selector: 'app-nav-bar-bottom',
   templateUrl: './nav-bar-bottom.html',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule]
+  imports: [CommonModule, FontAwesomeModule],
 })
 export class NavBarBottomComponent implements OnInit, OnDestroy {
-
   auth = inject(AuthService);
 
   isLogged = this.auth.isLogged;
-  role = this.auth.role; 
+  role = this.auth.role;
 
   menuOpen = false;
 
@@ -60,21 +52,21 @@ export class NavBarBottomComponent implements OnInit, OnDestroy {
     logout: faRightFromBracket,
     menu: faBars,
     owner: faBuilding,
-    admin: faEye
+    admin: faEye,
   };
 
   private routerSubscription?: Subscription;
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.routerSubscription = this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         this.menuOpen = false;
       });

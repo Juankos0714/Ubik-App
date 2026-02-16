@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { UserProfileService } from './services/user-profile.service';
-import { ModelProfileComponent } from './components/model-profile/model-profile.component';
-import { UserProfile } from './models/user-profile.model';
+import { UsersService } from '../../core/services/user.service';
+import { Users } from '../../core/models/users.model';
+import { Button01 } from "../../components/button-01/button-01";
+
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [ModelProfileComponent],
+  imports: [ Button01 ],
   templateUrl: './user-profile.html',
 })
-export class UserProfilePage implements OnInit {
-  profile!: UserProfile;
+export class UserProfile implements OnInit {
 
-  constructor(private userProfileService: UserProfileService) {}
+  profile!: Users;
+
+  constructor(private userProfileService: UsersService) {}
 
   ngOnInit(): void {
     this.userProfileService.getProfile().subscribe({
@@ -20,4 +22,5 @@ export class UserProfilePage implements OnInit {
       error: (err) => console.error('Error cargando perfil', err),
     });
   }
+
 }

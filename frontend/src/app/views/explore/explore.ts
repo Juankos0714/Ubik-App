@@ -1,120 +1,62 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Card3, Card3Informacion } from '../../components/card-3/card-3';
-import { Button02 } from '../../components/button-02/button-02';
-import { Map } from '../../components/map/map';
-import { FilterModal } from '../../components/filter-modal/filter-modal';
+import { Component, OnInit, inject } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
-import { RoomService } from '../../core/services/room/room';
 
-interface MotelMapPoint {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-  adress: string;
-}
+import { RoomService } from '../../core/services/room.service';
+import { Room } from '../../core/models/room.model';
+
+import { FilterModal } from '../../components/filter-modal/filter-modal';
+import { Button02 } from '../../components/button-02/button-02';
+import { Card3, Card3Informacion } from '../../components/card-3/card-3';
+import { Map } from '../../components/map/map';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, Card3, Button02, Map],
   templateUrl: './explore.html',
+  imports: [Button02, Card3, Map],
 })
 export class Explore implements OnInit {
-  private dialog = inject(Dialog);
   private roomService = inject(RoomService);
+  private dialog = inject(Dialog);
 
-  openModal() {
-    this.dialog.open(FilterModal, {
-      data: {
-        onChange: (filters: any) => {
-          this.applyFilters(filters);
-        },
-      },
-    });
-  }
-
-  /** Cards */
   cards: Card3Informacion[] = [];
 
-  /** Datos base del backend */
-  roomsRaw: any[] = [];
+  loading = false;
+  error = false;
 
-  /** Puntos que se muestran en el mapa */
-  mapPoints: MotelMapPoint[] = [];
-
-  ngOnInit() {
-    this.cargarRooms();
+  ngOnInit(): void {
+    this.loadRooms();
   }
 
-  cargarRooms() {
+  openModal() {
+    this.dialog.open(FilterModal);
+  }
+
+  loadRooms(): void {
+    this.loading = true;
+
     this.roomService.getRooms().subscribe({
-      next: (rooms) => {
-        this.roomsRaw = rooms;
-
-        this.cards = rooms
-          .filter((r) => r.isAvailable)
-          .map((room) => ({
-            id: room.id,
-            motelId: room.motelId,
-            numberHab: room.number,
-            type: room.roomType,
-            descripcion: room.description,
-            image: room.imageUrls?.[0] || 'assets/images/ubikLogo.jpg',
-            title: room.roomType,
-            location: room.city ?? 'Bogotá',
-            adress: room.address ?? '',
-            price: room.price,
-            hours: 4,
-          }));
-
-        // 👉 Al inicio: mapa con todos los moteles cercanos
-        this.mapPoints = rooms.map((room) => ({
+      next: (rooms: Room[]) => {
+        this.cards = rooms.map((room) => ({
           id: room.id,
-          name: room.roomType,
-          lat: room.lat ?? 4.6097,
-          lng: room.lng ?? -74.0817,
-          adress: room.address ?? '',
+          motelId: room.motel_id,
+          numberHab: room.num_or_name,
+          type: room.room_type,
+          descripcion: room.description,
+          image: room.photos?.[0]?.url ?? 'https://via.placeholder.com/400x300',
+          title: room.room_type,
+          location: room.city,
+          adress: room.address,
+          price: room.price,
+          hours: room.hours,
         }));
+
+        this.loading = false;
       },
-      error: (err) => console.error('Error cargando rooms', err),
+      error: () => {
+        this.error = true;
+        this.loading = false;
+      },
     });
-  }
-
-  applyFilters(filters: any) {
-    const filtered = this.roomsRaw.filter((room) => {
-      if (filters.categoryId && room.categoryId !== filters.categoryId) return false;
-      if (filters.locationId && room.locationId !== filters.locationId) return false;
-      if (room.price > filters.priceMax) return false;
-      if (
-        filters.featureIds?.length &&
-        !filters.featureIds.every((id: number) => room.features?.some((f: any) => f.id === id))
-      )
-        return false;
-      return true;
-    });
-
-    this.cards = filtered.map((room) => ({
-      id: room.id,
-      motelId: room.motelId,
-      numberHab: room.number,
-      type: room.roomType,
-      descripcion: room.description,
-      image: room.imageUrls?.[0] || 'assets/images/ubikLogo.jpg',
-      title: room.roomType,
-      location: room.city ?? 'Bogotá',
-      adress: room.address ?? '',
-      price: room.price,
-      hours: 4,
-    }));
-
-    this.mapPoints = filtered.map((room) => ({
-      id: room.id,
-      name: room.roomType,
-      lat: room.lat ?? 4.6097,
-      lng: room.lng ?? -74.0817,
-      adress: room.address ?? '',
-    }));
   }
 }

@@ -1,10 +1,9 @@
 import { Component, Input } from '@angular/core';
 
-
-interface CardHabitacion {
+export interface CardHabitacion {
   id: number;
   nombre: string;
-  number: number;
+  number: string;
   tipo: string;
   servicios: string[];
   descripcion: string;
@@ -14,13 +13,9 @@ interface CardHabitacion {
 
 @Component({
   selector: 'app-card-room',
-  imports: [],
+  standalone: true,
   templateUrl: './card-room.html',
 })
 export class CardRoom {
-
-  @Input() cardHabitacion!: CardHabitacion; 
-  // El ! indica que llegará desde el padre
-
-  constructor() {}
+  @Input() cardHabitacion!: CardHabitacion;
 }

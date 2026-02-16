@@ -2,14 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, delay, tap } from 'rxjs/operators';
-import {
-  LoginFormData,
-  AuthResult,
-  ValidationError,
-  OAuthProvider,
-} from '../types/login.types';
+import { LoginFormData, AuthResult, ValidationError, OAuthProvider } from '../types/login.types';
 import { environment } from '../../../../../environments/environment';
-import { AuthService } from '../../../../core/auth.service';
+import { AuthService } from '../../../../core/middleware/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +14,7 @@ export class LoginService {
 
   constructor(
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
   ) {}
 
   /* ======================= */
@@ -41,18 +36,14 @@ export class LoginService {
   /* ======================= */
 
   login(data: LoginFormData, rememberMe: boolean): Observable<string> {
-    return this.http.post(
-      `${this.apiUrl}/auth/login`,
-      data,
-      { responseType: 'text' }
-    ).pipe(
+    return this.http.post(`${this.apiUrl}/auth/login`, data, { responseType: 'text' }).pipe(
       tap((rawToken: string) => {
         const token = rawToken.replace(/"/g, '').trim();
 
         console.log('TOKEN LIMPIO →', token);
 
         this.auth.setToken(token, rememberMe);
-      })
+      }),
     );
   }
 
@@ -65,7 +56,7 @@ export class LoginService {
       tap((user) => this.auth.setUser(user)),
       catchError((error) => {
         return throwError(() => error);
-      })
+      }),
     );
   }
 
