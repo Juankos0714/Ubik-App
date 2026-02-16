@@ -11,7 +11,7 @@ import { MotelService } from '../../core/services/motel.service';
   imports: [CommonModule, Inputcomponent, Button01],
   templateUrl: './edit-profile-motel.html',
 })
-export class EditProfileMotelComponent implements OnInit {
+export class EditProfileMotel implements OnInit {
 
   private motelService = inject(MotelService);
 

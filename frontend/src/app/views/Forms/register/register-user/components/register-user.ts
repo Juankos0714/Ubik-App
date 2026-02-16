@@ -14,7 +14,6 @@ import { RegisterFormData } from '../types/register-user.types';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule,Inputcomponent],
   templateUrl: './register-user.html',
-  styleUrl: './register-user.css',
 })
 export class RegisterUser implements OnInit {
   registerForm: FormGroup;

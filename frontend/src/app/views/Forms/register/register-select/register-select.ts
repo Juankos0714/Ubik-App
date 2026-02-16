@@ -19,7 +19,6 @@ import { Button01 } from '../../../../components/button-01/button-01';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './register-select.html',
-  styleUrls: ['./register-select.css']
 })
 export class RegisterSelect {
 

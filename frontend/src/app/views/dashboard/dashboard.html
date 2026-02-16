@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gray-100 p-6">
+<div class="min-h-screen p-6">
 
   <!-- HEADER -->
   @if (currentUser()) {
-    <div class="bg-white shadow rounded-2xl p-6 mb-6">
+    <div class=" shadow rounded-2xl p-6 mb-6">
       <h1 class="text-2xl font-bold text-gray-800">
         Bienvenido, {{ currentUser()?.username }}
       </h1>
@@ -16,21 +16,21 @@
   @if (userRole() === 1) {
     <div class="space-y-6">
 
-      <div class="bg-white p-6 rounded-2xl shadow">
+      <div class="p-6 rounded-2xl shadow">
         <h2 class="text-xl font-semibold mb-4">
           Solicitudes pendientes de habitaciones
         </h2>
 
-        <div class="border p-4 rounded-xl bg-gray-50">
+        <div class="border p-4 rounded-xl">
           <p class="text-gray-700">
             Aquí aparecerán las habitaciones enviadas por propietarios (rol 2) para aprobación.
           </p>
 
           <div class="mt-4 flex gap-3">
-            <button class="bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition">
+            <button class="bg-green-600 px-4 py-2 rounded-xl hover:bg-green-700 transition">
               Aprobar
             </button>
-            <button class="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700 transition">
+            <button class="bg-red-600 px-4 py-2 rounded-xl hover:bg-red-700 transition">
               Rechazar
             </button>
           </div>
@@ -45,25 +45,25 @@
     <div class="space-y-6">
 
       <!-- Agregar habitación -->
-      <div class="bg-white p-6 rounded-2xl shadow">
+      <div class=" p-6 rounded-2xl shadow">
         <h2 class="text-xl font-semibold mb-4">
           Gestión de Habitaciones
         </h2>
 
         <button
-          class="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition">
+          class="bg-blue-600 px-5 py-2 rounded-xl hover:bg-blue-700 transition">
           Agregar Nueva Habitación
         </button>
       </div>
 
       <!-- Lista habitaciones -->
-      <div class="bg-white p-6 rounded-2xl shadow">
+      <div class=" p-6 rounded-2xl shadow">
         <h2 class="text-xl font-semibold mb-4">
           Mis Habitaciones
         </h2>
 
         @for (room of rooms(); track room.id) {
-          <div class="border p-4 rounded-xl mb-3 bg-gray-50">
+          <div class="border p-4 rounded-xl mb-3">
             <div class="flex justify-between items-center">
 
               <div>
@@ -90,7 +90,7 @@
       </div>
 
       <!-- Reservas -->
-      <div class="bg-white p-6 rounded-2xl shadow">
+      <div class=" p-6 rounded-2xl shadow">
         <h2 class="text-xl font-semibold mb-4">
           Reservas Recibidas
         </h2>

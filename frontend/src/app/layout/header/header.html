@@ -1,4 +1,4 @@
-<header class="w-full">
+<header class="w-full p-5">
 
   <!-- Top bar -->
   <div class="flex items-center justify-center lg:justify-between w-full h-25">
@@ -28,24 +28,27 @@
       Ofertas
     </a>
 
+    <div class="logandreg flex">
+
+      @if (!isLogged()) {
+  
+        <a
+          (click)="navigateTo(ROUTES.LOGIN)"
+          class="text-white hover:text-red-500 transition cursor-pointer"
+        >
+          Inicia sesión
+        </a>
+  
+        <a
+          (click)="navigateTo(ROUTES.REGISTER)"
+           class="text-white hover:text-red-500 transition cursor-pointer"
+        >
+          Registrarse
+        </a>
+  
+      }
+    </div>
     <!-- 🔓 NO LOGUEADO -->
-    @if (!isLogged()) {
-
-      <a
-        (click)="navigateTo(ROUTES.LOGIN)"
-        class="text-white hover:text-red-500 transition cursor-pointer"
-      >
-        Inicia sesión
-      </a>
-
-      <a
-        (click)="navigateTo(ROUTES.REGISTER)"
-        class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white"
-      >
-        Registrarse
-      </a>
-
-    }
 
     <!-- 🔐 LOGUEADO -->
     @if (isLogged()) {

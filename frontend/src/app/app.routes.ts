@@ -5,8 +5,10 @@ import { Explore } from './views/explore/explore';
 import { MotelProfile } from './views/motel-profile/motel-profile';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
-import { TodosLosComponentes } from './todos-los-componentes/todos-los-componentes';
+
 import { UserProfile } from './views/user-profile/user-profile';
+
+import { Dashboard } from './views/dashboard/dashboard';
 
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
@@ -33,6 +35,7 @@ export const routes: Routes = [
 
   { path: 'register-user', component: RegisterUser },
   { path: 'register-propertyEst', component: RegisterPropertyEst },
+  { path: 'dashboard', component: Dashboard },
 
   { path: 'login', component: LoginComponent },
   { path: 'register-establishment', component: RegisterEstablishmentComponent },
@@ -42,6 +45,5 @@ export const routes: Routes = [
   /**==== PERFILES DE USURIOS ====== */
 
   { path: 'userProfile', component: UserProfile },
-  /**⚠️ ESTA RUTA ES APARTE SOLO PARA VER TODOS LOS COMPONENTES DE LA PAGINA JUNTOS SOLO TENDREMOS CONOCIMIENTO DE ELLA NOSOTROS :v */
-  { path: 'allc', component: TodosLosComponentes },
+
 ];

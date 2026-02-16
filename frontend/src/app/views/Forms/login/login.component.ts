@@ -19,6 +19,12 @@ export class LoginComponent {
     password: '',
   });
 
+  showPassword = signal(false);
+
+  togglePassword() {
+    this.showPassword.update(v => !v);
+  }
+
   errors = signal<ValidationError[]>([]);
   isSubmitting = signal(false);
   rememberMe = signal(false);

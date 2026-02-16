@@ -7,7 +7,6 @@ import { Inputcomponent } from '../../../../../../components/input/input';
   selector: 'app-establishment-location',
   imports: [Button01, Inputcomponent],
   templateUrl: './establishment-location.html',
-  styleUrl: './establishment-location.css',
 })
 export class EstablishmentLocation {
 
