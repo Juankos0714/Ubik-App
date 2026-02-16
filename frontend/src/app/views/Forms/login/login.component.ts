@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LoginService } from './services/login.service';
+import { LoginService } from '../../../core/services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/middleware/auth.service';
@@ -114,6 +114,6 @@ export class LoginComponent {
   }
 
   navigateToPasswordReset(): void {
-    this.router.navigate(['/forgot-password']);// Recuperacion de contraseña
+    this.router.navigate(['/forgot-password']); // Recuperacion de contraseña
   }
 }

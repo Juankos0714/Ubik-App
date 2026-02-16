@@ -2,9 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, delay, tap } from 'rxjs/operators';
-import { LoginFormData, AuthResult, ValidationError, OAuthProvider } from '../types/login.types';
-import { environment } from '../../../../../environments/environment';
-import { AuthService } from '../../../../core/middleware/auth.service';
+import {
+  LoginFormData,
+  AuthResult,
+  ValidationError,
+  OAuthProvider,
+} from '../../views/Forms/login/types/login.types';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../middleware/auth.service';
 
 @Injectable({
   providedIn: 'root',
