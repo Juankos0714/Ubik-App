@@ -17,6 +17,7 @@ import { RegisterUser } from './views/Forms/register/register-user/components/re
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
 import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
+import { PropertyUserComponent } from './views/Propertys-user/property-user.component';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -36,6 +37,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register-establishment', component: RegisterEstablishmentComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'listProperty', component: PropertyUserComponent },
 
   /**==== PERFILES DE USURIOS ====== */
 

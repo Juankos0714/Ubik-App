@@ -23,6 +23,7 @@ const ROUTES = {
   EXPLORE: '/explore',
   LOGIN: '/login',
   REGISTER: '/select-register',
+  PROPERTY: '/listProperty',
   PROFILE: '/userProfile',
   OWNER: '/',
   ADMIN: '/',
