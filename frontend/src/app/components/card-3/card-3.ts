@@ -29,4 +29,16 @@ export class Card3 {
     name: string;
     icon: string;
   }[] = [];
+
+
 }
+//   [motelId]="card.motelId"
+//               [numberHab]="card.numberHab"
+//               [type]="card.type"
+//               [descripcion]="card.descripcion"
+//               [image]="card.image"
+//               [title]="card.title"
+//               [location]="card.location"
+//               [adress]="card.adress"
+//               [price]="card.price"
+//               [hours]="card.hours"

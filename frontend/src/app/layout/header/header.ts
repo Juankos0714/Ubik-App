@@ -5,7 +5,7 @@ import { Button01 } from "../../components/button-01/button-01";
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 
 
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../../core/middleware/auth.service';
 import { routes } from '../../app.routes';  
 import { RoomsOfferts } from '../../views/rooms-offerts/rooms-offerts';
 

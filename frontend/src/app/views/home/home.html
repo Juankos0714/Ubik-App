@@ -1,41 +1,35 @@
 <div class="w-full px-3 sm:px-4 md:px-6 lg:max-w-[1400px] lg:mx-auto">
 
   <!-- Ofertas -->
-  <section class="mb-10" id="offers">
+  <section class="mb-10">
     <h3 class="mb-6 text-2xl font-bold">Mejores ofertas</h3>
 
-    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
-      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
-        @for (oferta of mejoresOfertas; track oferta.id) {
-          <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
-        }
-      </div>
+    <div class="flex gap-4 overflow-x-auto pb-4">
+      @for (oferta of mejoresOfertas; track oferta.id) {
+        <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+      }
     </div>
   </section>
 
   <!-- Moteles Cercanos -->
-  <section class="mb-10" id="motels">
+  <section class="mb-10">
     <h3 class="mb-6 text-2xl font-bold">Moteles más cercanos</h3>
 
-    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
-      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
-        @for (motel of motelesCercanos; track motel.id) {
-          <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
-        }
-      </div>
+    <div class="flex gap-4 overflow-x-auto pb-4">
+      @for (motel of motelesCercanos; track motel.id) {
+        <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+      }
     </div>
   </section>
 
   <!-- Destinos Populares -->
-  <section class="mb-10" id="destines">
+  <section class="mb-10">
     <h3 class="mb-6 text-2xl font-bold">Destinos Populares</h3>
 
-    <div class="overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:-mx-6 lg:mx-0">
-      <div class="flex gap-4 px-3 sm:px-4 md:px-6 lg:px-0 pb-4">
-        @for (destino of destinosPopulares; track destino.id) {
-          <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
-        }
-      </div>
+    <div class="flex gap-4 overflow-x-auto pb-4">
+      @for (destino of destinosPopulares; track destino.id) {
+        <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+      }
     </div>
   </section>
 
