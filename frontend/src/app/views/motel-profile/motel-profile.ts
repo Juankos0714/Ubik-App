@@ -29,7 +29,7 @@ export class MotelProfile implements OnInit {
 
         this.profile = {
           imageBack: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600',
-          imagePerfile: motel.profile_iamge_url,
+          imagePerfile: motel.imagesUrls?.[0] ?? 'https://via.placeholder.com/150',
           nombre: motel.name,
           ubicacion: motel.city,
           description: motel.description,

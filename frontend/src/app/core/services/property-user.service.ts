@@ -3,7 +3,8 @@ import { environment } from "../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { AuthService } from "../middleware/auth.service";
-import { PropertyUser } from "../models/property-user.model";
+import { Users } from "../models/users.model";
+import { Motel } from "../models/motel.model";
 
 @Injectable({ providedIn: 'root'})
 export class PropertyUserService {
@@ -17,10 +18,8 @@ export class PropertyUserService {
   /**
    * Obtiene las propiedades del usuario logueado
    */
-  getMyProperties(): Observable<PropertyUser[]> {
-    const userId = this.authService.user()?.id;   
-
-    return this.http.get<PropertyUser[]>(`${this.baseUrl}/${userId}`);
+  getMyMotels(): Observable<Motel[]> { 
+    return this.http.get<Motel[]>(this.baseUrl);
   }
 
   /**
@@ -33,22 +32,22 @@ export class PropertyUserService {
   /**
    * Obtener una propiedad por id (para editar)
    */
-  getPropertyById(id: number): Observable<PropertyUser> {
-    return this.http.get<PropertyUser>(`${this.baseUrl}/property/${id}`);
+  getPropertyById(id: number): Observable<Users> {
+    return this.http.get<Users>(`${this.baseUrl}/property/${id}`);
   }
 
   /**
    * Crear propiedad
    */
-  createProperty(data: FormData | PropertyUser): Observable<PropertyUser> {
-    return this.http.post<PropertyUser>(`${this.baseUrl}`, data);
+  createProperty(data: FormData | Users): Observable<Users> {
+    return this.http.post<Users>(`${this.baseUrl}`, data);
   }
 
   /**
    * Actualizar propiedad
    */
-  updateProperty(id: number, data: FormData | PropertyUser): Observable<PropertyUser> {
-    return this.http.put<PropertyUser>(`${this.baseUrl}/${id}`, data);
+  updateProperty(id: number, data: FormData | Users): Observable<Users> {
+    return this.http.put<Users>(`${this.baseUrl}/${id}`, data);
   }
 
 }

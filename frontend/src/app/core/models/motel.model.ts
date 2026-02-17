@@ -7,21 +7,23 @@ export interface Motel {
   phone_number: string;
   description: string;
   city: string;
-  property_owner_id: number;
-  date_create: Date;
+  proprertyId: number;
+  dateCreated: Date;
+  imagesUrls: string[];
   latitude: number;
   longitude: number;
-  approval_status: 'pending' | 'approved' | 'rejected';
-  ruest: string;
+  approvalStatus: 'pending' | 'under_review' | 'approved' | 'rejected';
+  aprovalDate: string;
+  approvedByUserId: number;
+  rejectionReason: string;
+  rues: string;
   rnt: string;
-  owner_document_type: string;
-  owner_document: string;
-  owner_full_name: string;
-  legal_representative_name: string;
-  legal_document_url: string;
-  aproval_date: Date;
-  approved_by_user_id: number;
-  profile_iamge_url: string;
+  owerDocumentType: string;
+  ownerDocumentNumber: string;
+  owerFullName: string;
+  legalRepresentativeName: string;
+  legalDocumentUrl: string;
+  hasCompleteLegalInfo: boolean;
 
   rooms?: Room[];
 }
