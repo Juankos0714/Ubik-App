@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 
-import { ValidationError } from '../../register-user/types/register-user.types';
-import { RegisterFormData } from '../../register-user/types/register-user.types';
+import { ValidationError } from '../../views/Forms/register/register-user/types/register-user.types';
+import { RegisterFormData } from '../../views/Forms/register/register-user/types/register-user.types';
 
 import {
   validateEmail,
@@ -11,9 +11,9 @@ import {
   validatePasswordConfirmation,
   validateRequiredField,
   collectValidationErrors,
-} from '../../register-user/utils/validation.utils';
+} from '../utils/validation.utils';
 
-import { environment } from '../../../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 export interface RegistrationResult {
   success: boolean;

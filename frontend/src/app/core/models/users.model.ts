@@ -3,13 +3,16 @@ export interface Users{
     username: string;
     email: string;
     password: string;
-    phone_number: string;
+    phoneNumber: string;
     anonymous: boolean; // true
-    role_id: number;
-    reset_password_token: string | null;
-    reset_token_expiration: Date | null;
+    roleId: number;
+    birthDate: Date | null;
     longitude: number | null;
     latitude: number | null;
-    birth_date: Date | null;
-    created_at: Date;
+
+
+    /**
+     * reset_password_token: string | null;
+    reset_token_expiration: Date | null;
+     */
 }

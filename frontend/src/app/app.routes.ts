@@ -18,7 +18,7 @@ import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-pa
 import { RegisterUser } from './views/Forms/register/register-user/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
-import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
+import { RegisterUserEst } from './views/Forms/register/register-propertyEst/register-propertyEst';
 import { PropertyUserComponent } from './views/Propertys-user/property-user.component';
 
 export const routes: Routes = [
@@ -34,7 +34,7 @@ export const routes: Routes = [
   { path: 'select-register', component: RegisterSelect },
 
   { path: 'register-user', component: RegisterUser },
-  { path: 'register-propertyEst', component: RegisterPropertyEst },
+  { path: 'register-propertyEst', component: RegisterUserEst },
   { path: 'dashboard', component: Dashboard },
 
   { path: 'login', component: LoginComponent },

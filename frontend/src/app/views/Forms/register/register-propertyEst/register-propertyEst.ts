@@ -12,9 +12,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
-import { Inputcomponent } from '../../../../../components/input/input';
-import { RegisterService } from '../../../../../core/services/register-user.service';
-import { ValidationError } from '../types/register-user.types';
+import { Inputcomponent } from '../../../../components/input/input';
+import { RegisterServiceOwner } from '../../../../core/services/register-est.service';
+import { ValidationError } from '../register-user/types/register-user.types';
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -46,9 +46,9 @@ function matchFields(field1: string, field2: string): ValidatorFn {
   selector: 'app-register-user',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
-  templateUrl: './register-user.html',
+  templateUrl: './register-propertyEst.html',
 })
-export class RegisterUser implements OnInit {
+export class RegisterUserEst implements OnInit {
   registerForm: FormGroup;
 
   // Errores backend por campo
@@ -62,7 +62,7 @@ export class RegisterUser implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private registerService: RegisterService,
+    private registerService: RegisterServiceOwner,
     private router: Router
   ) {
     this.registerForm = this.fb.group(
@@ -170,7 +170,7 @@ export class RegisterUser implements OnInit {
       comfirmPassword: form.comfirmPassword,
       phoneNumber: form.phoneNumber?.trim(),
       anonymous: false,
-      roleId: 3,
+      roleId: 2,
       birthDate: form.birthDate,
       latitude: 4.6097,
       longitude: -74.0721,

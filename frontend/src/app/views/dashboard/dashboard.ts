@@ -20,7 +20,7 @@ export class Dashboard {
   private router = inject(Router);
 
   currentUser = signal<Users | null>(null);
-  userRole = computed(() => this.currentUser()?.role_id ?? null);
+  userRole = computed(() => this.currentUser()?.roleId ?? null);
 
   motel = signal<Motel | null>(null);
   rooms = signal<Room[]>([]);

@@ -5,7 +5,7 @@
  */
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { ValidationError } from '../types/register-user.types';
+import { ValidationError } from '../../views/Forms/register/register-user/types/register-user.types';
 
 /* =======================
    Constants & Regex
