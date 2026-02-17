@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ForgotService } from './services/forgot.service';
+import { ForgotService } from '../../../core/services/forgot.service';
 import { toValidatorFn, validateEmail,validatePassword, } from '../register/register-user/utils/validation.utils';
 
 @Component({

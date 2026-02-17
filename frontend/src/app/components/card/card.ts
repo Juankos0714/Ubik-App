@@ -1,27 +1,18 @@
 import { Component, Input } from '@angular/core';
-import { Button01 } from '../button-01/button-01';
-import { Button02 } from '../button-02/button-02';
-
-export interface HabitacionInformacion {
-  id: number;
-  motelId: number;
-  numberHab: string;
-  type: string;
-  price: number;
-  descripcion: string;
-  imagen: string;
-}
+import { Room } from '../../core/models/room.model';
+import { Button01 } from "../button-01/button-01";
+import { Button02 } from "../button-02/button-02";
 
 @Component({
   selector: 'app-card',
-  imports: [Button01, Button02],
+  standalone: true,
   templateUrl: './card.html',
+  imports: [Button01, Button02]
 })
 export class Card {
 
-  @Input() card!: HabitacionInformacion;
-  @Input() textButton1: string = 'Reservar';  
-  @Input() textButton2: string = 'Detalles'; 
-  @Input() showDescription: boolean = true;  
+  @Input() card!: Room;
+
+  showDescription = true;
 
 }

@@ -31,7 +31,7 @@
         Contraseña
       </label>
       <input
-        type="password"
+        [type]="showPassword() ? 'text' : 'password'"
         [value]="formData().password"
         (input)="onPasswordInput($event)"
         placeholder="Contraseña"
@@ -39,7 +39,18 @@
         [class.border-red-500]="hasFieldError('password')"
         [class.focus:ring-red-500]="hasFieldError('password')"
         [disabled]="isSubmitting()"
+
       />
+      <button
+        type="button"
+        (click)="togglePassword()"
+      >
+        @if (showPassword()) {
+          👁️‍🗨️
+        } @else {
+          👁️
+        }
+      </button>
       @if (hasFieldError('password')) {
         <p class="text-red-400 text-xs mt-1.5">
           {{ getFieldError('password') }}

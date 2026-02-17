@@ -7,7 +7,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-rooms-offerts',
   imports: [CardOffers],
   templateUrl: './rooms-offerts.html',
-  styleUrl: './rooms-offerts.css',
 })
 export class RoomsOfferts implements OnInit {
   habitacionesOfertas: CardOff[] = []; // Usa CardOff para el tipado

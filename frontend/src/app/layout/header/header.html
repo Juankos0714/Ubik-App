@@ -1,106 +1,120 @@
-<header class="w-full">
+<header class="w-full pr-5 pl-5 pt-4">
 
   <!-- Top bar -->
-  <div class="flex items-center justify-center lg:justify-between w-full h-25">
+  <div class=" w-full h-25">
     
-    <app-logo-01></app-logo-01>
-      <nav class="hidden lg:flex items-center gap-6">
 
-    <!-- Públicas -->
-    <a
-      (click)="navigateTo(ROUTES.HOME)"
-      class="text-white hover:text-red-500 transition cursor-pointer"
-    >
-      Inicio
-    </a>
+    <nav class="flex items-center justify-center lg:justify-between">
 
-    <a
-      (click)="navigateTo(ROUTES.EXPLORE)"
-      class="text-white hover:text-red-500 transition"
-    >
-      Explorar
-    </a>
+      <app-logo-01></app-logo-01>
 
-    <a
-      (click)="navigateTo(ROUTES.OFFERTS)"
-      class="text-white hover:text-red-500 transition"
-    >
-      Ofertas
-    </a>
 
-    <!-- 🔓 NO LOGUEADO -->
-    @if (!isLogged()) {
+      <div class="navlinks hidden lg:flex items-center gap-6">
 
-      <a
-        (click)="navigateTo(ROUTES.LOGIN)"
-        class="text-white hover:text-red-500 transition cursor-pointer"
-      >
-        Inicia sesión
-      </a>
+          <!-- Públicas -->
+        <a
+          (click)="navigateTo(ROUTES.HOME)"
+          class="text-white hover:text-red-500 transition cursor-pointer"
+        >
+          Inicio
+        </a>
 
-      <a
-        (click)="navigateTo(ROUTES.REGISTER)"
-        class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white"
-      >
-        Registrarse
-      </a>
+        <a
+          (click)="navigateTo(ROUTES.EXPLORE)"
+          class="text-white hover:text-red-500 transition cursor-pointer"
+        >
+          Explorar
+        </a>
 
-    }
+        <a
+          (click)="navigateTo(ROUTES.OFFERTS)"
+          class="text-white hover:text-red-500 transition cursor-pointer"
+        >
+          Ofertas
+        </a>
 
-    <!-- 🔐 LOGUEADO -->
-    @if (isLogged()) {
+      </div>
 
-      @switch (role()) {
+      
 
-        <!-- ADMIN -->
-        @case (1) {
+      <div class="logandreg hidden lg:flex gap-6">
+        <!-- 🔐 LOGUEADO -->
+
+        @if (!isLogged()) {
+    
           <a
-            (click)="navigateTo(ROUTES.ADMIN)"
-            class="text-white hover:text-red-400 transition cursor-pointer"
+            (click)="navigateTo(ROUTES.LOGIN)"
+            class="text-white hover:text-red-500 transition cursor-pointer"
           >
-            Panel Admin
+            Inicia sesión
           </a>
+    
+          <a
+            (click)="navigateTo(ROUTES.REGISTER)"
+            class="text-white hover:text-red-500 transition cursor-pointer"
+          >
+            Registrarse
+          </a>
+    
         }
 
-        <!-- OWNER -->
-        @case (2) {
-          <a
-            (click)="navigateTo(ROUTES.OWNER)"
-            class="text-white hover:text-red-400 transition cursor-pointer"
-          >
-            Propiedades
-          </a>
+        <!-- 🔓 NO LOGUEADO -->
+      
+        @if (isLogged()) {
 
-          <a
-            (click)="navigateTo(ROUTES.PROFILE)"
-            class="text-white hover:text-red-400 transition cursor-pointer"
+          @switch (role()) {
+
+            <!-- ADMIN -->
+            @case (1) {
+              <a
+                (click)="navigateTo(ROUTES.ADMIN)"
+                class="text-white hover:text-red-400 transition cursor-pointer"
+              >
+                Panel Admin
+              </a>
+            }
+
+            <!-- OWNER -->
+            @case (2) {
+              <a
+                (click)="navigateTo(ROUTES.OWNER)"
+                class="text-white hover:text-red-400 transition cursor-pointer"
+              >
+                Propiedades
+              </a>
+
+              <a
+                (click)="navigateTo(ROUTES.PROFILE)"
+                class="text-white hover:text-red-400 transition cursor-pointer"
+              >
+                Mi Perfil
+              </a>
+            }
+
+            <!-- USER -->
+            @default {
+              <a
+                (click)="navigateTo(ROUTES.PROFILE)"
+                class="text-white hover:text-red-400 transition cursor-pointer"
+              >
+                Mi Perfil
+              </a>
+            }
+          }
+
+          <!-- LOGOUT -->
+          <button
+            (click)="logout()"
+            class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white "
           >
-            Mi Perfil
-          </a>
+            Cerrar sesión
+          </button>
+
         }
+      
+      </div>
 
-        <!-- USER -->
-        @default {
-          <a
-            (click)="navigateTo(ROUTES.PROFILE)"
-            class="text-white hover:text-red-400 transition cursor-pointer"
-          >
-            Mi Perfil
-          </a>
-        }
-      }
-
-      <!-- LOGOUT -->
-      <button
-        (click)="logout()"
-        class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white "
-      >
-        Cerrar sesión
-      </button>
-
-    }
-
-  </nav>
+    </nav>
 
   </div>
 
@@ -126,7 +140,7 @@
       <div class="w-full lg:max-w-5xl flex items-end gap-4 rounded-xl">
         
         <div class="flex-1">
-          <label class="text-sm text-white">Ubicación</label>
+          <label class="text-sm text-white">Departamento</label>
           <input
             type="text"
             placeholder="Dónde quieres ir?"
@@ -135,7 +149,7 @@
         </div>
 
         <div class="flex-1">
-          <label class="text-sm text-white">Fecha</label>
+          <label class="text-sm text-white">Municipio</label>
           <input
             type="text"
             placeholder="Fecha / Hora"
