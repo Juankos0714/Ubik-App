@@ -11,6 +11,21 @@ import { Card } from '../../components/card/card';
 })
 export class Home implements OnInit {
 
+
+  scrollLeft(element: HTMLElement) {
+  element.scrollBy({
+    left: -300,
+    behavior: 'smooth'
+  });
+}
+
+  scrollRight(element: HTMLElement) {
+    element.scrollBy({
+      left: 300,
+      behavior: 'smooth'
+    });
+}
+
   private roomService = inject(RoomService);
 
   mejoresOfertas: Room[] = [];

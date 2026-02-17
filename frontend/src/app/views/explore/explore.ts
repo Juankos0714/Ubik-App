@@ -43,7 +43,7 @@ export class Explore implements OnInit {
           numberHab: room.num_or_name,
           type: room.room_type,
           descripcion: room.description,
-          image: room.photos?.[0]?.url ?? 'https://via.placeholder.com/400x300',
+          image: room.photos?.[0]?.url ?? './assets/images/ubikLogo.jpg',
           title: room.room_type,
           location: room.city,
           adress: room.address,

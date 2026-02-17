@@ -1,7 +1,7 @@
-<header class="w-full pr-5 pl-5 pt-4">
+<header class="w-full px-5 pt-4">
 
   <!-- Top bar -->
-  <div class=" w-full h-25">
+  <div class=" w-full">
     
 
     <nav class="flex items-center justify-center lg:justify-between">
@@ -103,12 +103,12 @@
           }
 
           <!-- LOGOUT -->
-          <button
+          <a
             (click)="logout()"
-            class="bg-linear-to-r from-[#6E2A35] to-[#A72027]  hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition cursor-pointer text-white "
+            class="text-white hover:text-red-400 transition cursor-pointer"
           >
             Cerrar sesión
-          </button>
+          </a>
 
         }
       

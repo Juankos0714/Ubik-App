@@ -45,7 +45,7 @@ export class MotelProfile implements OnInit {
             rs.service_id.map(service => service.name)
           ) ?? [],
           descripcion: room.description,
-          imagen: room.photos?.[0]?.url ?? 'https://via.placeholder.com/400x300',
+          imagen: room.photos?.[0]?.url ?? './assets/images/ubikLogo.jpg',
           price: room.price,
         })) ?? [];
       }
