@@ -1,27 +1,51 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
+import { Map as AppMap } from '../../components/map/map';
 
-@Injectable({
-  providedIn: 'root'
+@Component({
+  selector: 'app-product-room',
+  standalone: true,
+  templateUrl: './product-room.html',
+  imports: [CommonModule, AppMap],
 })
-export class RoomService {
+export class ProductRoom implements OnInit {
+  private roomService = inject(RoomService);
+  private route = inject(ActivatedRoute);
 
-  private readonly API_URL = `${environment.apiUrl}/rooms`;
+  room: Room | null = null;
+  loading = false;
+  error = false;
 
-  constructor(private http: HttpClient) {}
+  // Points to pass to <app-map> (map component expects {lat,lng,name})
+  points: { lat: number; lng: number; name: string }[] = [];
 
-  getRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(this.API_URL);
+  ngOnInit(): void {
+    const idFromQuery = Number(this.route.snapshot.queryParamMap.get('id'));
+    const idFromParam = Number(this.route.snapshot.paramMap.get('id'));
+    const id = idFromQuery || idFromParam;
+
+    if (id) this.loadRoom(id);
   }
 
-  getRoomById(id: number): Observable<Room> {
-    return this.http.get<Room>(`${this.API_URL}/${id}`);
-  }
-
-  getRoomsByMotel(motelId: number): Observable<Room[]> {
-    return this.http.get<Room[]>(`${this.API_URL}?motelId=${motelId}`);
+  loadRoom(id: number) {
+    this.loading = true;
+    this.roomService.getRoomById(id).subscribe({
+      next: (r: Room) => {
+        this.room = r;
+        if (r.lat != null && r.lng != null) {
+          this.points = [{ lat: r.lat, lng: r.lng, name: r.num_or_name }];
+        } else {
+          this.points = [];
+        }
+        this.loading = false;
+      },
+      error: () => {
+        this.error = true;
+        this.loading = false;
+      },
+    });
   }
 }

@@ -20,6 +20,7 @@ import { RegisterSelect } from './views/Forms/register/register-select/register-
 import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
 import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
 import { PropertyUserComponent } from './views/Propertys-user/property-user.component';
+import { ProductRoom } from './views/product-room/product-room';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -41,6 +42,7 @@ export const routes: Routes = [
   { path: 'register-establishment', component: RegisterEstablishmentComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'listProperty', component: PropertyUserComponent },
+  { path: 'roominfo', component: ProductRoom },
 
   /**==== PERFILES DE USURIOS ====== */
 

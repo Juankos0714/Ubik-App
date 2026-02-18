@@ -13,6 +13,7 @@ export class Button02 {
 
   @Input() text!: string;
   @Input() routerLink?: string;
+  @Input() queryParams?: { [key: string]: any } | null;
   @Input() iconLeft?: string;
   @Input() iconRight?: string;
 
@@ -23,7 +24,13 @@ export class Button02 {
 
   navigate() {
     if (this.routerLink) {
-      this.router.navigate([this.routerLink]);
+      const link = Array.isArray(this.routerLink) ? this.routerLink : [this.routerLink];
+      const extras = this.queryParams ? { queryParams: this.queryParams } : undefined;
+      if (extras) this.router.navigate(link, extras);
+      else this.router.navigate(link);
+      return;
     }
+
+    this.clicked.emit();
   }
 }
