@@ -1,11 +1,6 @@
 <article class="bg-[#14090C] rounded-2xl p-4 text-white shadow-lg flex flex-col gap-4">
-
   <div class="flex gap-4">
-    <img
-      [src]="card.image"
-      [alt]="card.title"
-      class="w-32 h-32 object-cover rounded-xl"
-    />
+    <img [src]="card.image" [alt]="card.title" class="w-32 h-32 object-cover rounded-xl" />
 
     <div class="flex flex-col gap-2 flex-1">
       <h3 class="text-lg font-semibold uppercase">
@@ -16,6 +11,8 @@
         <i class="pi pi-map-marker"></i>
         {{ card.location }}, {{ card.adress }}
       </p>
+
+      <p class="text-sm text-gray-400">Hab: {{ card.numberHab }} · {{ card.type }}</p>
 
       <div class="flex flex-wrap gap-3 text-sm mt-1">
         @for (service of services; track service.id) {
@@ -32,13 +29,18 @@
 
   <div class="flex items-end gap-2">
     <span class="font-bold text-red-600">
-      {{ card.price | currency:'COP' }}
+      {{ card.price | currency: 'COP' }}
     </span>
-    <span class="text-sm text-gray-300">
-      Por {{ card.hours }} Horas
-    </span>
+    <span class="text-sm text-gray-300"> Por {{ card.hours }} Horas </span>
   </div>
+  <p class="text-sm text-gray-400 line-clamp-2">{{ card.descripcion }}</p>
 
-  <app-button-01 text="Reservar Ahora" routerLink="/"></app-button-01>
-
+  <div class="flex gap-2">
+    <app-button-01 text="Reservar Ahora" [id]="card.id" action="reservar"></app-button-01>
+    <app-button-02
+      text="Ver más"
+      [routerLink]="'/roominfo'"
+      [queryParams]="{ id: card.id }"
+    ></app-button-02>
+  </div>
 </article>

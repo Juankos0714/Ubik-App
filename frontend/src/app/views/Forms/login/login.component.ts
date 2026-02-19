@@ -4,13 +4,14 @@ import { Router } from '@angular/router';
 import { LoginService } from '../../../core/services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';
 import { FormsModule } from '@angular/forms';
+import { Inputcomponent } from '../../../components/input/input';
 import { AuthService } from '../../../core/middleware/auth.service';
 import { Button01 } from '../../../components/button-01/button-01';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Inputcomponent],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -22,7 +23,7 @@ export class LoginComponent {
   showPassword = signal(false);
 
   togglePassword() {
-    this.showPassword.update(v => !v);
+    this.showPassword.update((v) => !v);
   }
 
   errors = signal<ValidationError[]>([]);

@@ -1,37 +1,28 @@
 <!-- Layout Container -->
-<div class="mb-28 mt-28 flex items-center justify-center ">
-
+<div class="mb-28 mt-28 flex items-center justify-center">
   <!-- Card -->
-  <div class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
-
+  <div
+    class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20"
+  >
     <form class="flex flex-col gap-6" (ngSubmit)="onFormSubmit()">
-
       <!-- Title -->
       <div class="text-center">
         <h2 class="text-2xl font-semibold text-white">Iniciar Sesión</h2>
-        <p class="text-gray-400 text-sm mt-1">
-          Ingresa tus credenciales para continuar
-        </p>
+        <p class="text-gray-400 text-sm mt-1">Ingresa tus credenciales para continuar</p>
       </div>
 
       <!-- Inputs -->
       <div class="flex flex-col gap-5">
-
         <!-- Username -->
         <div class="w-full">
-          <label class="block text-sm font-medium mb-2 text-white">
-            Usuario
-          </label>
-
-          <input
-            type="text"
-            [value]="formData().username"
-            (input)="onUsernameInput($event)"
+          <app-input
+            label="Usuario"
             placeholder="Ingresa tu usuario"
-            class="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            [class.border-red-500]="hasFieldError('username')"
+            name="username"
+            [ngModel]="formData().username"
+            (ngModelChange)="updateField('username', $event)"
             [disabled]="isSubmitting()"
-          />
+          ></app-input>
 
           @if (hasFieldError('username')) {
             <p class="text-red-400 text-xs mt-1.5">
@@ -42,35 +33,18 @@
 
         <!-- Password -->
         <div class="w-full">
-          <label class="block text-sm font-medium mb-2 text-white">
-            Contraseña
-          </label>
-
-          <div class="relative">
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              [value]="formData().password"
-              (input)="onPasswordInput($event)"
-              placeholder="Ingresa tu contraseña"
-              class="w-full px-4 py-3 pr-12 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              [class.border-red-500]="hasFieldError('password')"
-              [disabled]="isSubmitting()"
-            />
-
-            <!-- Eye Button -->
-            <button
-              type="button"
-              (click)="togglePassword()"
-              class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-300 hover:text-white transition-colors"
-              [disabled]="isSubmitting()"
-            >
-              @if (showPassword()) {
-                👁️‍🗨️
-              } @else {
-                👁️
-              }
-            </button>
-          </div>
+          <app-input
+            label="Contraseña"
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            name="password"
+            [ngModel]="formData().password"
+            (ngModelChange)="updateField('password', $event)"
+            [disabled]="isSubmitting()"
+            [hasToggle]="true"
+            [visible]="showPassword()"
+            (toggle)="togglePassword()"
+          ></app-input>
 
           @if (hasFieldError('password')) {
             <p class="text-red-400 text-xs mt-1.5">
@@ -81,7 +55,6 @@
 
         <!-- Remember + Forgot -->
         <div class="flex items-center justify-between text-sm">
-
           <label class="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -100,9 +73,7 @@
           >
             ¿Olvidaste tu contraseña?
           </button>
-
         </div>
-
       </div>
 
       <!-- Submit -->
@@ -113,9 +84,25 @@
       >
         @if (isSubmitting()) {
           <span class="flex items-center justify-center gap-2">
-            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              class="animate-spin h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Ingresando...
           </span>
@@ -123,9 +110,6 @@
           Ingresar
         }
       </button>
-
     </form>
-
   </div>
-
 </div>

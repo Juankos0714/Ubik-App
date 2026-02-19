@@ -10,7 +10,7 @@ import { RegisterFormData } from '../../register-user/types/register-user.types'
 @Component({
   selector: 'app-register-propertyEst',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,Inputcomponent],
+  imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-propertyEst.html',
 })
 export class RegisterPropertyEst implements OnInit {
@@ -18,11 +18,12 @@ export class RegisterPropertyEst implements OnInit {
   validationErrors: ValidationError[] = [];
   isSubmitting = false;
   progress = 10;
+  step = 1;
 
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterServiceOwner,
-    private router: Router
+    private router: Router,
   ) {
     this.registerForm = this.fb.group({
       username: [''],
@@ -31,7 +32,7 @@ export class RegisterPropertyEst implements OnInit {
       birthDate: [''],
       password: [''],
       comfirmPassword: [''],
-      anonymous: [false]
+      anonymous: [false],
     });
   }
 
@@ -40,6 +41,18 @@ export class RegisterPropertyEst implements OnInit {
     this.registerForm.valueChanges.subscribe(() => {
       this.updateProgress();
     });
+  }
+
+  nextStep(): void {
+    if (this.step < 3) this.step++;
+  }
+
+  prevStep(): void {
+    if (this.step > 1) this.step--;
+  }
+
+  goToSelect(): void {
+    this.router.navigate(['/select-register']);
   }
 
   /**
@@ -64,7 +77,7 @@ export class RegisterPropertyEst implements OnInit {
    * Obtiene error para un campo específico
    */
   getFieldError(fieldName: string): string | null {
-    const error = this.validationErrors.find(e => e.field === fieldName);
+    const error = this.validationErrors.find((e) => e.field === fieldName);
     return error ? error.message : null;
   }
 
@@ -73,12 +86,12 @@ export class RegisterPropertyEst implements OnInit {
    */
   parseBirthDate(dateString: string): { day: string; month: string; year: string } {
     if (!dateString) return { day: '', month: '', year: '' };
-    
+
     const date = new Date(dateString);
     return {
       day: String(date.getDate()).padStart(2, '0'),
       month: String(date.getMonth() + 1).padStart(2, '0'),
-      year: String(date.getFullYear())
+      year: String(date.getFullYear()),
     };
   }
 
@@ -86,7 +99,6 @@ export class RegisterPropertyEst implements OnInit {
    * Maneja el envío del formulario
    */
   onSubmit(): void {
-
     if (this.isSubmitting) return;
     this.validationErrors = [];
 
@@ -105,13 +117,13 @@ export class RegisterPropertyEst implements OnInit {
       username: form.username?.trim(),
       email: form.email?.trim(),
       password: form.password,
-      comfirmPassword: form.comfirmPassword, 
+      comfirmPassword: form.comfirmPassword,
       phoneNumber: form.phoneNumber?.trim(),
       birthDate: form.birthDate,
       anonymous: form.anonymous ?? false,
       roleId: 2,
       latitude: 4.6097,
-      longitude: -74.0721
+      longitude: -74.0721,
     };
 
     // ✅ Validación frontend
@@ -128,16 +140,16 @@ export class RegisterPropertyEst implements OnInit {
         console.log('🟢 REGISTER OK');
         this.router.navigate(['/login']);
       },
-      error: err => {
+      error: (err) => {
         console.error('🔴 REGISTER ERROR', err);
         this.isSubmitting = false;
-      }
+      },
     });
   }
 
   /** Limpiar error */
   clearFieldError(field: string): void {
-    this.validationErrors = this.validationErrors.filter(e => e.field !== field);
+    this.validationErrors = this.validationErrors.filter((e) => e.field !== field);
   }
 
   /** Validar +18 */

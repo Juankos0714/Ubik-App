@@ -12,7 +12,7 @@ import { RegisterFormData } from '../types/register-user.types';
 @Component({
   selector: 'app-register-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,Inputcomponent],
+  imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-user.html',
 })
 export class RegisterUser implements OnInit {
@@ -20,20 +20,21 @@ export class RegisterUser implements OnInit {
   validationErrors: ValidationError[] = [];
   isSubmitting = false;
   progress = 0;
+  step = 1;
 
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterService,
-    private router: Router
+    private router: Router,
   ) {
     this.registerForm = this.fb.group({
       username: [''],
       email: [''],
-      phoneNumber: [''],   
+      phoneNumber: [''],
       birthDate: [''],
       password: [''],
       comfirmPassword: [''],
-      anonymous: [false]
+      anonymous: [false],
     });
   }
 
@@ -54,14 +55,14 @@ export class RegisterUser implements OnInit {
     if (values.phoneNumber?.trim()) completed++;
     if (values.birthDate) completed++;
     if (values.password?.trim()) completed++;
-    if (values.confirmPassword?.trim()) completed++; // ✅ FIX
+    if (values.comfirmPassword?.trim()) completed++; // ✅ FIX: use form control name
 
     this.progress = Math.round((completed / totalFields) * 100);
   }
 
   /** Obtener error por campo */
   getFieldError(fieldName: string): string | null {
-    const error = this.validationErrors.find(e => e.field === fieldName);
+    const error = this.validationErrors.find((e) => e.field === fieldName);
     return error ? error.message : null;
   }
 
@@ -91,7 +92,7 @@ export class RegisterUser implements OnInit {
       roleId: 3,
       birthDate: form.birthDate,
       latitude: 4.6097,
-      longitude: -74.0721
+      longitude: -74.0721,
     };
 
     console.log('🚀 PAYLOAD', payload);
@@ -103,16 +104,28 @@ export class RegisterUser implements OnInit {
         console.log('🟢 REGISTER OK');
         this.router.navigate(['/login']);
       },
-      error: err => {
+      error: (err) => {
         console.error('🔴 REGISTER ERROR', err);
         this.isSubmitting = false;
-      }
+      },
     });
+  }
+
+  nextStep(): void {
+    if (this.step < 3) this.step++;
+  }
+
+  prevStep(): void {
+    if (this.step > 1) this.step--;
+  }
+
+  goToSelect(): void {
+    this.router.navigate(['/select-register']);
   }
 
   /** Limpiar error */
   clearFieldError(fieldName: string): void {
-    this.validationErrors = this.validationErrors.filter(e => e.field !== fieldName);
+    this.validationErrors = this.validationErrors.filter((e) => e.field !== fieldName);
   }
 
   /** Validar +18 */

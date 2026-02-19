@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Button01 } from "../button-01/button-01";
+import { Button01 } from '../button-01/button-01';
+import { Button02 } from '../button-02/button-02';
 import { CurrencyPipe } from '@angular/common';
 
 export interface Card3Informacion {
@@ -14,11 +15,14 @@ export interface Card3Informacion {
   adress: string;
   price: number;
   hours: number;
+  lat?: number;
+  lng?: number;
 }
 
 @Component({
   selector: 'app-card-3',
-  imports: [Button01, CurrencyPipe],
+  standalone: true,
+  imports: [Button01, Button02, CurrencyPipe],
   templateUrl: './card-3.html',
 })
 export class Card3 {
@@ -29,8 +33,6 @@ export class Card3 {
     name: string;
     icon: string;
   }[] = [];
-
-
 }
 //   [motelId]="card.motelId"
 //               [numberHab]="card.numberHab"

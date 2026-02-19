@@ -1,79 +1,114 @@
+<!-- Centered card like register-user -->
+<div class="mb-28 mt-28 flex items-center justify-center px-5 text-white">
+  <div
+    class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-white/20"
+  >
+    <div class="text-center mb-4">
+      <h1 class="text-2xl font-semibold text-white">CUENTA PROPIETARIO</h1>
+      <p class="text-gray-400 text-sm">Completa los pasos para crear tu cuenta</p>
+    </div>
 
-<div class="flex items-center justify-center px-5 text-white">
-  <div class="w-full max-w-md">
-    
-    <h1 class="text-4xl font-bold mb-8 tracking-wider text-center">CUENTA PROPIETARIO</h1>
-    
-    
-    <!-- Formulario -->
-      <form
-        [formGroup]="registerForm"
-        (ngSubmit)="onSubmit()"
-        class="flex flex-col gap-5"
-      >
-      
-      <!-- Nombre Usuario -->
-      <app-input 
-        label="Nombre de Usuario" 
-        placeholder="Ingrese su nombre de usuario"
-        type="text"
-        formControlName="username">
-      </app-input>
-      
-      <!-- Correo electrónico -->
-      <app-input 
-        label="Correo electrónico" 
-        placeholder="Ingrese su correo"
-        type="email"
-        formControlName="email">
-      </app-input>
+    <!-- Progress bar -->
+    <div class="w-full mb-4">
+      <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+        <div class="h-full bg-white transition-all" [style.width.%]="progress"></div>
+      </div>
+      <div class="text-right text-xs text-gray-300 mt-1">Progreso: {{ progress }}%</div>
+    </div>
 
-      <!-- Numero de teléfono -->
-      <app-input 
-        label="Número de teléfono" 
-        placeholder="Ingrese su número de teléfono"
-        type="tel"
-        formControlName="phoneNumber">
-      </app-input>
-      
-      <!-- Fecha de nacimiento (3 campos) -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <!-- STEP 1 -->
+      <div *ngIf="step === 1" class="flex flex-col gap-4">
+        <app-input
+          label="Nombre de Usuario"
+          placeholder="Ingrese su nombre de usuario"
+          type="text"
+          formControlName="username"
+        ></app-input>
+        <app-input
+          label="Correo electrónico"
+          placeholder="Ingrese su correo"
+          type="email"
+          formControlName="email"
+        ></app-input>
 
-          <p class="mb-1 text-white text-sm">Fecha de nacimiento</p>
-          <input 
-            type="date" 
-            formControlName="birthDate"
-            placeholder="DD"
-            maxlength="2"
-            class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white text-center" />
-          
-       
-      <!-- Contraseña -->
-      <app-input 
-        label="Contraseña" 
-        formControlName="password"
-        placeholder="Ingrese su contraseña"
-        type="password">
-      </app-input>
-      
-      <!-- Confirmar contraseña -->
-      <app-input 
-        label="Confirmar contraseña" 
-        formControlName="comfirmPassword"
-        placeholder="Confirme su contraseña"
-        type="password">
-      </app-input>
+        <div class="flex items-center justify-between gap-2 mt-4">
+          <button
+            type="button"
+            (click)="goToSelect()"
+            class="text-sm text-gray-300 hover:underline"
+          >
+            ← Volver a selección
+          </button>
+          <button
+            type="button"
+            (click)="nextStep()"
+            class="bg-red-600 text-white px-4 py-2 rounded-lg"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
 
+      <!-- STEP 2 -->
+      <div *ngIf="step === 2" class="flex flex-col gap-4">
+        <app-input
+          label="Número de teléfono"
+          placeholder="Ingrese su número de teléfono"
+          type="tel"
+          formControlName="phoneNumber"
+        ></app-input>
+        <app-input label="Fecha de nacimiento" type="date" formControlName="birthDate"></app-input>
 
-        <button
-          type="submit"
-          class="bg-red-600 text-white p-3 rounded w-full"
-        >
-          Registrarse
-        </button>
-      
-      
-    
+        <div class="flex items-center justify-between gap-2 mt-4">
+          <button
+            type="button"
+            (click)="prevStep()"
+            class="bg-white/10 text-white px-4 py-2 rounded-lg"
+          >
+            Volver
+          </button>
+          <button
+            type="button"
+            (click)="nextStep()"
+            class="bg-red-600 text-white px-4 py-2 rounded-lg"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div *ngIf="step === 3" class="flex flex-col gap-4">
+        <app-input
+          label="Contraseña"
+          type="password"
+          formControlName="password"
+          placeholder="Ingrese su contraseña"
+        ></app-input>
+        <app-input
+          label="Confirmar contraseña"
+          type="password"
+          formControlName="comfirmPassword"
+          placeholder="Confirme su contraseña"
+        ></app-input>
+
+        <div class="flex items-center justify-between gap-2 mt-4">
+          <button
+            type="button"
+            (click)="prevStep()"
+            class="bg-white/10 text-white px-4 py-2 rounded-lg"
+          >
+            Volver
+          </button>
+          <button
+            type="submit"
+            class="bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white px-4 py-2 rounded-lg"
+          >
+            Registrarse
+          </button>
+        </div>
+      </div>
     </form>
-    
   </div>
 </div>
