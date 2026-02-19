@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
-import { PropertyUserService } from '../../core/services/property-user.service';
+import { PropertyUserService } from '../../core/services/list-motel.service';
 import { Users } from '../../core/models/users.model'; // Idealmente cambia esto a Motel[]
 import { Motel } from '../../core/models/motel.model';
 

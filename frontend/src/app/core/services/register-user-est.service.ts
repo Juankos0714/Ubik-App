@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 
-import { ValidationError } from '../../views/Forms/register/register-user/types/register-user.types';
-import { RegisterFormData } from '../../views/Forms/register/register-user/types/register-user.types';
+import { ValidationError } from '../../views/Forms/register/register-user-client/types/register-user.types';
+import { RegisterFormData } from '../../views/Forms/register/register-user-client/types/register-user.types';
 
 import {
   validateEmail,

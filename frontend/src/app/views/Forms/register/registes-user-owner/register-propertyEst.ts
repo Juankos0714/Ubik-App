@@ -13,8 +13,8 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../../../components/input/input';
-import { RegisterServiceOwner } from '../../../../core/services/register-est.service';
-import { ValidationError } from '../register-user/types/register-user.types';
+import { RegisterServiceOwner } from '../../../../core/services/register-user-est.service';
+import { ValidationError } from '../register-user-client/types/register-user.types';
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -43,7 +43,7 @@ function matchFields(field1: string, field2: string): ValidatorFn {
 }
 
 @Component({
-  selector: 'app-register-user',
+  selector: 'app-register-propertyEst',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-propertyEst.html',

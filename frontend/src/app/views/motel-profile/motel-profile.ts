@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+/*import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Button01 } from '../../components/button-01/button-01';
@@ -51,4 +51,4 @@ export class MotelProfile implements OnInit {
       }
     });
   }
-}
+}*/
