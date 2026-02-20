@@ -2,6 +2,7 @@
 
   <!-- Ofertas -->
   <section class="ofertas mb-38">
+    
     <h3 class="mb-6 text-2xl font-bold">Mejores ofertas</h3>
 
     <div class="relative">
@@ -26,8 +27,15 @@
       <div
         #ofertasCarousel
         class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-        @for (oferta of mejoresOfertas; track oferta.id) {
-          <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+
+        @if(loading) {
+          @for (_ of skeletonItems; track $index) {
+            <app-loading-card></app-loading-card>
+          }
+        } @else {
+          @for (oferta of mejoresOfertas; track oferta.id) {
+            <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+          }
         }
       </div>
 
@@ -77,8 +85,14 @@
       <div
         #nearbyMotelsCarousel
         class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-        @for (motel of motelesCercanos; track motel.id) {
-          <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+        @if(loading) {
+          @for (_ of skeletonItems; track $index) {
+            <app-loading-card></app-loading-card>
+          }
+        } @else {
+          @for (motel of motelesCercanos; track motel.id) {
+            <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+          }
         }
       </div>
 
@@ -127,10 +141,19 @@
       <div
         #destinosPopularesCarousel
         class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-        @for (destino of destinosPopulares; track destino.id) {
-          <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+        @if(loading) {
+
+          @for (_ of skeletonItems; track $index) {
+            <app-loading-card></app-loading-card>
+          }
+          
+        } @else { 
+
+          @for (destino of destinosPopulares; track destino.id) {
+            <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+          }
         }
-      </div>
+        </div>
 
       <button
         (click)="scrollRight(destinosPopularesCarousel)"
