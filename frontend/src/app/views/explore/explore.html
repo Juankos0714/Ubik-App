@@ -19,7 +19,6 @@
     </div>
 
     <section class="results flex flex-col gap-6 sm:gap-10 w-full flex-1 overflow-y-auto">
-      <!-- SUGGESTIONS -->
       @if (suggestions.length) {
         <div class="px-4">
           <ul class="bg-[#111213] rounded shadow p-2 max-w-md">
@@ -36,7 +35,9 @@
       }
 
       @if (loading) {
-        <p>Cargando habitaciones...</p>
+        @for (_ of skeletonItems; track $index) {
+          <app-loading-card-3/>
+        }
       }
 
       @if (error) {
@@ -52,7 +53,11 @@
   </div>
 
   <!-- MAPA -->
-  <div class="flex-1 h-[800px] min-h-[400px] rounded-xl overflow-hidden">
-    <app-map [points]="points" [userPoint]="userPoint" [active]="activePoint"></app-map>
+  <div class="flex-1 h-[800px] min-h-[400px] rounded-xl overflow-hidden relative">
+    <app-map
+      class="block w-full h-full"
+      [points]="points"
+      [active]="activePoint">
+    </app-map>
   </div>
 </div>

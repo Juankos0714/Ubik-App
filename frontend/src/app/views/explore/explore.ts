@@ -9,12 +9,13 @@ import { FilterModal } from '../../components/filter-modal/filter-modal';
 import { Button02 } from '../../components/button-02/button-02';
 import { Card3, Card3Informacion } from '../../components/card-3/card-3';
 import { Map, MapPoint } from '../../components/map/map';
+import { LoadingCard3 } from "../../components/loading-card-3/loading-card-3";
 
 @Component({
   selector: 'app-explore',
   standalone: true,
   templateUrl: './explore.html',
-  imports: [CommonModule, Button02, Card3, Map],
+  imports: [CommonModule, Button02, Card3, Map, LoadingCard3],
 })
 export class Explore implements OnInit {
   private roomService = inject(RoomService);
@@ -27,56 +28,58 @@ export class Explore implements OnInit {
   loading = false;
   error = false;
 
-  // search
   query = signal('');
   suggestions: Card3Informacion[] = [];
-  userPoint: MapPoint | null = null;
   activePoint: MapPoint | null = null;
+
+  skeletonItems = Array.from({ length: 5 });
 
   ngOnInit(): void {
     this.loadRooms();
-    this.getUserLocation();
   }
 
   openModal() {
     this.dialog.open(FilterModal);
   }
 
-  getUserLocation() {
-    if (!('geolocation' in navigator)) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      this.userPoint = { lat: pos.coords.latitude, lng: pos.coords.longitude, name: 'Tú' };
-    });
-  }
-
   onSearchInput(value: string) {
     this.query.set(value);
     const q = value.trim().toLowerCase();
+
     if (!q) {
       this.suggestions = [];
       this.cards = [...this.allCards];
-      this.points = this.allCards
-        .filter((c) => !!(c as any).lat && !!(c as any).lng)
-        .map((c) => ({ lat: (c as any).lat, lng: (c as any).lng, name: c.title, id: c.id }));
+      this.points = this.mapPoints(this.allCards);
       return;
     }
 
     this.suggestions = this.allCards
       .filter((c) => (c.title + ' ' + c.location + ' ' + c.adress).toLowerCase().includes(q))
       .slice(0, 6);
+
     this.cards = this.allCards.filter((c) =>
       (c.title + ' ' + c.location + ' ' + c.adress).toLowerCase().includes(q),
     );
-    this.points = this.cards
-      .filter((c) => !!(c as any).lat && !!(c as any).lng)
-      .map((c) => ({ lat: (c as any).lat, lng: (c as any).lng, name: c.title, id: c.id }));
+
+    this.points = this.mapPoints(this.cards);
   }
 
   selectSuggestion(s: Card3Informacion) {
     this.activePoint = { lat: (s as any).lat, lng: (s as any).lng, name: s.title, id: s.id };
     this.cards = [s];
-    this.points = [{ lat: (s as any).lat, lng: (s as any).lng, name: s.title, id: s.id }];
+    this.points = this.mapPoints([s]);
     this.suggestions = [];
+  }
+
+  private mapPoints(cards: Card3Informacion[]): MapPoint[] {
+    return cards
+      .filter((c) => !!(c as any).lat && !!(c as any).lng)
+      .map((c) => ({
+        lat: (c as any).lat,
+        lng: (c as any).lng,
+        name: c.title,
+        id: c.id,
+      }));
   }
 
   loadRooms(): void {
@@ -96,16 +99,12 @@ export class Explore implements OnInit {
           adress: room.address,
           price: room.price,
           hours: room.hours,
-          // pass through lat/lng for search/select
           ...(room.lat ? { lat: room.lat } : {}),
           ...(room.lng ? { lng: room.lng } : {}),
         }));
 
         this.cards = [...this.allCards];
-        this.points = this.allCards
-          .filter((c) => !!(c as any).lat && !!(c as any).lng)
-          .map((c) => ({ lat: (c as any).lat, lng: (c as any).lng, name: c.title, id: c.id }));
-
+        this.points = this.mapPoints(this.allCards);
         this.loading = false;
       },
       error: () => {
