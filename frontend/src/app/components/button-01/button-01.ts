@@ -12,6 +12,7 @@ import { PaymentModal } from '../payment-modal/payment-modal';
 })
 export class Button01 {
   @Input() text!: string;
+  @Input() subtext?: string;
   @Input() routerLink?: string | (string | number)[];
   @Input() iconLeft?: string;
   @Input() iconRight?: string;
@@ -22,6 +23,9 @@ export class Button01 {
 
   // si es true el botón ocupará el 100%
   @Input() fullWidth: boolean = false;
+
+  // si es true el botón tendrá mayor altura y tamaño de texto
+  @Input() tall: boolean = false;
 
   constructor(
     private router: Router,
