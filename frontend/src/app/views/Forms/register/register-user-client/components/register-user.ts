@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,12 @@ import { finalize } from 'rxjs/operators';
 import { Inputcomponent } from '../../../../../components/input/input';
 import { RegisterService } from '../../../../../core/services/register-user.service';
 import { ValidationError } from '../types/register-user.types';
+
+import {
+  toValidatorFn,
+  validatePassword,
+  validatePasswordConfirmation,
+} from '../../../../../core/utils/validation.utils';
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -33,12 +39,29 @@ function adultValidator(minAge = 18): ValidatorFn {
   };
 }
 
-function matchFields(field1: string, field2: string): ValidatorFn {
+/**
+ * Validador a nivel de FormGroup para confirmar contraseña
+ * usando validatePasswordConfirmation() (de tus utils).
+ */
+function passwordConfirmationValidator(
+  passwordField: string,
+  confirmField: string
+): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
-    const a = group.get(field1)?.value;
-    const b = group.get(field2)?.value;
-    if (!a || !b) return null;
-    return a === b ? null : { fieldsMismatch: true };
+    const passwordCtrl = group.get(passwordField);
+    const confirmCtrl = group.get(confirmField);
+
+    if (!passwordCtrl || !confirmCtrl) return null;
+
+    const password = passwordCtrl.value ?? '';
+    const confirm = confirmCtrl.value ?? '';
+
+    // Si no han escrito password todavía, no mostramos mismatch.
+    // (El error de password ya lo da validatePassword)
+    if (!password) return null;
+
+    const errorMsg = validatePasswordConfirmation(password, confirm);
+    return errorMsg ? { passwordMismatch: errorMsg } : null;
   };
 }
 
@@ -73,31 +96,39 @@ export class RegisterUser implements OnInit {
           '',
           [
             Validators.required,
-            // + opcional, 7 a 15 dígitos
             Validators.pattern(/^\+?\d{7,15}$/),
           ],
         ],
         birthDate: ['', [adultValidator(18)]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
+
+        // ✅ Password con tus validations (mensaje exacto desde validatePassword)
+        password: ['', [toValidatorFn(validatePassword, 'passwordInvalid')]],
+
+        // Confirm requerida (y match lo hace el validador de grupo)
         comfirmPassword: ['', [Validators.required]],
+
         anonymous: [false],
       },
-      { validators: matchFields('password', 'comfirmPassword') }
+      { validators: passwordConfirmationValidator('password', 'comfirmPassword') }
     );
   }
 
   ngOnInit(): void {
-  this.registerForm.get('username')?.valueChanges.subscribe(() => {
+    // Limpia el error usernameTaken al escribir
+    this.registerForm.get('username')?.valueChanges.subscribe(() => {
       const c = this.registerForm.get('username');
       if (!c) return;
 
-      // quita solo el error usernameTaken, no todos
       if (c.hasError('usernameTaken')) {
         const errors = { ...(c.errors || {}) };
         delete errors['usernameTaken'];
         c.setErrors(Object.keys(errors).length ? errors : null);
       }
     });
+
+    // ✅ Progreso
+    this.updateProgress();
+    this.registerForm.valueChanges.subscribe(() => this.updateProgress());
   }
 
   updateProgress(): void {
@@ -110,7 +141,7 @@ export class RegisterUser implements OnInit {
     if (values.phoneNumber?.trim()) completed++;
     if (values.birthDate) completed++;
     if (values.password?.trim()) completed++;
-    if (values.comfirmPassword?.trim()) completed++; // ✅ FIX REAL
+    if (values.comfirmPassword?.trim()) completed++;
 
     this.progress = Math.round((completed / totalFields) * 100);
   }
@@ -129,22 +160,35 @@ export class RegisterUser implements OnInit {
     const c = this.registerForm.get(fieldName);
     if (!c || !c.touched) return null;
 
-    if (c.hasError('required')) return 'Este campo es obligatorio';
+    // ✅ Password: mensaje viene de validatePassword()
+    if (fieldName === 'password' && c.hasError('passwordInvalid')) {
+      return c.getError('passwordInvalid');
+    }
+
+    // Angular standard
+    if (c.hasError('required')) {
+      // ✅ Confirm: muestra el mensaje de tu validation (no el genérico)
+      if (fieldName === 'comfirmPassword') return 'Debe confirmar la contraseña';
+      return 'Este campo es obligatorio';
+    }
+
     if (fieldName === 'email' && c.hasError('email')) return 'Correo inválido';
+
     if (c.hasError('minlength')) {
       const req = c.getError('minlength')?.requiredLength;
       return `Mínimo ${req} caracteres`;
     }
+
     if (c.hasError('pattern')) return 'Formato inválido';
     if (c.hasError('invalidDate')) return 'Fecha inválida';
     if (c.hasError('underAge')) return 'Debes ser mayor de 18 años';
 
-    // Error de contraseñas (validator a nivel grupo)
+    // ✅ Confirmación: mensaje viene de validatePasswordConfirmation()
     if (
       fieldName === 'comfirmPassword' &&
-      this.registerForm.hasError('fieldsMismatch')
+      this.registerForm.hasError('passwordMismatch')
     ) {
-      return 'Las contraseñas no coinciden';
+      return this.registerForm.getError('passwordMismatch');
     }
 
     return null;
@@ -178,46 +222,42 @@ export class RegisterUser implements OnInit {
 
     this.isSubmitting = true;
 
+    // ✅ Método real de tu service (no .register)
     this.registerService
-    .submitClientRegistration(payload)
-    .pipe(finalize(() => (this.isSubmitting = false)))
-    .subscribe({
-      next: () => {
-        console.log('🟢 REGISTER OK');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('🔴 REGISTER ERROR', err);
-        this.handleRegisterError(err);
-      }
-    });
+      .submitClientRegistration(payload)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => {
+          console.log('🟢 REGISTER OK');
+          this.router.navigate(['/login']);
+        },
+        error: (err: any) => { // ✅ TS7006 fix
+          console.error('🔴 REGISTER ERROR', err);
+          this.handleRegisterError(err);
+        },
+      });
   }
 
   private handleRegisterError(err: any) {
-      // Reset mensajes si usas banner
     this.serverError = null;
 
-    // 🔌 Sin conexión / CORS
     if (err?.status === 0) {
-      this.serverError = 'No se pudo conectar con el servidor. Revisa tu internet e intenta nuevamente.';
+      this.serverError =
+        'No se pudo conectar con el servidor. Revisa tu internet e intenta nuevamente.';
       return;
     }
 
-    const raw = err?.error; // 👈 en tu caso es un string
-    const msg = typeof raw === 'string' ? raw : (raw?.message ?? '');
+    const raw = err?.error;
+    const msg = typeof raw === 'string' ? raw : raw?.message ?? '';
 
-    // ✅ Caso exacto: username repetido
     if (msg.includes('Username already exists')) {
       const control = this.registerForm.get('username');
       control?.setErrors({ usernameTaken: true });
       control?.markAsTouched();
-
-      // opcional: también banner arriba
       this.serverError = 'El nombre de usuario ya está en uso.';
       return;
     }
 
-    // ✅ (Opcional) Caso email repetido si el backend lo manda similar
     if (msg.toLowerCase().includes('email') && msg.toLowerCase().includes('exists')) {
       const control = this.registerForm.get('email');
       control?.setErrors({ emailTaken: true });
@@ -226,7 +266,6 @@ export class RegisterUser implements OnInit {
       return;
     }
 
-    // Fallback
     this.serverError = msg || 'Ocurrió un error al registrarse. Intenta de nuevo.';
   }
 
