@@ -8,6 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { getUserLocation } from './geolocation';
 
 export interface MapPoint {
   lat: number;
@@ -24,93 +25,131 @@ export interface MapPoint {
   styleUrls: ['./map.css'],
 })
 export class Map implements AfterViewInit, OnChanges {
+
   @Input() points: MapPoint[] = [];
-  @Input() userPoint?: MapPoint | null = null;
   @Input() active?: MapPoint | null = null;
 
   private platformId = inject(PLATFORM_ID);
-  private map: any;
-  private markers: any[] = [];
-  private userMarker: any | null = null;
+
+  private map!: any;
+  private L!: any;
+  private markerLayer!: any;
+  private userMarker!: any;
+  private accuracyCircle!: any;
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    const L = await import('leaflet');
+    this.L = await import('leaflet');
 
-    // default center
-    const center = this.userPoint
-      ? [this.userPoint.lat, this.userPoint.lng]
-      : this.points[0]
-        ? [this.points[0].lat, this.points[0].lng]
-        : [4.541141, -75.668121];
+    this.map = this.L.map('map');
 
-    this.map = L.map('map').setView(center as [number, number], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
 
-    this.renderMarkers(L);
+    this.markerLayer = this.L.layerGroup().addTo(this.map);
 
-    // ensure correct rendering after layout
-    setTimeout(() => this.map.invalidateSize(), 200);
+    setTimeout(() => this.map.invalidateSize(), 300);
+
+    this.initializeLocation();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.map) return;
-    import('leaflet').then((L) => {
-      this.renderMarkers(L);
-      // refresh size in case container changed
-      setTimeout(() => this.map.invalidateSize(), 100);
+
+    if (changes['points']) {
+      this.renderMarkers();
+    }
+
+    if (changes['active'] && this.active) {
+      this.map.flyTo([this.active.lat, this.active.lng], 17);
+    }
+  }
+
+  // ======================================
+  // 📍 GEOLOCALIZACIÓN CON DEBUG Y ALERTA
+  // ======================================
+  private async initializeLocation() {
+    try {
+      const location = await getUserLocation();
+
+      console.log('📍 LAT:', location.latitude);
+      console.log('📍 LNG:', location.longitude);
+      console.log('🎯 ACCURACY:', location.accuracy, 'metros');
+
+      // ⚠️ Advertencia si precisión es mala
+      if (location.accuracy > 1000) {
+        console.warn(
+          '⚠️ Ubicación poco precisa (posiblemente por IP). ' +
+          'Prueba desde móvil o activa GPS para mayor exactitud.'
+        );
+      }
+
+      this.map.setView([location.latitude, location.longitude], 16);
+
+      // Remover marcador anterior si existe
+      if (this.userMarker) {
+        this.map.removeLayer(this.userMarker);
+      }
+
+      // Remover círculo anterior si existe
+      if (this.accuracyCircle) {
+        this.map.removeLayer(this.accuracyCircle);
+      }
+
+      // 🔵 Marcador usuario
+      this.userMarker = this.L.marker([
+        location.latitude,
+        location.longitude,
+      ])
+        .addTo(this.map)
+        .bindPopup('Tú estás aquí')
+        .openPopup();
+
+      // 🔵 Círculo de precisión
+      this.accuracyCircle = this.L.circle(
+        [location.latitude, location.longitude],
+        {
+          radius: location.accuracy,
+        }
+      ).addTo(this.map);
+
+    } catch (error) {
+      console.warn('❌ Geolocalización falló:', error);
+      this.adjustView();
+    }
+  }
+
+  // ===============================
+  // 🏨 MARCADORES
+  // ===============================
+  private renderMarkers() {
+    if (!this.markerLayer) return;
+
+    this.markerLayer.clearLayers();
+
+    this.points.forEach((p) => {
+      const marker = this.L.marker([p.lat, p.lng])
+        .bindPopup(p.name);
+
+      this.markerLayer.addLayer(marker);
     });
   }
 
-  private async renderMarkers(L: any) {
-    // clear existing
-    this.markers.forEach((m) => this.map.removeLayer(m));
-    this.markers = [];
-
-    // add points (motels) using FontAwesome building icon
-    this.points.forEach((p) => {
-      const isActive = this.active && p.id && this.active.id === p.id;
-      const motelIcon = L.divIcon({
-        html: `<i class="fa-solid fa-building ${isActive ? 'marker-active' : ''}"></i>`,
-        className: 'motel-div-icon',
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-      });
-
-      const marker = L.marker([p.lat, p.lng], { icon: motelIcon })
-        .addTo(this.map)
-        .bindPopup(p.name);
-      marker.on('click', () => {
-        marker.openPopup();
-      });
-      this.markers.push(marker);
-    });
-
-    // user marker
-    if (this.userMarker) {
-      this.map.removeLayer(this.userMarker);
-      this.userMarker = null;
+  // ===============================
+  // 🎯 FALLBACK
+  // ===============================
+  private adjustView() {
+    if (!this.points.length) {
+      this.map.setView([4.6, -74.1], 6);
+      return;
     }
 
-    if (this.userPoint) {
-      const userIcon = L.divIcon({
-        html: `<i class="fa-solid fa-person user-marker-icon"></i>`,
-        className: 'user-div-icon',
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-      });
-      this.userMarker = L.marker([this.userPoint.lat, this.userPoint.lng], { icon: userIcon })
-        .addTo(this.map)
-        .bindPopup('Tú estás aquí');
-    }
+    const bounds = this.L.latLngBounds(
+      this.points.map((p) => [p.lat, p.lng])
+    );
 
-    // highlight active
-    if (this.active) {
-      this.map.setView([this.active.lat, this.active.lng], 15);
-    }
+    this.map.fitBounds(bounds, { padding: [50, 50] });
   }
 }
