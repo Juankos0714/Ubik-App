@@ -46,9 +46,9 @@ function matchFields(field1: string, field2: string): ValidatorFn {
   selector: 'app-register-propertyEst',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
-  templateUrl: './register-propertyEst.html',
+  templateUrl: './register-owner.html',
 })
-export class RegisterUserEst implements OnInit {
+export class RegisterOwner implements OnInit {
   registerForm: FormGroup;
 
   // Errores backend por campo

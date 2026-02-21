@@ -17,7 +17,7 @@ import { Button01 } from '../../../../components/button-01/button-01';
 @Component({
   selector: 'app-register-select',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Button01],
   templateUrl: './register-select.html',
 })
 export class RegisterSelect {
