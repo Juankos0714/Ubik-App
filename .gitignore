@@ -7,7 +7,7 @@
 ##################################################
 
 ############################
-# 🔹 IntelliJ IDEA / JetBrains
+# IntelliJ IDEA / JetBrains
 ############################
 .idea/
 *.iml
@@ -16,12 +16,12 @@ out/
 *.iws
 
 ############################
-# 🔹 VSCode (si se usa)
+# VSCode (si se usa)
 ############################
 .vscode/
 
 ############################
-# 🔹 Sistema operativo
+# Sistema operativo
 ############################
 # macOS
 .DS_Store
@@ -38,7 +38,7 @@ $RECYCLE.BIN/
 *~
 
 ############################
-# 🔹 Archivos temporales / logs
+# Archivos temporales / logs
 ############################
 logs/
 *.log
@@ -48,7 +48,7 @@ logs/
 *.swo
 
 ############################
-# 🔹 Spring Boot / Maven / Gradle
+# Spring Boot / Maven / Gradle
 ############################
 target/
 build/
@@ -65,7 +65,7 @@ spring.log
 *.class
 
 ############################
-# 🔹 Archivos de entorno o configuración sensible
+# Archivos de entorno o configuración sensible
 ############################
 .env
 .env.*
@@ -75,7 +75,7 @@ application-*.properties
 !application.properties
 
 ############################
-# 🔹 Node.js / Angular.)
+# Node.js / Angular.)
 ############################
 node_modules/
 dist/
@@ -89,7 +89,7 @@ package-lock.json
 yarn.lock
 
 ############################
-# 🔹 Archivos del sistema / editor
+# Archivos del sistema / editor
 ############################
 *.orig
 *.rej
@@ -97,7 +97,7 @@ yarn.lock
 *.sublime-project
 
 ############################
-# 🔹 Archivos temporales y cache de IDEs
+# Archivos temporales y cache de IDEs
 ############################
 *.idea_modules/
 *.classpath
@@ -105,7 +105,7 @@ yarn.lock
 *.settings/
 
 ############################
-# 🔹 Subcarpetas específicas del proyecto
+# Subcarpetas específicas del proyecto
 ############################
 microservicios/.idea/
 microservicios/**/target/
@@ -115,7 +115,7 @@ backend/**/build/
 backend/**/out/
 
 ############################
-# 🔹 Otros
+# Otros
 ############################
 *.pid
 *.seed
