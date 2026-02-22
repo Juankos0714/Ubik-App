@@ -6,7 +6,7 @@ import { Explore } from './views/explore/explore';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 
-import { UserProfile } from './views/user-profile/user-profile';
+import { UserProfile } from './views/user-profile/profile/user-profile';
 
 import { Dashboard } from './views/dashboard/dashboard';
 
@@ -22,6 +22,7 @@ import { CreateMotelComponent } from './views/Forms/register/establecimiento/com
 
 import { RegisterUserEst } from './views/Forms/register/registes-user-owner/register-propertyEst';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
+import { EditProfileComponent } from './views/user-profile/edit-profile/edit-profile.component';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -47,5 +48,7 @@ export const routes: Routes = [
   /**==== PERFILES DE USURIOS ====== */
 
   { path: 'userProfile', component: UserProfile },
+  /* editar perfil */
+  { path: 'edit-profile', component: EditProfileComponent },
 
 ];

@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ForgotService } from '../../../core/services/forgot.service';
-import { toValidatorFn, validateEmail,validatePassword, } from '../../../core/utils/validation.utils';
+import { toValidatorFn, validateEmail, validatePassword } from '../../../core/utils/validation.utils';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -11,66 +12,83 @@ import { toValidatorFn, validateEmail,validatePassword, } from '../../../core/ut
   templateUrl: './forgot-password.component.html',
 })
 export class ForgotPasswordComponent {
-
   step = signal(1);
   loading = signal(false);
   error = signal<string | null>(null);
-  private fb: FormBuilder = new FormBuilder();
+  success = signal<string | null>(null); // ✅ NUEVO
 
-  constructor(
-    private forgotService: ForgotService
-  ) {}
+  private fb = new FormBuilder();
 
-    form = this.fb.nonNullable.group({
+  constructor(private forgotService: ForgotService) {}
+
+  form = this.fb.nonNullable.group({
     email: ['', [toValidatorFn(validateEmail, 'email')]],
-    token: ['', []],
-    newPassword: ['', []]
-    });
+    token: ['', [Validators.required]],
+    newPassword: ['', [toValidatorFn(validatePassword, 'newPassword')]],
+  });
 
-  
+  sendEmail() {
+    const emailCtrl = this.form.controls.email;
+    emailCtrl.markAsTouched();
 
-  // STEP 1 → enviar email
-sendEmail() {
-    if (this.form.controls.email.invalid) return;
+    if (emailCtrl.invalid || this.loading()) return;
 
     this.loading.set(true);
     this.error.set(null);
+    this.success.set(null); // ✅ limpiar éxito
 
-    const email = this.form.controls.email.value; // ← string seguro
-
-    this.forgotService.requestReset(email).subscribe({
-        next: () => {
-        this.loading.set(false);
+    this.forgotService.requestReset(emailCtrl.value).subscribe({
+      next: (res) => {
+        console.log('requestReset OK', res);
         this.step.set(2);
-        },
-        error: () => {
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('requestReset ERROR FULL:', err);
         this.loading.set(false);
         this.error.set('No se pudo enviar el correo');
-        }
+      }
     });
+  }
+
+  resetPassword() {
+    const tokenCtrl = this.form.controls.token;
+    const passCtrl = this.form.controls.newPassword;
+
+    tokenCtrl.markAsTouched();
+    passCtrl.markAsTouched();
+
+    const token = tokenCtrl.value.trim();
+    const newPassword = passCtrl.value.trim();
+    this.form.patchValue({ token, newPassword });
+
+    if (tokenCtrl.invalid || passCtrl.invalid) {
+      this.success.set(null);
+      this.error.set('Revisa el token y la contraseña (no cumplen validación).');
+      return;
     }
 
-  // STEP 2 → reset password
-  resetPassword() {
-    if (
-        this.form.controls.token.invalid ||
-        this.form.controls.newPassword.invalid
-    ) return;
+    if (this.loading()) return;
 
     this.loading.set(true);
     this.error.set(null);
-
-    const { token, newPassword } = this.form.getRawValue();
+    this.success.set(null); // ✅ limpiar éxito antes de enviar
 
     this.forgotService.resetPassword(token, newPassword).subscribe({
-    next: () => {
+      next: (res) => {
+        console.log('resetPassword OK', res);
         this.loading.set(false);
-        this.step.set(3);
-    },
-    error: () => {
+        this.error.set(null);
+        this.success.set('¡Listo! Tu contraseña fue cambiada. Ya puedes iniciar sesión.'); // ✅ AVISO OK
+        // Opcional: limpiar campos
+        // this.form.patchValue({ token: '', newPassword: '' });
+      },
+      error: (err) => {
+        console.error('resetPassword ERROR FULL:', err);
         this.loading.set(false);
-        this.error.set('Token inválido o expirado');
-    }
+        this.success.set(null);
+        this.error.set('No se pudo cambiar la contraseña. Token inválido/expirado o contraseña no válida.'); // ✅ AVISO FAIL
+      }
     });
-    }
+  }
 }
