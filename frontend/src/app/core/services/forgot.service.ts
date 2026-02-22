@@ -5,24 +5,23 @@ import { Observable } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class ForgotService {
-
   private baseUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 
-  // STEP 1 → Enviar email
-  requestReset(email: string): Observable<any> {
+  requestReset(email: string): Observable<string> {
     return this.http.post(
-      `${this.baseUrl}/reset-password-request?email=${email}`,
-      {}
+      `${this.baseUrl}/reset-password-request?email=${encodeURIComponent(email)}`,
+      null,
+      { responseType: 'text' }
     );
   }
 
-  // STEP 2 → Cambiar contraseña
-  resetPassword(token: string, newPassword: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/reset-password`, {
-      token,
-      newPassword
-    });
+  resetPassword(token: string, newPassword: string): Observable<string> {
+    return this.http.post(
+      `${this.baseUrl}/reset-password`,
+      { token, newPassword },
+      { responseType: 'text' }
+    );
   }
 }

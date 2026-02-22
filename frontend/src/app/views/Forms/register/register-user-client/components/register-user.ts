@@ -214,7 +214,7 @@ export class RegisterUser implements OnInit {
       comfirmPassword: form.comfirmPassword,
       phoneNumber: form.phoneNumber?.trim(),
       anonymous: false,
-      roleId: 3,
+      roleId: "9182736450192837",
       birthDate: form.birthDate,
       latitude: 4.6097,
       longitude: -74.0721,

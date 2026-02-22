@@ -40,7 +40,7 @@ export class Dashboard {
   }
 
   private loadUser() {
-    this.userService.getProfile().subscribe(user => {
+    this.userService.loadProfile().subscribe(user => {
       this.currentUser.set(user);
     });
   }

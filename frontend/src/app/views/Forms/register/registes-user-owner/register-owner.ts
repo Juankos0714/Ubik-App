@@ -170,7 +170,7 @@ export class RegisterOwner implements OnInit {
       comfirmPassword: form.comfirmPassword,
       phoneNumber: form.phoneNumber?.trim(),
       anonymous: false,
-      roleId: 2,
+      roleId: "3847261094857362",
       birthDate: form.birthDate,
       latitude: 4.6097,
       longitude: -74.0721,

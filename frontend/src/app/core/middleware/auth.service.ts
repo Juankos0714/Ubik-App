@@ -14,9 +14,9 @@ export class AuthService {
   role = computed(() => this._user()?.roleId ?? null);
   isLogged = computed(() => !!this._token());
 
-  isAdmin = computed(() => this.role() === 1);
-  isOwner = computed(() => this.role() === 2);
-  isUser  = computed(() => this.role() === 3);
+  isAdmin = computed(() => this.role() === 7392841056473829);
+  isOwner = computed(() => this.role() === 3847261094857362);
+  isUser  = computed(() => this.role() === 9182736450192837);
 
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);

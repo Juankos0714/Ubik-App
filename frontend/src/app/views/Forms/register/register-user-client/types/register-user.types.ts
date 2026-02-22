@@ -5,7 +5,7 @@ export interface RegisterFormData {
   email: string;
   phoneNumber: string;
   anonymous: boolean;
-  roleId: number;
+  roleId: string;
   longitude: number;
   latitude: number;
   birthDate: string;
