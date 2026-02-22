@@ -18,23 +18,23 @@
         <!-- Images carousel -->
         <div class="rounded-lg overflow-hidden bg-black/20">
           <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide p-4">
-            <ng-container *ngIf="room.photos?.length; else noPhotos">
-              <img
-                *ngFor="let photo of room.photos"
-                [src]="photo.url"
-                alt="{{ 'Imagen habitación ' + room.num_or_name }}"
-                title="{{ 'Imagen habitación ' + room.num_or_name }}"
-                class="w-[320px] sm:w-[420px] md:w-[520px] h-60 md:h-72 object-cover rounded-lg shrink-0 snap-center"
-              />
-            </ng-container>
-            <ng-template #noPhotos>
+            @if (room.photos?.length) {
+              @for (photo of room.photos; track $index) {
+                <img
+                  [src]="photo.url"
+                  alt="{{ 'Imagen habitación ' + room.num_or_name }}"
+                  title="{{ 'Imagen habitación ' + room.num_or_name }}"
+                  class="w-[320px] sm:w-[420px] md:w-[520px] h-60 md:h-72 object-cover rounded-lg shrink-0 snap-center"
+                />
+              }
+            } @else {
               <img
                 src="./assets/images/ubikLogo.jpg"
                 alt="Imagen por defecto"
                 title="Imagen por defecto"
                 class="w-full h-72 object-cover rounded-lg"
               />
-            </ng-template>
+            }
           </div>
         </div>
 
@@ -72,17 +72,15 @@
         <section class="bg-white/5 rounded-lg p-4">
           <h3 class="font-semibold mb-3">Servicios</h3>
           <div class="flex flex-wrap gap-2">
-            <ng-container *ngIf="room.services && room.services.length; else noServices">
-              <span
-                *ngFor="let svc of room.services"
-                class="px-3 py-1 bg-white/6 rounded-full text-sm"
-              >
-                {{ svc?.service_id?.[0]?.name ?? 'Servicio' }}
-              </span>
-            </ng-container>
-            <ng-template #noServices>
+            @if (room.services && room.services.length) {
+              @for (svc of room.services; track $index) {
+                <span class="px-3 py-1 bg-white/6 rounded-full text-sm">
+                  {{ svc?.service_id?.[0]?.name ?? 'Servicio' }}
+                </span>
+              }
+            } @else {
               <span class="text-gray-400">Sin servicios listados</span>
-            </ng-template>
+            }
           </div>
         </section>
       </div>

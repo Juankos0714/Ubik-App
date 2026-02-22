@@ -1,40 +1,37 @@
-<div class="w-full sm:px-4 md:px-6 lg:max-w-[1400px] lg:mx-auto flex-col gap-y-28 mt-32">
+<div class="w-full max-w-[1400px] mx-auto mt-32 flex flex-col gap-y-28 px-4">
 
-  <!-- Ofertas -->
-  <section class="ofertas mb-38">
-    
-    <h3 class="mb-6 text-2xl font-bold">Mejores ofertas</h3>
+  <!-- ================= OFERTAS ================= -->
+  <section>
+    <h3 class="mb-6 text-2xl font-bold text-white">
+      Mejores ofertas
+    </h3>
 
-    <div class="relative">
+    <div class="relative w-full overflow-hidden">
 
       <!-- Botón izquierda -->
       <button
         (click)="scrollLeft(ofertasCarousel)"
-        class="absolute 
-               -left-3 sm:-left-4 md:-left-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ‹
       </button>
 
+      <!-- Track -->
       <div
         #ofertasCarousel
-        class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-
-        @if(loading) {
+        class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-2 md:px-12 py-2"
+      >
+        @if (loading) {
           @for (_ of skeletonItems; track $index) {
-            <app-loading-card></app-loading-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-loading-card></app-loading-card>
+            </div>
           }
         } @else {
           @for (oferta of mejoresOfertas; track oferta.id) {
-            <app-card [card]="oferta" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-card [card]="oferta"></app-card>
+            </div>
           }
         }
       </div>
@@ -42,17 +39,8 @@
       <!-- Botón derecha -->
       <button
         (click)="scrollRight(ofertasCarousel)"
-        class="absolute 
-               -right-3 sm:-right-4 md:-right-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ›
       </button>
 
@@ -60,55 +48,45 @@
   </section>
 
 
-  <!-- Moteles Cercanos -->
-  <section class="motelesCercanos mb-38">
-    <h3 class="mb-6 text-2xl font-bold">Moteles más cercanos</h3>
 
-    <div class="relative">
+  <!-- ================= MOTELS CERCANOS ================= -->
+  <section>
+    <h3 class="mb-6 text-2xl font-bold text-white">
+      Moteles más cercanos
+    </h3>
+
+    <div class="relative w-full overflow-hidden">
 
       <button
         (click)="scrollLeft(nearbyMotelsCarousel)"
-        class="absolute 
-               -left-3 sm:-left-4 md:-left-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ‹
       </button>
 
       <div
         #nearbyMotelsCarousel
-        class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-        @if(loading) {
+        class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-2 md:px-12 py-2"
+      >
+        @if (loading) {
           @for (_ of skeletonItems; track $index) {
-            <app-loading-card></app-loading-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-loading-card></app-loading-card>
+            </div>
           }
         } @else {
           @for (motel of motelesCercanos; track motel.id) {
-            <app-card [card]="motel" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-card [card]="motel"></app-card>
+            </div>
           }
         }
       </div>
 
       <button
         (click)="scrollRight(nearbyMotelsCarousel)"
-        class="absolute 
-               -right-3 sm:-right-4 md:-right-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ›
       </button>
 
@@ -116,58 +94,45 @@
   </section>
 
 
-  <!-- Destinos Populares -->
-  <section class="destinosPopulares mb-38">
-    <h3 class="mb-6 text-2xl font-bold">Destinos Populares</h3>
 
-    <div class="relative">
+  <!-- ================= DESTINOS POPULARES ================= -->
+  <section>
+    <h3 class="mb-6 text-2xl font-bold text-white">
+      Destinos Populares
+    </h3>
+
+    <div class="relative w-full overflow-hidden">
 
       <button
         (click)="scrollLeft(destinosPopularesCarousel)"
-        class="absolute 
-               -left-3 sm:-left-4 md:-left-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ‹
       </button>
 
       <div
         #destinosPopularesCarousel
-        class="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide">
-        @if(loading) {
-
+        class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-2 md:px-12 py-2"
+      >
+        @if (loading) {
           @for (_ of skeletonItems; track $index) {
-            <app-loading-card></app-loading-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-loading-card></app-loading-card>
+            </div>
           }
-          
-        } @else { 
-
+        } @else {
           @for (destino of destinosPopulares; track destino.id) {
-            <app-card [card]="destino" class="shrink-0 w-60 sm:w-64 md:w-72"></app-card>
+            <div class="snap-start shrink-0 w-[75%] sm:w-[48%] md:w-[32%] lg:w-[24%] xl:w-[20%]">
+              <app-card [card]="destino"></app-card>
+            </div>
           }
         }
-        </div>
+      </div>
 
       <button
         (click)="scrollRight(destinosPopularesCarousel)"
-        class="absolute 
-               -right-3 sm:-right-4 md:-right-7
-               top-1/2 -translate-y-1/2 z-20
-               w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14
-               flex items-center justify-center
-               rounded-full cursor-pointer
-               bg-black/60 backdrop-blur-md
-               text-white text-base sm:text-lg md:text-2xl
-               shadow-lg border border-white/40
-               transition-all duration-300
-               hover:bg-white hover:text-black md:hover:scale-110">
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 items-center justify-center rounded-full bg-black/70 text-white text-xl backdrop-blur border border-white/30 hover:bg-white hover:text-black transition"
+      >
         ›
       </button>
 
