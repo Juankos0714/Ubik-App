@@ -1,0 +1,62 @@
+<aside class="filter bg-gray-800 p-4 rounded-lg text-amber-50 relative">
+  <!-- CERRAR -->
+  <button class="absolute top-2 right-2 text-xl" (click)="close()">✕</button>
+
+  <!-- SERVICIOS -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Servicios</h3>
+    @for (feat of services; track feat.id) {
+      <label class="flex gap-2 mb-2">
+        <input type="checkbox" [value]="feat.id" (change)="onFeatureChange($event)" />
+        {{ feat.name }}
+      </label>
+    }
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Categorías</h3>
+    @for (category of categories; track category.id) {
+      <label class="flex gap-2 mb-2">
+        <input type="checkbox" [value]="category.id" (change)="onCategoryChange($event)" />
+        {{ category.name }}
+      </label>
+    }
+  </section>
+
+  <!-- UBICACIONES -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Ubicación</h3>
+    @for (city of locations; track city.id) {
+      <label class="flex gap-2 mb-2">
+        <input type="checkbox" [value]="city.id" (change)="onLocationChange($event)" />
+        {{ city.city }}
+      </label>
+    }
+  </section>
+
+  <!-- PRECIO -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Precio máximo</h3>
+    <input
+      type="range"
+      min="0"
+      max="50000"
+      step="500"
+      [value]="filters.priceMax"
+      (input)="onPriceChange($event)"
+      title="Precio"
+    />
+    <!-- Agregado para mostrar el tooltip del valor actual del rango -->
+    <p>$ {{ filters.priceMax | number }}</p>
+  </section>
+
+  <!-- BOTONES -->
+  <div class="flex justify-between mt-4">
+    <button class="px-4 py-2 bg-gray-600 rounded" (click)="reset()">Reiniciar</button>
+
+    <button class="px-4 py-2 bg-amber-500 text-black rounded" (click)="apply()">
+      Aplicar filtros
+    </button>
+  </div>
+</aside>
