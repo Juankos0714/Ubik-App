@@ -6,6 +6,8 @@ import {
   PLATFORM_ID,
   OnChanges,
   SimpleChanges,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { getUserLocation } from './geolocation';
@@ -26,23 +28,29 @@ export interface MapPoint {
 })
 export class Map implements AfterViewInit, OnChanges {
   @Input() points: MapPoint[] = [];
-  @Input() active?: MapPoint | null = null;
+  @Input() active: MapPoint | null = null;
+
+  @ViewChild('mapContainer', { static: false })
+  mapContainer!: ElementRef<HTMLDivElement>;
 
   private platformId = inject(PLATFORM_ID);
 
-  private map: any;
-  private L: any;
-  private markerLayer: any;
+  private map!: import('leaflet').Map;
+  private L!: typeof import('leaflet');
+  private markerLayer!: import('leaflet').LayerGroup;
   private userLatLng?: [number, number];
+
+  /* =========================
+     INIT
+  ========================== */
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // 🔥 Import dinámico SOLO en navegador
-    const leaflet = await import('leaflet');
-    this.L = leaflet;
+    // Import dinámico correcto para SSR
+    this.L = await import('leaflet');
 
-    this.map = this.L.map('map', {
+    this.map = this.L.map(this.mapContainer.nativeElement, {
       center: [4.6, -74.1],
       zoom: 6,
     });
@@ -58,11 +66,15 @@ export class Map implements AfterViewInit, OnChanges {
 
     setTimeout(() => {
       this.map.invalidateSize();
-    }, 500);
+    });
 
     this.renderMarkers();
     this.initializeLocation();
   }
+
+  /* =========================
+     INPUT CHANGES
+  ========================== */
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.map) return;
@@ -75,6 +87,10 @@ export class Map implements AfterViewInit, OnChanges {
       this.map.flyTo([this.active.lat, this.active.lng], 17);
     }
   }
+
+  /* =========================
+     USER LOCATION
+  ========================== */
 
   private async initializeLocation() {
     try {
@@ -92,32 +108,38 @@ export class Map implements AfterViewInit, OnChanges {
     }
   }
 
+  /* =========================
+     MARKERS
+  ========================== */
+
   private renderMarkers() {
     if (!this.markerLayer) return;
 
     this.markerLayer.clearLayers();
 
-    this.points.forEach((p) => {
+    for (const p of this.points) {
       this.L.marker([p.lat, p.lng])
         .bindPopup(p.name)
         .addTo(this.markerLayer);
-    });
+    }
 
     this.adjustView();
   }
 
-  private adjustView() {
-    const allPoints: [number, number][] = [];
+  /* =========================
+     VIEW ADJUSTMENT
+  ========================== */
 
-    this.points.forEach((p) => {
-      allPoints.push([p.lat, p.lng]);
-    });
+  private adjustView() {
+    if (!this.map) return;
+
+    const allPoints: [number, number][] = this.points.map(p => [p.lat, p.lng]);
 
     if (this.userLatLng) {
       allPoints.push(this.userLatLng);
     }
 
-    if (!allPoints.length) {
+    if (allPoints.length === 0) {
       this.map.setView([4.6, -74.1], 6);
       return;
     }
