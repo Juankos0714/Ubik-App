@@ -30,26 +30,29 @@ export class Map implements AfterViewInit, OnChanges {
 
   private platformId = inject(PLATFORM_ID);
 
-  private map!: any;
-  private L!: any;
-  private markerLayer!: any;
-  private userMarker!: any;
-  private accuracyCircle!: any;
+  private map: any;
+  private L: any;
+  private markerLayer: any;
   private userLatLng?: [number, number];
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.L = await import('leaflet');
+    // 🔥 Import dinámico SOLO en navegador
+    const leaflet = await import('leaflet');
+    this.L = leaflet;
 
     this.map = this.L.map('map', {
       center: [4.6, -74.1],
       zoom: 6,
     });
 
-    this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
+    this.L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution: '© OpenStreetMap contributors',
+      }
+    ).addTo(this.map);
 
     this.markerLayer = this.L.layerGroup().addTo(this.map);
 
@@ -79,26 +82,12 @@ export class Map implements AfterViewInit, OnChanges {
 
       this.userLatLng = [location.latitude, location.longitude];
 
-      this.map.setView(this.userLatLng, 16);
-
-      if (this.userMarker) {
-        this.map.removeLayer(this.userMarker);
-      }
-
-      if (this.accuracyCircle) {
-        this.map.removeLayer(this.accuracyCircle);
-      }
-
-      this.userMarker = this.L.marker(this.userLatLng)
+      this.L.marker(this.userLatLng)
         .addTo(this.map)
         .bindPopup('Tú estás aquí');
 
-      this.accuracyCircle = this.L.circle(this.userLatLng, {
-        radius: location.accuracy,
-      }).addTo(this.map);
-
       this.adjustView();
-    } catch (error) {
+    } catch {
       this.adjustView();
     }
   }
@@ -109,10 +98,9 @@ export class Map implements AfterViewInit, OnChanges {
     this.markerLayer.clearLayers();
 
     this.points.forEach((p) => {
-      const marker = this.L.marker([p.lat, p.lng])
-        .bindPopup(p.name);
-
-      this.markerLayer.addLayer(marker);
+      this.L.marker([p.lat, p.lng])
+        .bindPopup(p.name)
+        .addTo(this.markerLayer);
     });
 
     this.adjustView();
