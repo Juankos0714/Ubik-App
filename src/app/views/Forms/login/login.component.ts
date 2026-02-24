@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { Inputcomponent } from '../../../components/input/input';
 import { AuthService } from '../../../core/middleware/auth.service';
 import { Button01 } from '../../../components/button-01/button-01';
+import { validateLoginForm } from './utils/login-validation.utils';
 
 @Component({
   selector: 'app-login',
@@ -66,7 +67,11 @@ export class LoginComponent {
   onFormSubmit(): void {
     const data = this.formData();
 
-    if (!data.username || !data.password) {
+    // ✅ 1) Validación front: llena errores por campo
+    const validationErrors = validateLoginForm(data);
+    this.errors.set(validationErrors);
+
+    if (validationErrors.length > 0) {
       return;
     }
 
@@ -75,31 +80,49 @@ export class LoginComponent {
     this.loginService
       .login(
         {
-          username: data.username,
-          password: data.password,
+          username: data.username!, // ya pasó validación
+          password: data.password!,
         },
         this.rememberMe(),
       )
       .subscribe({
         next: () => {
-          // 🔥 ahora pedimos el perfil
           this.loginService.getProfile().subscribe({
             next: () => {
               this.isSubmitting.set(false);
+              this.errors.set([]); // ✅ limpia errores al éxito
               this.router.navigate(['/']);
             },
             error: (err: any) => {
               console.error('Error cargando perfil', err);
               this.isSubmitting.set(false);
+              this.errors.set([
+                { field: 'form', message: 'Iniciaste sesión, pero no se pudo cargar tu perfil.' },
+              ]);
             },
           });
         },
         error: (err: any) => {
           console.error('Error login', err);
           this.isSubmitting.set(false);
+
+          // ✅ 2) Error backend (fallback seguro)
+          const status = err?.status;
+          const apiMsg = err?.error?.message || err?.message;
+
+          // Si tu API NO diferencia usuario/password (lo normal), muestra genérico:
+          const msg =
+            status === 401 || status === 403
+              ? 'Usuario o contraseña incorrectos'
+              : apiMsg || 'Ocurrió un error al iniciar sesión';
+
+          this.errors.set([{ field: 'form', message: msg }]);
+
+          // Si quieres que salga debajo de contraseña en vez de arriba:
+          // this.errors.set([{ field: 'password', message: msg }]);
         },
       });
-  }
+    }
   /* =======================
      ERRORS
      ======================= */
