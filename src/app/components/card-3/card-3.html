@@ -12,7 +12,7 @@
         {{ card.location }}, {{ card.adress }}
       </p>
 
-      <p class="text-sm text-gray-400">Hab: {{ card.numberHab }} · {{ card.type }}</p>
+      <p class="text-sm text-gray-400">Hab: {{ card.numberHab }} · {{ card.title }}</p>
 
       <div class="flex flex-wrap gap-3 text-sm mt-1">
         @for (service of services; track service.id) {
@@ -31,7 +31,6 @@
     <span class="font-bold text-red-600">
       {{ card.price | currency: 'COP' }}
     </span>
-    <span class="text-sm text-gray-300"> Por {{ card.hours }} Horas </span>
   </div>
   <p class="text-sm text-gray-400 line-clamp-2">{{ card.descripcion }}</p>
 

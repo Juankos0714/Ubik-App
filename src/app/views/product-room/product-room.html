@@ -9,7 +9,7 @@
     <nav class="text-sm text-gray-300 mb-4">
       <a class="hover:underline" routerLink="/explore">Explorar</a>
       <span class="px-2">/</span>
-      <span class="text-white">Habitación {{ room.num_or_name }}</span>
+      <span class="text-white">Habitación {{ room.number }}</span>
     </nav>
 
     <div class="bg-white/3 rounded-xl p-6 lg:p-8 grid gap-6 lg:grid-cols-3">
@@ -18,23 +18,23 @@
         <!-- Images carousel -->
         <div class="rounded-lg overflow-hidden bg-black/20">
           <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide p-4">
-            <ng-container *ngIf="room.photos?.length; else noPhotos">
-              <img
-                *ngFor="let photo of room.photos"
-                [src]="photo.url"
-                alt="{{ 'Imagen habitación ' + room.num_or_name }}"
-                title="{{ 'Imagen habitación ' + room.num_or_name }}"
-                class="w-[320px] sm:w-[420px] md:w-[520px] h-60 md:h-72 object-cover rounded-lg shrink-0 snap-center"
-              />
-            </ng-container>
-            <ng-template #noPhotos>
+            @if (room.imageUrls && room.imageUrls.length > 0) {
+              @for (photo of room.imageUrls; track $index) {
+                <img
+                  [src]="photo"
+                  [alt]="'Imagen habitación ' + room.number"
+                  [title]="'Imagen habitación ' + room.number"
+                  class="w-[320px] sm:w-[420px] md:w-[520px] h-60 md:h-72 object-cover rounded-lg shrink-0 snap-center"
+                />
+              }
+            } @else {
               <img
                 src="./assets/images/ubikLogo.jpg"
                 alt="Imagen por defecto"
                 title="Imagen por defecto"
                 class="w-full h-72 object-cover rounded-lg"
               />
-            </ng-template>
+            }
           </div>
         </div>
 
@@ -42,22 +42,21 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 class="text-2xl sm:text-3xl font-semibold">
-              {{ room.room_type }} — {{ room.num_or_name }}
+              {{ room.roomType }} — {{ room.number }}
             </h1>
-            <p class="text-sm text-gray-300 mt-1">{{ room.city }} • {{ room.address }}</p>
+            <p class="text-sm text-gray-300 mt-1">{{ room.motelCity }} • {{ room.motelAddress }}</p>
           </div>
 
           <div class="flex items-center gap-4">
-            <div class="text-right">
-              <div class="text-2xl font-bold">${{ room.price }}</div>
-              <div class="text-sm text-gray-300">por {{ room.hours }} hora(s)</div>
-            </div>
             <div
               class="px-3 py-1 rounded-full text-sm font-medium"
               [ngClass]="room.isAvailable ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-200'"
             >
-              <span *ngIf="room.isAvailable">Disponible</span>
-              <span *ngIf="!room.isAvailable">No disponible</span>
+              @if(room.isAvailable){
+                <span >Disponible</span>
+              }@else if(!room.isAvailable){
+                <span>No disponible</span>
+              }
             </div>
           </div>
         </div>
@@ -72,17 +71,16 @@
         <section class="bg-white/5 rounded-lg p-4">
           <h3 class="font-semibold mb-3">Servicios</h3>
           <div class="flex flex-wrap gap-2">
-            <ng-container *ngIf="room.services && room.services.length; else noServices">
-              <span
-                *ngFor="let svc of room.services"
-                class="px-3 py-1 bg-white/6 rounded-full text-sm"
-              >
-                {{ svc?.service_id?.[0]?.name ?? 'Servicio' }}
-              </span>
-            </ng-container>
-            <ng-template #noServices>
+            @if (room.serviceIds && room.serviceIds.length) {
+              @for (svc of room.serviceIds; track $index) {
+                <span class="px-3 py-1 bg-white/6 rounded-full text-sm">
+                  <!-- {{ svc?.service_id?.[0]?.name ?? 'Servicio' }} -->
+                    servicio
+                </span>
+              }
+            } @else {
               <span class="text-gray-400">Sin servicios listados</span>
-            </ng-template>
+            }
           </div>
         </section>
       </div>
@@ -93,7 +91,6 @@
           <div class="flex items-baseline justify-between">
             <div>
               <div class="text-3xl font-bold">${{ room.price }}</div>
-              <div class="text-sm text-gray-300">por {{ room.hours }} hora(s)</div>
             </div>
           </div>
 
@@ -106,9 +103,9 @@
           </div>
 
           <div class="mt-4 text-sm text-gray-300">
-            <div><strong>Dirección:</strong> {{ room.address }}</div>
-            <div class="mt-1"><strong>Ciudad:</strong> {{ room.city }}</div>
-            <div class="mt-1"><strong>Horas:</strong> {{ room.hours }}</div>
+            <div><strong>Dirección:</strong> {{ room.motelAddress }}</div>
+            <div class="mt-1"><strong>Ciudad:</strong> {{ room.motelCity }}</div>
+            <div class="mt-1"><strong>Horas:</strong> </div>
           </div>
         </div>
 
@@ -121,7 +118,7 @@
 
         <div class="p-4 rounded-lg bg-white/5">
           <h4 class="font-semibold mb-2">Contacto del motel</h4>
-          <p class="text-sm text-gray-300">Teléfono: --</p>
+          <p class="text-sm text-gray-300">Teléfono: {{ room.motelPhoneNumber }}</p>
         </div>
       </aside>
     </div>
