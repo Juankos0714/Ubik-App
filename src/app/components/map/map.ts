@@ -25,7 +25,6 @@ export interface MapPoint {
   styleUrls: ['./map.css'],
 })
 export class Map implements AfterViewInit, OnChanges {
-
   @Input() points: MapPoint[] = [];
   @Input() active?: MapPoint | null = null;
 
@@ -36,13 +35,17 @@ export class Map implements AfterViewInit, OnChanges {
   private markerLayer!: any;
   private userMarker!: any;
   private accuracyCircle!: any;
+  private userLatLng?: [number, number];
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.L = await import('leaflet');
 
-    this.map = this.L.map('map');
+    this.map = this.L.map('map', {
+      center: [4.6, -74.1],
+      zoom: 6,
+    });
 
     this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -50,8 +53,11 @@ export class Map implements AfterViewInit, OnChanges {
 
     this.markerLayer = this.L.layerGroup().addTo(this.map);
 
-    setTimeout(() => this.map.invalidateSize(), 300);
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 500);
 
+    this.renderMarkers();
     this.initializeLocation();
   }
 
@@ -67,63 +73,36 @@ export class Map implements AfterViewInit, OnChanges {
     }
   }
 
-  // ======================================
-  // 📍 GEOLOCALIZACIÓN CON DEBUG Y ALERTA
-  // ======================================
   private async initializeLocation() {
     try {
       const location = await getUserLocation();
 
-      console.log('📍 LAT:', location.latitude);
-      console.log('📍 LNG:', location.longitude);
-      console.log('🎯 ACCURACY:', location.accuracy, 'metros');
+      this.userLatLng = [location.latitude, location.longitude];
 
-      // ⚠️ Advertencia si precisión es mala
-      if (location.accuracy > 1000) {
-        console.warn(
-          '⚠️ Ubicación poco precisa (posiblemente por IP). ' +
-          'Prueba desde móvil o activa GPS para mayor exactitud.'
-        );
-      }
+      this.map.setView(this.userLatLng, 16);
 
-      this.map.setView([location.latitude, location.longitude], 16);
-
-      // Remover marcador anterior si existe
       if (this.userMarker) {
         this.map.removeLayer(this.userMarker);
       }
 
-      // Remover círculo anterior si existe
       if (this.accuracyCircle) {
         this.map.removeLayer(this.accuracyCircle);
       }
 
-      // 🔵 Marcador usuario
-      this.userMarker = this.L.marker([
-        location.latitude,
-        location.longitude,
-      ])
+      this.userMarker = this.L.marker(this.userLatLng)
         .addTo(this.map)
-        .bindPopup('Tú estás aquí')
-        .openPopup();
+        .bindPopup('Tú estás aquí');
 
-      // 🔵 Círculo de precisión
-      this.accuracyCircle = this.L.circle(
-        [location.latitude, location.longitude],
-        {
-          radius: location.accuracy,
-        }
-      ).addTo(this.map);
+      this.accuracyCircle = this.L.circle(this.userLatLng, {
+        radius: location.accuracy,
+      }).addTo(this.map);
 
+      this.adjustView();
     } catch (error) {
-      console.warn('❌ Geolocalización falló:', error);
       this.adjustView();
     }
   }
 
-  // ===============================
-  // 🏨 MARCADORES
-  // ===============================
   private renderMarkers() {
     if (!this.markerLayer) return;
 
@@ -135,21 +114,32 @@ export class Map implements AfterViewInit, OnChanges {
 
       this.markerLayer.addLayer(marker);
     });
+
+    this.adjustView();
   }
 
-  // ===============================
-  // 🎯 FALLBACK
-  // ===============================
   private adjustView() {
-    if (!this.points.length) {
+    const allPoints: [number, number][] = [];
+
+    this.points.forEach((p) => {
+      allPoints.push([p.lat, p.lng]);
+    });
+
+    if (this.userLatLng) {
+      allPoints.push(this.userLatLng);
+    }
+
+    if (!allPoints.length) {
       this.map.setView([4.6, -74.1], 6);
       return;
     }
 
-    const bounds = this.L.latLngBounds(
-      this.points.map((p) => [p.lat, p.lng])
-    );
+    if (allPoints.length === 1) {
+      this.map.setView(allPoints[0], 16);
+      return;
+    }
 
+    const bounds = this.L.latLngBounds(allPoints);
     this.map.fitBounds(bounds, { padding: [50, 50] });
   }
 }

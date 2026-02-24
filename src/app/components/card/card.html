@@ -1,14 +1,13 @@
 <div class="shrink-0 w-60 sm:w-64 md:w-72 bg-[#1e2128] rounded-2xl overflow-hidden shadow-lg">
   <img
-    [src]="card.photos?.[0]?.url ?? './assets/images/ubikLogo.jpg'"
-    [alt]="card.room_type"
+    [src]="card.imageUrls[0] ?? './assets/images/ubikLogo.jpg'"
+    [alt]="card.roomType"
     class="w-full h-40 object-cover"
-    alt=""
   />
 
   <div class="p-4">
     <h2 class="text-white font-bold mb-1">
-      {{ card.room_type }}
+      {{ card.roomType }}
     </h2>
 
     @if (showDescription) {
@@ -24,6 +23,7 @@
         [id]="card.id"
         action="reservar"
       ></app-button-01>
+
       <app-button-02
         text="Ver más"
         [routerLink]="'/roominfo'"
