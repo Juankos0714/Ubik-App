@@ -35,9 +35,19 @@ export class UsersService {
   updateProfile(dto: UpdateUserProfileDto): Observable<Users> {
     if (!isPlatformBrowser(this.platformId)) return EMPTY;
 
-    return this.http.patch<Users>(this.baseUrl, dto).pipe(
+    return this.http.put<Users>(this.baseUrl, dto).pipe(
       tap(updated => this.profileSubject.next(updated))
     );
+  }
+
+  deleteProfile(): Observable<void> {
+    if (!isPlatformBrowser(this.platformId)) return EMPTY;  
+
+    return this.http.delete<void>(this.baseUrl);
+  }
+
+  clearProfile() {
+    this.profileSubject.next(null);
   }
 
   /** Por si quieres forzar refresh manual */
