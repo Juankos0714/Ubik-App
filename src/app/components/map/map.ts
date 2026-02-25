@@ -44,6 +44,14 @@ export class Map implements AfterViewInit, OnChanges {
 
     this.map = this.L.map('map');
 
+    delete (this.L.Icon.Default.prototype as any)._getIconUrl;
+
+  this.L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'assets/icons/leaflet/marker-icon-2x.png',
+    iconUrl: 'assets/icons/leaflet/marker-icon.png',
+    shadowUrl: 'assets/icons/leaflet/marker-shadow.png',
+  });
+
     this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
