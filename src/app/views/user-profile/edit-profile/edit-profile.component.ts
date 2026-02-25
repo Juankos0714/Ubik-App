@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { filter, switchMap, take, tap, catchError, of, finalize } from 'rxjs';
+import { AuthService } from '../../../core/middleware/auth.service';
 
 import { UsersService, UpdateUserProfileDto } from '../../../core/services/user.service';
 import { Users } from '../../../core/models/users.model';
@@ -19,6 +20,7 @@ export class EditProfileComponent {
   private usersService = inject(UsersService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private AuthService = inject(AuthService);
 
   loading = true;
   saving = false;
@@ -151,8 +153,7 @@ export class EditProfileComponent {
         // ✅ limpia cache del perfil en el front
         this.usersService.clearProfile();
 
-        // 🔐 si tienes un AuthService/logout, llámalo aquí para borrar tokens
-        // this.authService.logout();
+        this.AuthService.logout(); 
 
         this.router.navigate(['/login']);
       });
