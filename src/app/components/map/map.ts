@@ -6,6 +6,8 @@ import {
   PLATFORM_ID,
   OnChanges,
   SimpleChanges,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { getUserLocation } from './geolocation';
@@ -25,24 +27,34 @@ export interface MapPoint {
   styleUrls: ['./map.css'],
 })
 export class Map implements AfterViewInit, OnChanges {
-
   @Input() points: MapPoint[] = [];
-  @Input() active?: MapPoint | null = null;
+  @Input() active: MapPoint | null = null;
+
+  @ViewChild('mapContainer', { static: false })
+  mapContainer!: ElementRef<HTMLDivElement>;
 
   private platformId = inject(PLATFORM_ID);
 
-  private map!: any;
-  private L!: any;
-  private markerLayer!: any;
-  private userMarker!: any;
-  private accuracyCircle!: any;
+  private map!: import('leaflet').Map;
+  private L!: typeof import('leaflet');
+  private markerLayer!: import('leaflet').LayerGroup;
+  private userLatLng?: [number, number];
+
+  /* =========================
+     INIT
+  ========================== */
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.L = await import('leaflet');
+    // Import dinámico correcto para SSR
+    const leaflet = await import('leaflet');
+    this.L = (leaflet as any).default ?? leaflet;
 
-    this.map = this.L.map('map');
+    this.map = this.L.map(this.mapContainer.nativeElement, {
+      center: [4.6, -74.1],
+      zoom: 6,
+    });
 
     delete (this.L.Icon.Default.prototype as any)._getIconUrl;
 
@@ -55,13 +67,26 @@ export class Map implements AfterViewInit, OnChanges {
     this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
+    this.L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        attribution: '© OpenStreetMap contributors',
+      }
+    ).addTo(this.map);
 
     this.markerLayer = this.L.layerGroup().addTo(this.map);
 
-    setTimeout(() => this.map.invalidateSize(), 300);
+    setTimeout(() => {
+      this.map.invalidateSize();
+    });
 
+    this.renderMarkers();
     this.initializeLocation();
   }
+
+  /* =========================
+     INPUT CHANGES
+  ========================== */
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.map) return;
@@ -75,89 +100,68 @@ export class Map implements AfterViewInit, OnChanges {
     }
   }
 
-  // ======================================
-  // 📍 GEOLOCALIZACIÓN CON DEBUG Y ALERTA
-  // ======================================
+  /* =========================
+     USER LOCATION
+  ========================== */
+
   private async initializeLocation() {
     try {
       const location = await getUserLocation();
 
-      console.log('📍 LAT:', location.latitude);
-      console.log('📍 LNG:', location.longitude);
-      console.log('🎯 ACCURACY:', location.accuracy, 'metros');
+      this.userLatLng = [location.latitude, location.longitude];
 
-      // ⚠️ Advertencia si precisión es mala
-      if (location.accuracy > 1000) {
-        console.warn(
-          '⚠️ Ubicación poco precisa (posiblemente por IP). ' +
-          'Prueba desde móvil o activa GPS para mayor exactitud.'
-        );
-      }
-
-      this.map.setView([location.latitude, location.longitude], 16);
-
-      // Remover marcador anterior si existe
-      if (this.userMarker) {
-        this.map.removeLayer(this.userMarker);
-      }
-
-      // Remover círculo anterior si existe
-      if (this.accuracyCircle) {
-        this.map.removeLayer(this.accuracyCircle);
-      }
-
-      // 🔵 Marcador usuario
-      this.userMarker = this.L.marker([
-        location.latitude,
-        location.longitude,
-      ])
+      this.L.marker(this.userLatLng)
         .addTo(this.map)
-        .bindPopup('Tú estás aquí')
-        .openPopup();
+        .bindPopup('Tú estás aquí');
 
-      // 🔵 Círculo de precisión
-      this.accuracyCircle = this.L.circle(
-        [location.latitude, location.longitude],
-        {
-          radius: location.accuracy,
-        }
-      ).addTo(this.map);
-
-    } catch (error) {
-      console.warn('❌ Geolocalización falló:', error);
+      this.adjustView();
+    } catch {
       this.adjustView();
     }
   }
 
-  // ===============================
-  // 🏨 MARCADORES
-  // ===============================
+  /* =========================
+     MARKERS
+  ========================== */
+
   private renderMarkers() {
     if (!this.markerLayer) return;
 
     this.markerLayer.clearLayers();
 
-    this.points.forEach((p) => {
-      const marker = this.L.marker([p.lat, p.lng])
-        .bindPopup(p.name);
+    for (const p of this.points) {
+      this.L.marker([p.lat, p.lng])
+        .bindPopup(p.name)
+        .addTo(this.markerLayer);
+    }
 
-      this.markerLayer.addLayer(marker);
-    });
+    this.adjustView();
   }
 
-  // ===============================
-  // 🎯 FALLBACK
-  // ===============================
+  /* =========================
+     VIEW ADJUSTMENT
+  ========================== */
+
   private adjustView() {
-    if (!this.points.length) {
+    if (!this.map) return;
+
+    const allPoints: [number, number][] = this.points.map(p => [p.lat, p.lng]);
+
+    if (this.userLatLng) {
+      allPoints.push(this.userLatLng);
+    }
+
+    if (allPoints.length === 0) {
       this.map.setView([4.6, -74.1], 6);
       return;
     }
 
-    const bounds = this.L.latLngBounds(
-      this.points.map((p) => [p.lat, p.lng])
-    );
+    if (allPoints.length === 1) {
+      this.map.setView(allPoints[0], 16);
+      return;
+    }
 
+    const bounds = this.L.latLngBounds(allPoints);
     this.map.fitBounds(bounds, { padding: [50, 50] });
   }
 }

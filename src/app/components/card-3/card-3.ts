@@ -7,14 +7,12 @@ export interface Card3Informacion {
   id: number;
   motelId: number;
   numberHab: string;
-  type: string;
+  title: string;       
   descripcion: string;
   image: string;
-  title: string;
-  location: string;
-  adress: string;
+  location: string;   
+  adress: string;      
   price: number;
-  hours: number;
   lat?: number;
   lng?: number;
 }
@@ -34,13 +32,3 @@ export class Card3 {
     icon: string;
   }[] = [];
 }
-//   [motelId]="card.motelId"
-//               [numberHab]="card.numberHab"
-//               [type]="card.type"
-//               [descripcion]="card.descripcion"
-//               [image]="card.image"
-//               [title]="card.title"
-//               [location]="card.location"
-//               [adress]="card.adress"
-//               [price]="card.price"
-//               [hours]="card.hours"

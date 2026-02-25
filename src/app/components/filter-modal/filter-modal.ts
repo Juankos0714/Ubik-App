@@ -1,7 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogRef } from '@angular/cdk/dialog';
-import { RoomService } from '../../core/services/room.service';
+
+export interface ExploreFilters {
+  priceMin: number | null;
+  priceMax: number | null;
+  roomTypes: string[];
+  cities: string[];
+  onlyAvailable: boolean;
+  serviceIds: number[];
+  sortBy: 'priceAsc' | 'priceDesc' | null;
+}
 
 @Component({
   selector: 'app-filter-modal',
@@ -10,39 +19,82 @@ import { RoomService } from '../../core/services/room.service';
   templateUrl: './filter-modal.html',
 })
 export class FilterModal {
-  private dialog = inject(DialogRef<any>);
-  private roomService = inject(RoomService);
+  private dialog = inject(DialogRef<ExploreFilters>);
 
-  services: { id: number; name: string }[] = [];
-  categories: { id: number; name: string }[] = [];
-  locations: { id: number; city: string }[] = [];
+  @Input() roomTypes: string[] = [];
+  @Input() cities: string[] = [];
+  @Input() services: { id: number; name: string }[] = [];
 
-  filters = {
-    priceMax: 50000,
+  filters: ExploreFilters = {
+    priceMin: null,
+    priceMax: null,
+    roomTypes: [],
+    cities: [],
+    onlyAvailable: false,
+    serviceIds: [],
+    sortBy: null,
   };
-
-  constructor() {
-    // placeholder - could fetch filter options from RoomService
-  }
 
   close() {
     this.dialog.close();
   }
 
-  onFeatureChange(_e: Event) {}
-  onCategoryChange(_e: Event) {}
-  onLocationChange(_e: Event) {}
-  onPriceChange(e: Event) {
-    const v = Number((e.target as HTMLInputElement).value || 0);
-    this.filters.priceMax = v;
+  toggleArrayValue(array: any[], value: any) {
+    const index = array.indexOf(value);
+    if (index >= 0) {
+      array.splice(index, 1);
+    } else {
+      array.push(value);
+    }
+  }
+
+  onRoomTypeChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    this.toggleArrayValue(this.filters.roomTypes, value);
+  }
+
+  onCityChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    this.toggleArrayValue(this.filters.cities, value);
+  }
+
+  onServiceChange(e: Event) {
+    const value = Number((e.target as HTMLInputElement).value);
+    this.toggleArrayValue(this.filters.serviceIds, value);
+  }
+
+  onPriceMinChange(e: Event) {
+    const v = Number((e.target as HTMLInputElement).value);
+    this.filters.priceMin = v || null;
+  }
+
+  onPriceMaxChange(e: Event) {
+    const v = Number((e.target as HTMLInputElement).value);
+    this.filters.priceMax = v || null;
+  }
+
+  onAvailabilityChange(e: Event) {
+    this.filters.onlyAvailable = (e.target as HTMLInputElement).checked;
+  }
+
+  onSortChange(e: Event) {
+    this.filters.sortBy =
+      ((e.target as HTMLSelectElement).value as any) || null;
   }
 
   reset() {
-    this.filters.priceMax = 50000;
+    this.filters = {
+      priceMin: null,
+      priceMax: null,
+      roomTypes: [],
+      cities: [],
+      onlyAvailable: false,
+      serviceIds: [],
+      sortBy: null,
+    };
   }
 
   apply() {
-    // apply filters (to be implemented)
     this.dialog.close(this.filters);
   }
 }

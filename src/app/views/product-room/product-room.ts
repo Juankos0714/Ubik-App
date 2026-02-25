@@ -19,7 +19,6 @@ export class ProductRoom implements OnInit {
   loading = false;
   error = false;
 
-  // Points to pass to <app-map> (map component expects {lat,lng,name})
   points: { lat: number; lng: number; name: string }[] = [];
 
   ngOnInit(): void {
@@ -35,11 +34,19 @@ export class ProductRoom implements OnInit {
     this.roomService.getRoomById(id).subscribe({
       next: (r: Room) => {
         this.room = r;
-        if (r.lat != null && r.lng != null) {
-          this.points = [{ lat: r.lat, lng: r.lng, name: r.num_or_name }];
+
+        if (r.latitude != null && r.longitude != null) {
+          this.points = [
+            {
+              lat: r.latitude,
+              lng: r.longitude,
+              name: r.motelName,
+            },
+          ];
         } else {
           this.points = [];
         }
+
         this.loading = false;
       },
       error: () => {
