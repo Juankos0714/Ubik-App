@@ -1,62 +1,75 @@
-<aside class="filter bg-gray-800 p-4 rounded-lg text-amber-50 relative">
-  <!-- CERRAR -->
+<aside class="filter bg-gray-800 p-4 rounded-lg text-amber-50 relative max-h-[80vh] overflow-y-auto">
   <button class="absolute top-2 right-2 text-xl" (click)="close()">✕</button>
-
-  <!-- SERVICIOS -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Servicios</h3>
-    @for (feat of services; track feat.id) {
-      <label class="flex gap-2 mb-2">
-        <input type="checkbox" [value]="feat.id" (change)="onFeatureChange($event)" />
-        {{ feat.name }}
-      </label>
-    }
-  </section>
-
-  <!-- CATEGORÍAS -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Categorías</h3>
-    @for (category of categories; track category.id) {
-      <label class="flex gap-2 mb-2">
-        <input type="checkbox" [value]="category.id" (change)="onCategoryChange($event)" />
-        {{ category.name }}
-      </label>
-    }
-  </section>
-
-  <!-- UBICACIONES -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Ubicación</h3>
-    @for (city of locations; track city.id) {
-      <label class="flex gap-2 mb-2">
-        <input type="checkbox" [value]="city.id" (change)="onLocationChange($event)" />
-        {{ city.city }}
-      </label>
-    }
-  </section>
 
   <!-- PRECIO -->
   <section class="mb-4">
-    <h3 class="font-semibold mb-2">Precio máximo</h3>
+    <h3 class="font-semibold mb-2">Precio</h3>
+
     <input
-      type="range"
-      min="0"
-      max="50000"
-      step="500"
-      [value]="filters.priceMax"
-      (input)="onPriceChange($event)"
-      title="Precio"
+      type="number"
+      placeholder="Precio mínimo"
+      class="w-full mb-2 px-2 py-1 bg-[#1e2128] rounded"
+      (input)="onPriceMinChange($event)"
     />
-    <!-- Agregado para mostrar el tooltip del valor actual del rango -->
-    <p>$ {{ filters.priceMax | number }}</p>
+
+    <input
+      type="number"
+      placeholder="Precio máximo"
+      class="w-full px-2 py-1 bg-[#1e2128] rounded"
+      (input)="onPriceMaxChange($event)"
+    />
   </section>
 
-  <!-- BOTONES -->
+  <!-- DISPONIBILIDAD -->
+  <section class="mb-4">
+    <label class="flex gap-2">
+      <input type="checkbox" (change)="onAvailabilityChange($event)" />
+      Solo disponibles
+    </label>
+  </section>
+
+  <!-- TIPOS -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Tipo de habitación</h3>
+    @for (type of roomTypes; track type) {
+      <label class="flex gap-2 mb-1">
+        <input type="checkbox" [value]="type" (change)="onRoomTypeChange($event)" />
+        {{ type }}
+      </label>
+    }
+  </section>
+
+  <!-- CIUDADES -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Ciudad</h3>
+    @for (city of cities; track city) {
+      <label class="flex gap-2 mb-1">
+        <input type="checkbox" [value]="city" (change)="onCityChange($event)" />
+        {{ city }}
+      </label>
+    }
+  </section>
+
+  <!-- ORDEN -->
+  <section class="mb-4">
+    <h3 class="font-semibold mb-2">Ordenar por</h3>
+    <select
+      class="w-full px-2 py-1 bg-[#1e2128] rounded"
+      (change)="onSortChange($event)"
+    >
+      <option value="">Sin ordenar</option>
+      <option value="priceAsc">Precio menor a mayor</option>
+      <option value="priceDesc">Precio mayor a menor</option>
+    </select>
+  </section>
+
   <div class="flex justify-between mt-4">
-    <button class="px-4 py-2 bg-gray-600 rounded" (click)="reset()">Reiniciar</button>
+    <button class="px-4 py-2 bg-gray-600 rounded" (click)="reset()">
+      Reiniciar
+    </button>
 
     <button class="px-4 py-2 bg-amber-500 text-black rounded" (click)="apply()">
-      Aplicar filtros
+      Aplicar
     </button>
   </div>
 </aside>

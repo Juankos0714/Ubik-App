@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 
-import { FilterModal } from '../../components/filter-modal/filter-modal';
+import { FilterModal, ExploreFilters } from '../../components/filter-modal/filter-modal';
 import { Button02 } from '../../components/button-02/button-02';
 import { Card3, Card3Informacion } from '../../components/card-3/card-3';
 import { Map, MapPoint } from '../../components/map/map';
@@ -22,15 +22,18 @@ export class Explore implements OnInit {
   private roomService = inject(RoomService);
   private dialog = inject(Dialog);
 
-  allCards: (Card3Informacion & { lat?: number; lng?: number })[] = [];
-  cards: (Card3Informacion & { lat?: number; lng?: number })[] = [];
+  allCards: (Card3Informacion & { lat?: number; lng?: number; isAvailable?: boolean; serviceIds?: number[] })[] = [];
+  cards: typeof this.allCards = [];
   points: MapPoint[] = [];
 
   loading = false;
   error = false;
 
+  roomTypes: string[] = [];
+  cities: string[] = [];
+
   query = signal('');
-  suggestions: (Card3Informacion & { lat?: number; lng?: number })[] = [];
+  suggestions: typeof this.allCards = [];
   activePoint: MapPoint | null = null;
 
   skeletonItems = Array.from({ length: 5 });
@@ -40,7 +43,53 @@ export class Explore implements OnInit {
   }
 
   openModal() {
-    this.dialog.open(FilterModal);
+  const dialogRef = this.dialog.open<ExploreFilters>(FilterModal, {
+    data: {
+      roomTypes: this.roomTypes,
+      cities: this.cities
+    }
+  });
+
+  dialogRef.closed.subscribe((filters) => {
+    if (filters) {
+      this.applyFilters(filters);
+    }
+  });
+}
+
+  applyFilters(filters: ExploreFilters) {
+    let result = [...this.allCards];
+
+    if (filters.priceMin !== null) {
+      result = result.filter(r => r.price >= filters.priceMin!);
+    }
+
+    if (filters.priceMax !== null) {
+      result = result.filter(r => r.price <= filters.priceMax!);
+    }
+
+    if (filters.roomTypes.length) {
+      result = result.filter(r => filters.roomTypes.includes(r.title));
+    }
+
+    if (filters.cities.length) {
+      result = result.filter(r => filters.cities.includes(r.location));
+    }
+
+    if (filters.onlyAvailable) {
+      result = result.filter(r => r.isAvailable);
+    }
+
+    if (filters.sortBy === 'priceAsc') {
+      result.sort((a,b) => a.price - b.price);
+    }
+
+    if (filters.sortBy === 'priceDesc') {
+      result.sort((a,b) => b.price - a.price);
+    }
+
+    this.cards = result;
+    this.points = this.mapPoints(result);
   }
 
   onSearchInput(value: string) {
@@ -48,48 +97,22 @@ export class Explore implements OnInit {
     const q = value.trim().toLowerCase();
 
     if (!q) {
-      this.suggestions = [];
       this.cards = [...this.allCards];
-      this.points = this.mapPoints(this.allCards);
+      this.points = this.mapPoints(this.cards);
       return;
     }
 
-    this.suggestions = this.allCards
-      .filter((c) =>
-        (c.title + ' ' + c.location + ' ' + c.adress)
-          .toLowerCase()
-          .includes(q)
-      )
-      .slice(0, 6);
-
-    this.cards = this.allCards.filter((c) =>
-      (c.title + ' ' + c.location + ' ' + c.adress)
+    const filtered = this.allCards.filter((c) =>
+      (c.title + c.location + c.adress + c.descripcion)
         .toLowerCase()
         .includes(q)
     );
 
-    this.points = this.mapPoints(this.cards);
+    this.cards = filtered;
+    this.points = this.mapPoints(filtered);
   }
 
-  selectSuggestion(s: Card3Informacion & { lat?: number; lng?: number }) {
-    if (s.lat && s.lng) {
-      this.activePoint = {
-        lat: s.lat,
-        lng: s.lng,
-        name: s.title,
-        id: s.id
-      };
-    }
-
-    this.cards = [s];
-    this.points = this.mapPoints([s]);
-    this.suggestions = [];
-  }
-
-  private mapPoints(
-    cards: (Card3Informacion & { lat?: number; lng?: number })[]
-  ): MapPoint[] {
-
+  private mapPoints(cards: typeof this.allCards): MapPoint[] {
     return cards
       .filter((c) => c.lat !== undefined && c.lng !== undefined)
       .map((c) => ({
@@ -106,6 +129,9 @@ export class Explore implements OnInit {
     this.roomService.getRooms().subscribe({
       next: (rooms: Room[]) => {
 
+        this.roomTypes = [...new Set(rooms.map(r => r.roomType))];
+        this.cities = [...new Set(rooms.map(r => r.motelCity))];
+
         this.allCards = rooms.map((room) => ({
           id: room.id,
           motelId: room.motelId,
@@ -118,10 +144,13 @@ export class Explore implements OnInit {
           price: room.price,
           lat: room.latitude,
           lng: room.longitude,
+          isAvailable: room.isAvailable,
+          serviceIds: room.serviceIds,
         }));
 
         this.cards = [...this.allCards];
         this.points = this.mapPoints(this.allCards);
+
         this.loading = false;
       },
       error: () => {
