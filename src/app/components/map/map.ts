@@ -48,7 +48,8 @@ export class Map implements AfterViewInit, OnChanges {
     if (!isPlatformBrowser(this.platformId)) return;
 
     // Import dinámico correcto para SSR
-    this.L = await import('leaflet');
+    const leaflet = await import('leaflet');
+    this.L = (leaflet as any).default ?? leaflet;
 
     this.map = this.L.map(this.mapContainer.nativeElement, {
       center: [4.6, -74.1],
