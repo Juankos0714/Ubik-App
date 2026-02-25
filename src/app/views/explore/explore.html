@@ -19,7 +19,7 @@
     </div>
 
     <section class="results flex flex-col gap-6 sm:gap-10 w-full flex-1 overflow-y-auto">
-      @if (suggestions.length) {
+      <!-- @if (suggestions.length) {
         <div class="px-4">
           <ul class="bg-[#111213] rounded shadow p-2 max-w-md">
             @for (s of suggestions; track s.id) {
@@ -32,7 +32,7 @@
             }
           </ul>
         </div>
-      }
+      } -->
 
       @if (loading) {
         @for (_ of skeletonItems; track $index) {
