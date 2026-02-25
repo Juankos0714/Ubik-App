@@ -25,8 +25,8 @@ import { RegisterSelect } from './views/Forms/register/register-select/register-
 import { ProductRoom } from './views/product-room/product-room';
 import { RegisterOwner } from './views/Forms/register/registes-user-owner/register-owner';
 
-import { PropertyUserComponent } from './components/List-motels/property-user.component';
 import { EditProfileComponent } from './views/user-profile/edit-profile/edit-profile.component';
+import { PropertyUserComponent } from './components/List-motels/property-user.component';
 
 
 export const routes: Routes = [
@@ -48,7 +48,7 @@ export const routes: Routes = [
   { path: 'create-motel', component: CreateMotelComponent },
 
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  // { path: 'listProperty', component: PropertyUserComponent },
+  { path: 'listProperty', component: PropertyUserComponent },
   { path: 'roominfo', component: ProductRoom },
 
   /**==== PERFILES DE USURIOS ====== */

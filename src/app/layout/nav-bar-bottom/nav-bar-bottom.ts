@@ -25,7 +25,7 @@ const ROUTES = {
   REGISTER: '/select-register',
   PROPERTY: '/listProperty',
   PROFILE: '/userProfile',
-  OWNER: '/',
+  OWNER: '/listProperty',
   ADMIN: '/',
 };
 
