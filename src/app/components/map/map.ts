@@ -40,6 +40,12 @@ export class Map implements AfterViewInit, OnChanges {
   private markerLayer!: import('leaflet').LayerGroup;
   private userLatLng?: [number, number];
 
+  // 🔥 Iconos personalizados
+  private userIcon!: import('leaflet').Icon;
+  private motelIcon!: import('leaflet').Icon;
+
+  private readonly MAX_DISTANCE_KM = 2;
+
   /* =========================
      INIT
   ========================== */
@@ -47,41 +53,39 @@ export class Map implements AfterViewInit, OnChanges {
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Import dinámico correcto para SSR
     const leaflet = await import('leaflet');
     this.L = (leaflet as any).default ?? leaflet;
 
     this.map = this.L.map(this.mapContainer.nativeElement, {
       center: [4.6, -74.1],
-      zoom: 6,
+      zoom: 13,
     });
-
-    delete (this.L.Icon.Default.prototype as any)._getIconUrl;
-
-  this.L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'assets/icons/leaflet/marker-icon-2x.png',
-    iconUrl: 'assets/icons/leaflet/marker-icon.png',
-    shadowUrl: 'assets/icons/leaflet/marker-shadow.png',
-  });
 
     this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
-    this.L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      {
-        attribution: '© OpenStreetMap contributors',
-      }
-    ).addTo(this.map);
 
     this.markerLayer = this.L.layerGroup().addTo(this.map);
 
-    setTimeout(() => {
-      this.map.invalidateSize();
+    // 🔥 Crear iconos personalizados
+    this.userIcon = this.L.icon({
+      iconUrl: 'assets/icons/leaflet/icon_person.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32],
     });
 
+    this.motelIcon = this.L.icon({
+      iconUrl: 'assets/icons/leaflet/icon_motel.png',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36],
+    });
+
+    setTimeout(() => this.map.invalidateSize());
+
+    await this.initializeLocation();
     this.renderMarkers();
-    this.initializeLocation();
   }
 
   /* =========================
@@ -110,13 +114,13 @@ export class Map implements AfterViewInit, OnChanges {
 
       this.userLatLng = [location.latitude, location.longitude];
 
-      this.L.marker(this.userLatLng)
+      this.L.marker(this.userLatLng, { icon: this.userIcon })
         .addTo(this.map)
         .bindPopup('Tú estás aquí');
 
-      this.adjustView();
+      this.map.setView(this.userLatLng, 14);
     } catch {
-      this.adjustView();
+      console.warn('No se pudo obtener ubicación');
     }
   }
 
@@ -129,35 +133,77 @@ export class Map implements AfterViewInit, OnChanges {
 
     this.markerLayer.clearLayers();
 
-    for (const p of this.points) {
-      this.L.marker([p.lat, p.lng])
+    let visiblePoints = this.points;
+
+    // 🔥 Filtrar por distancia si hay usuario
+    if (this.userLatLng) {
+      visiblePoints = this.points.filter(p => {
+        const distance = this.getDistanceKm(
+          this.userLatLng![0],
+          this.userLatLng![1],
+          p.lat,
+          p.lng
+        );
+        return distance <= this.MAX_DISTANCE_KM;
+      });
+    }
+
+    for (const p of visiblePoints) {
+      this.L.marker([p.lat, p.lng], { icon: this.motelIcon })
         .bindPopup(p.name)
         .addTo(this.markerLayer);
     }
 
-    this.adjustView();
+    this.adjustView(visiblePoints);
+  }
+
+  /* =========================
+     DISTANCE CALCULATION
+     Haversine Formula
+  ========================== */
+
+  private getDistanceKm(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6371; // radio tierra km
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) *
+        Math.cos(this.deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  private deg2rad(deg: number) {
+    return deg * (Math.PI / 180);
   }
 
   /* =========================
      VIEW ADJUSTMENT
   ========================== */
 
-  private adjustView() {
+  private adjustView(points: MapPoint[]) {
     if (!this.map) return;
 
-    const allPoints: [number, number][] = this.points.map(p => [p.lat, p.lng]);
+    const allPoints: [number, number][] = points.map(p => [p.lat, p.lng]);
 
     if (this.userLatLng) {
       allPoints.push(this.userLatLng);
     }
 
-    if (allPoints.length === 0) {
-      this.map.setView([4.6, -74.1], 6);
-      return;
-    }
+    if (allPoints.length === 0) return;
 
     if (allPoints.length === 1) {
-      this.map.setView(allPoints[0], 16);
+      this.map.setView(allPoints[0], 14);
       return;
     }
 
