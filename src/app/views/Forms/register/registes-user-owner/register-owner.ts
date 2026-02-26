@@ -60,6 +60,16 @@ export class RegisterOwner implements OnInit {
   isSubmitting = false;
   progress = 0;
 
+
+  //location 
+  loading = false;
+  gettingLocation = false;
+  locationStatus: string | null = null;
+
+  error: string | null = null;
+  
+
+
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterServiceOwner,
@@ -81,6 +91,8 @@ export class RegisterOwner implements OnInit {
         password: ['', [Validators.required, Validators.minLength(8)]],
         comfirmPassword: ['', [Validators.required]],
         anonymous: [false],
+        latitude: [null as number | null],
+        longitude: [null as number | null],
       },
       { validators: matchFields('password', 'comfirmPassword') }
     );
@@ -150,6 +162,49 @@ export class RegisterOwner implements OnInit {
     return null;
   }
 
+
+  getUserLocation() {
+    if (!navigator.geolocation) {
+      this.locationStatus = 'Geolocalización no soportada.';
+      return;
+    }
+    this.gettingLocation = true;
+    this.locationStatus = 'Solicitando permiso...';
+    this.error = null;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.gettingLocation = false;
+        const { latitude, longitude } = pos.coords;
+        this.registerForm.patchValue({ latitude, longitude });
+        this.locationStatus = 'Ubicación obtenida.';
+      },
+      (err) => {
+        this.gettingLocation = false;
+        this.locationStatus = null;
+        this.error =
+          err.code === err.PERMISSION_DENIED ? 'Permiso de ubicación denegado.' :
+          err.code === err.POSITION_UNAVAILABLE ? 'Ubicación no disponible.' :
+          err.code === err.TIMEOUT ? 'Timeout obteniendo ubicación.' :
+          'Error obteniendo ubicación.';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  get hasLocation(): boolean {
+    const lat = this.registerForm.get('latitude')?.value;
+    const lng = this.registerForm.get('longitude')?.value;
+    return typeof lat === 'number' && typeof lng === 'number';
+  }
+
+  get locationText(): string {
+    const lat = this.registerForm.get('latitude')?.value;
+    const lng = this.registerForm.get('longitude')?.value;
+    if (typeof lat !== 'number' || typeof lng !== 'number') return '';
+    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+
   onSubmit(): void {
     if (this.isSubmitting) return;
 
@@ -172,8 +227,8 @@ export class RegisterOwner implements OnInit {
       anonymous: false,
       roleId: "3847261094857362",
       birthDate: form.birthDate,
-      latitude: 4.6097,
-      longitude: -74.0721,
+      latitude: form.latitude,
+      longitude: form.longitude,
     };
 
     this.isSubmitting = true;

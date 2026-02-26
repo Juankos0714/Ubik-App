@@ -165,7 +165,7 @@ export class CreateMotelComponent {
       .subscribe({
         next: () => {
           this.loading = false;
-          this.router.navigate(['/my-motels']);
+          this.router.navigate(['/listProperty']);
         },
         error: (err) => {
           this.loading = false;

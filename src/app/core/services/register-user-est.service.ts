@@ -73,8 +73,8 @@ export class RegisterServiceOwner {
       anonymous: data.anonymous ?? false,
       roleId: data.roleId ?? 2,
       birthDate: data.birthDate,
-      latitude: data.latitude ?? 4.6097,
-      longitude: data.longitude ?? -74.0721
+      latitude: data.latitude ,
+      longitude: data.longitude 
     };
 
     console.log('🚀 REGISTER PAYLOAD', payload);
