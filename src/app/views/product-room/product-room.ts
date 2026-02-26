@@ -4,12 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { Map as AppMap } from '../../components/map/map';
+import { Button01 } from "../../components/button-01/button-01";
 
 @Component({
   selector: 'app-product-room',
   standalone: true,
   templateUrl: './product-room.html',
-  imports: [CommonModule, AppMap],
+  imports: [CommonModule, AppMap, Button01],
 })
 export class ProductRoom implements OnInit {
   private roomService = inject(RoomService);

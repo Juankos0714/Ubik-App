@@ -27,6 +27,7 @@ export interface MapPoint {
   styleUrls: ['./map.css'],
 })
 export class Map implements AfterViewInit, OnChanges {
+
   @Input() points: MapPoint[] = [];
   @Input() active: MapPoint | null = null;
 
@@ -40,11 +41,8 @@ export class Map implements AfterViewInit, OnChanges {
   private markerLayer!: import('leaflet').LayerGroup;
   private userLatLng?: [number, number];
 
-  // 🔥 Iconos personalizados
   private userIcon!: import('leaflet').Icon;
   private motelIcon!: import('leaflet').Icon;
-
-  private readonly MAX_DISTANCE_KM = 2;
 
   /* =========================
      INIT
@@ -67,17 +65,16 @@ export class Map implements AfterViewInit, OnChanges {
 
     this.markerLayer = this.L.layerGroup().addTo(this.map);
 
-    // 🔥 Crear iconos personalizados
     this.userIcon = this.L.icon({
       iconUrl: 'assets/icons/leaflet/icon_person.png',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
+      iconSize: [25, 32],
+      iconAnchor: [18, 36],
       popupAnchor: [0, -32],
     });
 
     this.motelIcon = this.L.icon({
       iconUrl: 'assets/icons/leaflet/icon_motel.png',
-      iconSize: [36, 36],
+      iconSize: [27, 36],
       iconAnchor: [18, 36],
       popupAnchor: [0, -36],
     });
@@ -85,7 +82,11 @@ export class Map implements AfterViewInit, OnChanges {
     setTimeout(() => this.map.invalidateSize());
 
     await this.initializeLocation();
-    this.renderMarkers();
+
+    // 🔥 Si ya había puntos antes de que el mapa terminara de cargar
+    if (this.points.length) {
+      this.renderMarkers();
+    }
   }
 
   /* =========================
@@ -117,84 +118,34 @@ export class Map implements AfterViewInit, OnChanges {
       this.L.marker(this.userLatLng, { icon: this.userIcon })
         .addTo(this.map)
         .bindPopup('Tú estás aquí');
-
-      this.map.setView(this.userLatLng, 14);
     } catch {
       console.warn('No se pudo obtener ubicación');
     }
   }
 
-  /* =========================
-     MARKERS
-  ========================== */
-
   private renderMarkers() {
     if (!this.markerLayer) return;
 
+    // Limpiar markers anteriores
     this.markerLayer.clearLayers();
 
-    let visiblePoints = this.points;
-
-    // 🔥 Filtrar por distancia si hay usuario
-    if (this.userLatLng) {
-      visiblePoints = this.points.filter(p => {
-        const distance = this.getDistanceKm(
-          this.userLatLng![0],
-          this.userLatLng![1],
-          p.lat,
-          p.lng
-        );
-        return distance <= this.MAX_DISTANCE_KM;
-      });
-    }
-
-    for (const p of visiblePoints) {
+    for (const p of this.points) {
       this.L.marker([p.lat, p.lng], { icon: this.motelIcon })
         .bindPopup(p.name)
         .addTo(this.markerLayer);
     }
 
-    this.adjustView(visiblePoints);
-  }
-
-  /* =========================
-     DISTANCE CALCULATION
-     Haversine Formula
-  ========================== */
-
-  private getDistanceKm(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371; // radio tierra km
-    const dLat = this.deg2rad(lat2 - lat1);
-    const dLon = this.deg2rad(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.deg2rad(lat1)) *
-        Math.cos(this.deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  private deg2rad(deg: number) {
-    return deg * (Math.PI / 180);
+    this.adjustView();
   }
 
   /* =========================
      VIEW ADJUSTMENT
   ========================== */
 
-  private adjustView(points: MapPoint[]) {
+  private adjustView() {
     if (!this.map) return;
 
-    const allPoints: [number, number][] = points.map(p => [p.lat, p.lng]);
+    const allPoints: [number, number][] = this.points.map(p => [p.lat, p.lng]);
 
     if (this.userLatLng) {
       allPoints.push(this.userLatLng);

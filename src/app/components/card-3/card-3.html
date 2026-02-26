@@ -1,62 +1,61 @@
-<article class="bg-[#14090C] rounded-2xl p-4 text-white shadow-lg flex flex-col gap-4">
-  <div class="flex gap-4">
+<div class="bg-[#1e2128] rounded-2xl overflow-hidden border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
+
+  <div class="relative h-52 overflow-hidden">
     <img
       [src]="card.image"
       [alt]="card.roomType"
-      class="w-32 h-32 object-cover rounded-xl"
+      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
     />
 
-    <div class="flex flex-col gap-2 flex-1">
-      <h3 class="text-lg font-semibold uppercase">
-        {{ card.roomType }}
-      </h3>
-
-      <p class="text-sm text-gray-300">
-        {{ card.location }}, {{ card.adress }}
-      </p>
-
-      <p class="text-sm text-gray-400">
-        Hab: {{ card.numberHab }} · {{ card.roomType }}
-      </p>
+    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white">
+      {{ card.location }}
     </div>
-  </div>
 
-  <hr class="border-white/10" />
-
-  <div class="flex items-end gap-2">
-    <span class="font-bold text-red-600">
-      {{ card.price | currency: 'COP' }}
-    </span>
-  </div>
-
-  <p class="text-sm text-gray-400 line-clamp-2">
-    {{ card.descripcion }}
-  </p>
-
-  <div class="flex gap-2">
-    <app-button-01
-      text="Reservar Ahora"
-      [id]="card.id"
-      action="reservar">
-    </app-button-01>
-
-    <app-button-02
-      text="Ver más"
-      [routerLink]="'/roominfo'"
-      [queryParams]="{ id: card.id }">
-    </app-button-02>
-  </div>
-
-  <div class="flex items-center gap-4">
     <div
-      class="px-3 py-1 rounded-full text-sm font-medium"
-      [ngClass]="card.isAvailable ? 'bg-green-700' : 'bg-red-700'"
+      class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium"
+      [ngClass]="card.isAvailable ? 'bg-green-600/80 text-white' : 'bg-red-600/80 text-white'"
     >
-      @if (card.isAvailable) {
-        <span>Disponible</span>
-      } @else {
-        <span>No disponible</span>
-      }
+      {{ card.isAvailable ? 'Disponible' : 'No disponible' }}
     </div>
   </div>
-</article>
+
+  <div class="p-5 flex flex-col flex-1">
+
+    <h3 class="text-lg font-semibold mb-2 text-white">
+      {{ card.roomType }}
+    </h3>
+
+    <p class="text-sm text-gray-400 line-clamp-2 mb-4">
+      {{ card.descripcion }}
+    </p>
+
+    <div class="mt-auto">
+
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-amber-400 font-bold text-xl">
+          $ {{ card.price | number }}
+        </span>
+        <span class="text-xs text-gray-500">
+          {{ card.adress }}
+        </span>
+      </div>
+
+      <div class="flex gap-3 flex-col">
+
+        <app-button-01
+          text="Reservar"
+          [fullWidth]="true"
+          (clicked)="openPayment()">
+        </app-button-01>
+
+        <button
+          (click)="onViewLocation()"
+          class="border border-[#8B0000] text-[#cc3a3a] rounded-lg px-4 py-2 hover:bg-[#6E2A35]/20 transition w-full cursor-pointer">
+          Ver ubicación
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
