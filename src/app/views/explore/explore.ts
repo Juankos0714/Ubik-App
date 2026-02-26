@@ -22,8 +22,8 @@ export class Explore implements OnInit {
   private roomService = inject(RoomService);
   private dialog = inject(Dialog);
 
-  allCards: (Card3Informacion & { lat?: number; lng?: number; isAvailable?: boolean; serviceIds?: number[] })[] = [];
-  cards: typeof this.allCards = [];
+  allCards: Card3Informacion[] = [];
+  cards: Card3Informacion[] = [];
   points: MapPoint[] = [];
 
   loading = false;
@@ -33,7 +33,6 @@ export class Explore implements OnInit {
   cities: string[] = [];
 
   query = signal('');
-  suggestions: typeof this.allCards = [];
   activePoint: MapPoint | null = null;
 
   skeletonItems = Array.from({ length: 5 });
@@ -43,19 +42,19 @@ export class Explore implements OnInit {
   }
 
   openModal() {
-  const dialogRef = this.dialog.open<ExploreFilters>(FilterModal, {
-    data: {
-      roomTypes: this.roomTypes,
-      cities: this.cities
-    }
-  });
+    const dialogRef = this.dialog.open<ExploreFilters>(FilterModal, {
+      data: {
+        roomTypes: this.roomTypes,
+        cities: this.cities
+      }
+    });
 
-  dialogRef.closed.subscribe((filters) => {
-    if (filters) {
-      this.applyFilters(filters);
-    }
-  });
-}
+    dialogRef.closed.subscribe((filters) => {
+      if (filters) {
+        this.applyFilters(filters);
+      }
+    });
+  }
 
   applyFilters(filters: ExploreFilters) {
     let result = [...this.allCards];
@@ -69,15 +68,27 @@ export class Explore implements OnInit {
     }
 
     if (filters.roomTypes.length) {
-      result = result.filter(r => filters.roomTypes.includes(r.title));
+      result = result.filter(r =>
+        filters.roomTypes.includes(r.roomType)
+      );
     }
 
     if (filters.cities.length) {
-      result = result.filter(r => filters.cities.includes(r.location));
+      result = result.filter(r =>
+        filters.cities.includes(r.location)
+      );
     }
 
     if (filters.onlyAvailable) {
       result = result.filter(r => r.isAvailable);
+    }
+
+    if (filters.serviceIds.length) {
+      result = result.filter(room =>
+        filters.serviceIds.every(id =>
+          room.serviceIds?.includes(id)
+        )
+      );
     }
 
     if (filters.sortBy === 'priceAsc') {
@@ -103,24 +114,25 @@ export class Explore implements OnInit {
     }
 
     const filtered = this.allCards.filter((c) =>
-      (c.title + c.location + c.adress + c.descripcion)
-        .toLowerCase()
-        .includes(q)
+      (
+        c.roomType +
+        c.location +
+        c.adress +
+        c.descripcion
+      ).toLowerCase().includes(q)
     );
 
     this.cards = filtered;
     this.points = this.mapPoints(filtered);
   }
 
-  private mapPoints(cards: typeof this.allCards): MapPoint[] {
-    return cards
-      .filter((c) => c.lat !== undefined && c.lng !== undefined)
-      .map((c) => ({
-        lat: c.lat!,
-        lng: c.lng!,
-        name: c.title,
-        id: c.id,
-      }));
+  private mapPoints(cards: Card3Informacion[]): MapPoint[] {
+    return cards.map((c) => ({
+      lat: 0,
+      lng: 0,
+      name: c.roomType,
+      id: c.id,
+    }));
   }
 
   loadRooms(): void {
@@ -136,16 +148,14 @@ export class Explore implements OnInit {
           id: room.id,
           motelId: room.motelId,
           numberHab: room.number,
-          title: room.roomType,
+          roomType: room.roomType,
           descripcion: room.description,
           image: room.imageUrls?.[0] ?? './assets/images/ubikLogo.jpg',
           location: room.motelCity,
           adress: room.motelAddress,
           price: room.price,
-          lat: room.latitude,
-          lng: room.longitude,
           isAvailable: room.isAvailable,
-          serviceIds: room.serviceIds,
+          serviceIds: room.serviceIds ?? [],
         }));
 
         this.cards = [...this.allCards];
