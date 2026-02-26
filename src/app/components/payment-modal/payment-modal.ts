@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/middleware/auth.service';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
+import { Button01 } from "../button-01/button-01";
 
 @Component({
   selector: 'app-payment-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Button01],
   templateUrl: './payment-modal.html',
 })
 export class PaymentModal implements OnInit {
