@@ -111,10 +111,7 @@ export class LoginComponent {
           const apiMsg = err?.error?.message || err?.message;
 
           // Si tu API NO diferencia usuario/password (lo normal), muestra genérico:
-          const msg =
-            status === 401 || status === 403
-              ? 'Usuario o contraseña incorrectos'
-              : apiMsg || 'Ocurrió un error al iniciar sesión';
+          const msg = 'Credenciales incorrectas'
 
           this.errors.set([{ field: 'form', message: msg }]);
 
