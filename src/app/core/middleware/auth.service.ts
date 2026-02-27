@@ -22,7 +22,7 @@ export class AuthService {
     this.isBrowser = isPlatformBrowser(platformId);
 
     if (this.isBrowser) {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
       if (token) this._token.set(token);
 
       const storedUser = localStorage.getItem('user');
