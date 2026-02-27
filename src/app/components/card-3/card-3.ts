@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { Button01 } from '../button-01/button-01';
 import { PaymentModal } from '../payment-modal/payment-modal';
+import { RouterLink } from "@angular/router";
 
 export interface Card3Informacion {
   id: number;
@@ -24,7 +25,7 @@ export interface Card3Informacion {
 @Component({
   selector: 'app-card-3',
   standalone: true,
-  imports: [CommonModule, Button01],
+  imports: [CommonModule, Button01, RouterLink],
   templateUrl: './card-3.html',
 })
 export class Card3 {

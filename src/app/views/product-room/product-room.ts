@@ -5,6 +5,8 @@ import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { Map as AppMap } from '../../components/map/map';
 import { Button01 } from "../../components/button-01/button-01";
+import { PaymentModal } from '../../components/payment-modal/payment-modal';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-product-room',
@@ -56,4 +58,12 @@ export class ProductRoom implements OnInit {
       },
     });
   }
+
+  constructor(private dialog: Dialog) {}
+
+  openPayment() {
+      this.dialog.open(PaymentModal, {
+        data: this.room?.id
+      });
+    }
 }

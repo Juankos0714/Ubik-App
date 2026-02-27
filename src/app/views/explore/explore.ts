@@ -169,8 +169,6 @@ export class Explore implements OnInit {
       this.cards = [...this.allCards];
       this.points = this.mapPoints(this.allCards);
 
-      console.log('Points enviados al mapa:', this.points); // 👈 prueba temporal
-
       this.loading = false;
     },
     error: () => {
