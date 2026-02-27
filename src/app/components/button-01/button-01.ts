@@ -1,51 +1,66 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { Dialog } from '@angular/cdk/dialog';
 import { PaymentModal } from '../payment-modal/payment-modal';
 
 @Component({
   selector: 'app-button-01',
   standalone: true,
-  imports: [CommonModule, DialogModule],
+  imports: [CommonModule],
   templateUrl: './button-01.html',
 })
 export class Button01 {
+
   @Input() text!: string;
   @Input() subtext?: string;
-  @Input() routerLink?: string | (string | number)[];
+
   @Input() iconLeft?: string;
   @Input() iconRight?: string;
-  @Input() id!: number;
-  @Input() action!: 'reservar' | 'detalles';
+
+  @Input() routerLink?: string | (string | number)[];
   @Input() disabled = false;
-  @Input() type!: 'submit' | 'button';
+  @Input() fullWidth = false;
+  @Input() tall = false;
+  @Input() type: 'submit' | 'button' = 'button';
 
-  // si es true el botón ocupará el 100%
-  @Input() fullWidth: boolean = false;
+  /* 👇 RESTAURAMOS ESTO */
+  @Input() id?: number;
+  @Input() action?: 'reservar' | 'detalles';
 
-  // si es true el botón tendrá mayor altura y tamaño de texto
-  @Input() tall: boolean = false;
+  @Output() clicked = new EventEmitter<void>();
 
   constructor(
     private router: Router,
-    private dialog: Dialog,
+    private dialog: Dialog
   ) {}
 
-  navigate() {
-    // Si la acción es reservar, abrimos el modal de pago con la habitación seleccionada
+  handleClick() {
+
+    if (this.disabled) return;
+
+
     if (this.action === 'reservar') {
-      if (this.id == null) return;
-      this.dialog.open(PaymentModal, { data: { id: this.id } });
+
+      if (!this.id) return;
+
+      this.dialog.open(PaymentModal, {
+        data: { id: this.id }
+      });
+
       return;
     }
 
-    if (!this.routerLink) return;
 
-    if (Array.isArray(this.routerLink)) {
-      this.router.navigate(this.routerLink);
-    } else {
-      this.router.navigate([this.routerLink]);
+    if (this.routerLink) {
+      if (Array.isArray(this.routerLink)) {
+        this.router.navigate(this.routerLink);
+      } else {
+        this.router.navigate([this.routerLink]);
+      }
+      return;
     }
+
+    this.clicked.emit();
   }
 }

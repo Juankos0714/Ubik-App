@@ -1,34 +1,58 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Dialog } from '@angular/cdk/dialog';
 import { Button01 } from '../button-01/button-01';
-import { Button02 } from '../button-02/button-02';
-import { CurrencyPipe } from '@angular/common';
+import { PaymentModal } from '../payment-modal/payment-modal';
+import { RouterLink } from "@angular/router";
 
 export interface Card3Informacion {
   id: number;
   motelId: number;
+  motelName: string;
   numberHab: string;
-  title: string;       
+  roomType: string;
   descripcion: string;
   image: string;
-  location: string;   
-  adress: string;      
+  location: string;
+  adress: string;
   price: number;
-  lat?: number;
-  lng?: number;
+  isAvailable: boolean;
+  serviceIds: number[];
+  lat: number;
+  lng: number;
 }
 
 @Component({
   selector: 'app-card-3',
   standalone: true,
-  imports: [Button01, Button02, CurrencyPipe],
+  imports: [CommonModule, Button01, RouterLink],
   templateUrl: './card-3.html',
 })
 export class Card3 {
+
   @Input() card!: Card3Informacion;
 
-  @Input() services: {
-    id: number;
+  @Output() viewLocation = new EventEmitter<{
+    lat: number;
+    lng: number;
     name: string;
-    icon: string;
-  }[] = [];
+    id: number;
+  }>();
+
+  constructor(private dialog: Dialog) {}
+
+  openPayment() {
+    this.dialog.open(PaymentModal, {
+      data: { id: this.card.id }
+    });
+  }
+
+  onViewLocation() {
+    this.viewLocation.emit({
+      lat: this.card.lat,
+      lng: this.card.lng,
+      name: this.card.roomType,
+      id: this.card.id,
+    });
+  }
 }
