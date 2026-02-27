@@ -6,6 +6,8 @@ import { finalize } from 'rxjs/operators';
 import { PropertyUserService } from '../../core/services/list-motel.service';
 import { Motel } from '../../core/models/motel.model';
 
+type MotelListItem = Motel & { mainImageUrl?: string | null };
+
 @Component({
   selector: 'app-property-user',
   standalone: true,
@@ -13,7 +15,7 @@ import { Motel } from '../../core/models/motel.model';
   templateUrl: './property-user.component.html',
 })
 export class PropertyUserComponent implements OnInit {
-  properties: Motel[] = [];
+  properties: MotelListItem[] = [];
   loading = false;
   errorMsg: string | null = null;
 
@@ -27,10 +29,7 @@ export class PropertyUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    // ✅ Evita disparar la llamada en SSR (401 por no mandar Authorization)
-    if (this.isBrowser) {
-      this.loadProperties();
-    }
+    if (this.isBrowser) this.loadProperties();
   }
 
   loadProperties() {
@@ -42,7 +41,15 @@ export class PropertyUserComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data) => {
-          this.properties = data ?? [];
+          this.properties = (data ?? []).map((p: any) => ({
+            ...p,
+
+            mainImageUrl:
+              p.imageUrls?.[0] ??     //  lo que te devuelve la API
+              p.imagesUrls?.[0] ??    // por si alguna vez lo envías así
+              p.imagesUrl ??          //  lo que tu modelo dice que existe (singular)
+              null,
+          }));
         },
         error: (err) => {
           console.error('Error cargando moteles:', err);
@@ -65,7 +72,7 @@ export class PropertyUserComponent implements OnInit {
     });
   }
 
-  trackById(_index: number, item: Motel) {
+  trackById(_index: number, item: MotelListItem) {
     return item.id;
   }
 }

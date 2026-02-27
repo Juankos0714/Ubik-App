@@ -9,7 +9,7 @@ export interface Motel {
   city: string;
   proprertyId: number;
   dateCreated: Date;
-  imagesUrls: string[];
+  imagesUrl: string[];
   latitude: number;
   longitude: number;
   approvalStatus: 'pending' | 'under_review' | 'approved' | 'rejected';

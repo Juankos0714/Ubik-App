@@ -1,5 +1,7 @@
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection
 } from '@angular/core';
@@ -17,6 +19,7 @@ import {
 } from '@angular/platform-browser';
 
 import { authInterceptor } from '../app/core/interceptors/auth-interceptor';
+import { AuthService } from './core/middleware/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,5 +31,6 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([authInterceptor]) 
     ),
+     provideAppInitializer(() => inject(AuthService).restoreSession()),
   ]
 };

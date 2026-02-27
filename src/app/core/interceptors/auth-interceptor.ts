@@ -38,8 +38,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // ✅ 3) Obtener token de storage
   let token =
-    localStorage.getItem('auth_token') ??
-    sessionStorage.getItem('auth_token');
+  sessionStorage.getItem('auth_token') ||
+  localStorage.getItem('auth_token');
 
   if (!token) {
     return next(req);
