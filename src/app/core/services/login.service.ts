@@ -43,16 +43,23 @@ export class LoginService {
   login(data: LoginFormData, rememberMe: boolean): Observable<string> {
     return this.http.post(`${this.apiUrl}/auth/login`, data, { responseType: 'text' }).pipe(
       tap((rawToken: string) => {
-        let token = rawToken.trim();
+        let token = (rawToken ?? '').toString().trim();
 
         try {
           // Si el backend devuelve un objeto JSON (como {"token": "..."})
           const parsed = JSON.parse(rawToken);
-          token = parsed.token || parsed.access_token || parsed.jwt || rawToken;
+          token = (parsed.token || parsed.access_token || parsed.jwt || rawToken) as string;
         } catch (e) {
           // Si no es JSON válido, limpiamos comillas por si acaso
           token = rawToken.replace(/"/g, '').trim();
         }
+
+        // ✅ Normalizar por si viene "Bearer xxx"
+        token = token
+          .toString()
+          .replace(/"/g, '')
+          .replace(/^Bearer\s+/i, '')
+          .trim();
 
         console.log('TOKEN FINAL →', token);
 

@@ -12,7 +12,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const platformId = inject(PLATFORM_ID);
 
+  // ✅ En SSR no tenemos storage ni token (evita intentar)
   if (!isPlatformBrowser(platformId)) {
+    return next(req);
+  }
+
+  // ✅ Si ya viene Authorization, no lo sobreescribas
+  if (req.headers.has('Authorization')) {
     return next(req);
   }
 
@@ -39,8 +45,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // ✅ 4) Limpiar token por si quedó guardado con comillas (JSON stringified)
-  token = token.replace(/"/g, '').trim();
+  // ✅ 4) Normalizar token (quitar comillas y "Bearer " si quedó guardado así)
+  token = token
+    .replace(/"/g, '')
+    .replace(/^Bearer\s+/i, '')
+    .trim();
+
+  if (!token) {
+    return next(req);
+  }
 
   // ✅ 5) Solo agregar a nuestro dominio de API (o si es relativo)
   const isOurApi = req.url.includes('ubik-back.duckdns.org') || !req.url.startsWith('http');

@@ -3,7 +3,6 @@ import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private isBrowser: boolean;
 
   private _user = signal<any | null>(null);
@@ -16,13 +15,16 @@ export class AuthService {
 
   isAdmin = computed(() => this.role() === 7392841056473829);
   isOwner = computed(() => this.role() === 3847261094857362);
-  isUser  = computed(() => this.role() === 9182736450192837);
+  isUser = computed(() => this.role() === 9182736450192837);
 
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     if (this.isBrowser) {
-      const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+      const rawToken =
+        localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+
+      const token = rawToken ? this.normalizeToken(rawToken) : null;
       if (token) this._token.set(token);
 
       const storedUser = localStorage.getItem('user');
@@ -30,17 +32,27 @@ export class AuthService {
     }
   }
 
+  private normalizeToken(token: string): string {
+    return token
+      .replace(/"/g, '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
+  }
+
   /* ================= TOKEN ================= */
 
   setToken(token: string, remember: boolean) {
-    this._token.set(token);
+    const normalized = this.normalizeToken(token);
+    this._token.set(normalized);
 
     if (!this.isBrowser) return;
 
     if (remember) {
-      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_token', normalized);
+      sessionStorage.removeItem('auth_token');
     } else {
-      sessionStorage.setItem('auth_token', token);
+      sessionStorage.setItem('auth_token', normalized);
+      localStorage.removeItem('auth_token');
     }
   }
 
