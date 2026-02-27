@@ -1,42 +1,51 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
-import { Router } from '@angular/router';
-import { AuthService } from '../../core/middleware/auth.service';
+import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
-import { Button01 } from "../button-01/button-01";
 
 @Component({
   selector: 'app-payment-modal',
   standalone: true,
-  imports: [CommonModule, Button01],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './payment-modal.html',
 })
 export class PaymentModal implements OnInit {
+
   room: Room | null = null;
   loading = true;
   error = false;
+
+  form!: FormGroup;
 
   constructor(
     private dialogRef: DialogRef<any>,
     @Inject(DIALOG_DATA) public data: { id?: number },
     private roomService: RoomService,
-    private auth: AuthService,
-    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+
+    this.form = this.fb.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      document: ['', Validators.required],
+      phone: ['', Validators.required],
+    });
+
     const id = this.data?.id;
+
     if (!id) {
-      this.loading = false;
       this.error = true;
+      this.loading = false;
       return;
     }
 
     this.roomService.getRooms().subscribe({
-      next: (rooms: Room[]) => {
-        this.room = rooms.find((r) => r.id === id) ?? null;
+      next: (rooms) => {
+        this.room = rooms.find(r => r.id === id) ?? null;
         this.loading = false;
       },
       error: () => {
@@ -46,28 +55,22 @@ export class PaymentModal implements OnInit {
     });
   }
 
-  close(result?: any) {
-    this.dialogRef.close(result);
+  close() {
+    this.dialogRef.close();
   }
 
   reserve() {
-    if (!this.room) return;
 
-    // Si no está logueado o no es rol usuario (id 3), abrir login
-    if (!this.auth.isLogged()) {
-      this.dialogRef.close();
-      this.router.navigate(['/login'], { queryParams: { id: this.room.id, from: 'reserve' } });
-      return;
-    }
+    if (this.form.invalid || !this.room) return;
 
-    if (!this.auth.isUser()) {
-      this.dialogRef.close();
-      // usuario logueado pero sin rol cliente
-      alert('Necesitas una cuenta de cliente para reservar.');
-      return;
-    }
+    const payload = {
+      ...this.form.value,
+      roomId: this.room.id,
+      price: this.room.price
+    };
 
-    // Usuario válido: proceder (aquí se integrará Mercado Pago en el siguiente paso)
-    this.dialogRef.close({ reserved: true, roomId: this.room.id });
+    console.log('Enviar a backend / Mercado Pago:', payload);
+
+    this.dialogRef.close(payload);
   }
 }

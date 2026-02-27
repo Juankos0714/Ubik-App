@@ -1,44 +1,60 @@
-<div class="p-[50px] bg-[#1e2128] text-white rounded-3xl relative">
-  <button class="absolute top-2 right-2 text-xl cursor-pointer m-2" (click)="close()">✕</button>
-  @if(loading){
+<div class="bg-[#1e2128] text-white rounded-3xl p-8 w-[500px] max-w-full relative">
 
-    <div class="py-8 text-center">Cargando habitación...</div>
+  <button
+    class="absolute top-3 right-3 text-xl"
+    (click)="close()">✕</button>
 
-  }@else if (error){
-    
-    <div class="py-8 text-center text-red-400">Error al cargar la habitación.</div>            
+  @if (loading) {
+    <div class="text-center py-6">Cargando habitación...</div>
   }
 
-  <div *ngIf="!loading && room">
-    <img
-      [src]="room.imageUrls.length ? room.imageUrls[0] : './assets/images/ubikLogo.jpg'"
-      [alt]="room.roomType"
-      class="w-full h-48 object-cover rounded mb-4"
-    />
+  @if (!loading && room) {
 
-    <h3 class="text-xl font-bold mb-2">{{ room.roomType }}</h3>
-    <p class="text-gray-300 mb-3 line-clamp-3">{{ room.description }}</p>
+    <h2 class="text-2xl font-bold mb-4">
+      Confirmar reserva
+    </h2>
 
-    <div class="flex items-center justify-between gap-4">
-      <div>
-        <p class="text-amber-400 font-semibold text-lg">$ {{ room.price | number }}</p>
+    <p class="text-gray-400 mb-6">
+      {{ room.roomType }} — $ {{ room.price | number }}
+    </p>
+
+    <form [formGroup]="form" class="flex flex-col gap-4">
+
+      <input formControlName="fullName"
+        placeholder="Nombre completo"
+        class="bg-[#111213] border border-white/10 rounded p-3" />
+
+      <input formControlName="email"
+        placeholder="Correo electrónico"
+        class="bg-[#111213] border border-white/10 rounded p-3" />
+
+      <input formControlName="document"
+        placeholder="Documento"
+        class="bg-[#111213] border border-white/10 rounded p-3" />
+
+      <input formControlName="phone"
+        placeholder="Teléfono"
+        class="bg-[#111213] border border-white/10 rounded p-3" />
+
+      <div class="flex gap-3 mt-4">
+        <div class="flex gap-3 mt-4">
+          <button
+            type="button"
+            (click)="close()"
+            class="border border-[#8B0000] text-[#cc3a3a] rounded-lg px-4 py-2">
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            (click)="reserve()"
+            [disabled]="form.invalid"
+            class="bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white rounded-lg px-4 py-2 w-full">
+            Pagar y reservar
+          </button>
+        </div>
       </div>
 
-      <div class="flex gap-2">
-        <button
-          (click)="close()"
-          class="px-4 py-2 bg-transparent border border-[#8B0000] text-[#cc3a3a] rounded"
-        >
-          Cancelar
-        </button>
-        <app-button-01 (click)="reserve()">Pagar y reservar</app-button-01>
-        <!-- <button
-          (click)="reserve()"
-          class="px-4 py-2 bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white rounded"
-        >
-          Pagar y reservar
-        </button> -->
-      </div>
-    </div>
-  </div>
+    </form>
+  }
 </div>
