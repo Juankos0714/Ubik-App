@@ -1,4 +1,4 @@
-import { Room } from './room.model';  
+import { Room } from './room.model';
 
 export interface Motel {
   id: number;
@@ -14,14 +14,14 @@ export interface Motel {
   latitude: number;
   longitude: number;
   approvalStatus: 'pending' | 'under_review' | 'approved' | 'rejected';
-  aprovalDate: string;
+  approvalDate: string;
   approvedByUserId: number;
   rejectionReason: string;
   rues: string;
   rnt: string;
-  owerDocumentType: string;
+  ownerDocumentType: string;
   ownerDocumentNumber: string;
-  owerFullName: string;
+  ownerFullName: string;
   legalRepresentativeName: string;
   legalDocumentUrl: string;
   hasCompleteLegalInfo: boolean;

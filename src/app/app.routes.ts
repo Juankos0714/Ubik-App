@@ -10,17 +10,15 @@ import { DashboardAdmin } from './views/dashboard/admin/admin';
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
-/** Register  */ 
+/** Register  */
 import { CreateMotelComponent } from './views/Forms/register/establecimiento/components/create-motel.component';
 
 import { RegisterUser } from './views/Forms/register/register-user-client/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 
-
 // import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
 // import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
 // import { PropertyUserComponent } from './views/Propertys-user/property-user.component';
-
 
 import { ProductRoom } from './views/product-room/product-room';
 import { RegisterOwner } from './views/Forms/register/registes-user-owner/register-owner';
@@ -30,11 +28,10 @@ import { PropertyUserComponent } from './components/List-motels/property-user.co
 import { permissionGuard } from './core/guards/permission.guard';
 import { DashboardOwner } from './views/dashboard/owner/owner';
 
-
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
-//  { path: 'profile-motel', component: MotelProfile },
+  //  { path: 'profile-motel', component: MotelProfile },
 
   { path: 'rooms-motel', component: RoomsMotel },
   { path: 'rooms-offerts', component: RoomsOfferts },
@@ -45,15 +42,15 @@ export const routes: Routes = [
 
   { path: 'register-user', component: RegisterUser },
   { path: 'register-owner', component: RegisterOwner },
-  { 
+  {
     path: 'dashboard/admin',
     canActivate: [permissionGuard('view_dashboard')],
-    component: DashboardAdmin
+    component: DashboardAdmin,
   },
-  { 
+  {
     path: 'dashboard/owner',
     canActivate: [permissionGuard('view_dashboard')],
-    component: DashboardOwner
+    component: DashboardOwner,
   },
   { path: 'login', component: LoginComponent },
   { path: 'create-motel', component: CreateMotelComponent },
@@ -68,4 +65,6 @@ export const routes: Routes = [
   /* editar perfil */
   { path: 'edit-profile', component: EditProfileComponent },
 
+  /*========== WILDCARD ROUTE ==========*/
+  { path: '**', redirectTo: '' },
 ];
