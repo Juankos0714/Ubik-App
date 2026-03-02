@@ -26,9 +26,10 @@ export class CreateMotelComponent implements OnInit {
 
   readonly documentTypes: DocumentType[] = ['CC', 'NIT', 'CE', 'PASAPORTE'];
 
-  motelImages: File[] = [];
-  rntFile: File | null = null;
-  ruesFile: File | null = null;
+  profileImage: File | null = null;
+  motelImages: File[]        = [];
+  rntFile: File | null       = null;
+  ruesFile: File | null      = null;
   legalDocumentFile: File | null = null;
 
   constructor(
@@ -112,6 +113,10 @@ export class CreateMotelComponent implements OnInit {
     return input.files && input.files.length > 0 ? input.files[0] : null;
   }
 
+  onProfileImageSelected(evt: Event): void {
+    this.profileImage = this.extractFirstFile(evt);
+  }
+
   // ─── Submit ─────────────────────────────────────────────────────────────────
   submit(): void {
     this.error = null;
@@ -126,6 +131,11 @@ export class CreateMotelComponent implements OnInit {
       return;
     }
 
+    if (!this.profileImage) {
+      this.error = 'Debes subir la foto de perfil del motel.';
+      return;
+    }
+
     const userId: number | undefined = this.auth.user()?.id;
     if (!userId) {
       this.error = 'No hay usuario logueado.';
@@ -135,33 +145,39 @@ export class CreateMotelComponent implements OnInit {
     this.loading = true;
     const v = this.form.getRawValue();
 
-    const rnt$ = this.cloudinary.uploadFile(this.rntFile, 'legal');
-    const rues$ = this.cloudinary.uploadFile(this.ruesFile, 'legal');
-    const images$ = this.motelImages.length
-      ? this.cloudinary.uploadMultiple(this.motelImages, 'gallery')
-      : of([] as string[]);
+    const rnt$      = this.cloudinary.uploadFile(this.rntFile, 'legal');
+    const rues$     = this.cloudinary.uploadFile(this.ruesFile, 'legal');
+    const profile$  = this.cloudinary.uploadFile(this.profileImage, 'profile');
+
+
     const legalDoc$ = this.legalDocumentFile
       ? this.cloudinary.uploadFile(this.legalDocumentFile, 'legal')
       : of(null as string | null);
 
-    forkJoin({ rntUrl: rnt$, ruesUrl: rues$, imageUrls: images$, legalUrl: legalDoc$ })
+    forkJoin({ rntUrl: rnt$, ruesUrl: rues$, profileUrl: profile$, legalUrl: legalDoc$ })
       .pipe(
-        switchMap(({ rntUrl, ruesUrl, imageUrls, legalUrl }) => {
+        switchMap(({ rntUrl, ruesUrl, profileUrl, legalUrl }) => {
+          const imagesUrls = profileUrl ? [profileUrl] : [];
+
+
           const payload: CreateMotelRequest = {
-            name: v.name,
-            address: v.address,
-            city: v.city,
-            phoneNumber: v.phoneNumber || null,
-            description: v.description || null,
-            propertyId: userId,
-            latitude: v.latitude !== undefined ? v.latitude : null,
-            longitude: v.longitude !== undefined ? v.longitude : null,
-            imageUrls: imageUrls,
-            rnt: rntUrl,
-            rues: ruesUrl,
-            ownerDocumentType: v.ownerDocumentType as DocumentType,
-            ownerDocumentNumber: v.ownerDocumentNumber,
-            ownerFullName: v.ownerFullName,
+            name:                    v.name,
+            address:                 v.address,
+            city:                    v.city,
+            phoneNumber:             v.phoneNumber || null,
+            description:             v.description || null,
+            propertyId:              userId,
+            latitude:                v.latitude !== undefined ? v.latitude : null,
+            longitude:               v.longitude !== undefined ? v.longitude : null,
+
+            imageUrls:               imagesUrls,
+
+            
+            rnt:                     rntUrl,
+            rues:                    ruesUrl,
+            ownerDocumentType:       v.ownerDocumentType as DocumentType,
+            ownerDocumentNumber:     v.ownerDocumentNumber,
+            ownerFullName:           v.ownerFullName,
             legalRepresentativeName: v.legalRepresentativeName || null,
             legalDocumentUrl: legalUrl,
           };

@@ -127,25 +127,22 @@
 
       <hr class="md:col-span-2 border-white/10 my-2" />
 
-      <!-- Galería -->
+      <!-- Foto de perfil -->
       <h4 class="md:col-span-2 text-lg font-semibold tracking-wide text-white/90">
-        Imágenes del motel (galería)
+        Foto de perfil (obligatoria)
       </h4>
 
       <div class="md:col-span-2 flex flex-col gap-2">
-        <label class="text-sm text-white/80">Subir imágenes</label>
+        <label class="text-sm text-white/80">Subir foto de perfil</label>
         <input
           class="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-white file:mr-4 file:rounded-lg file:border-0 file:bg-red-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-red-500 transition"
           type="file"
           accept="image/*"
-          multiple
-          (change)="onMotelImagesSelected($event)"
+          (change)="onProfileImageSelected($event)"
         />
 
-        @if (motelImages.length > 0) {
-          <small class="text-sm text-white/60">
-            {{ motelImages.length }} archivo(s) seleccionado(s)
-          </small>
+        @if (profileImage) {
+          <small class="text-sm text-white/60">{{ profileImage.name }}</small>
         }
       </div>
 

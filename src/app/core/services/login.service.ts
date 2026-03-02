@@ -63,7 +63,7 @@ export class LoginService {
 
         console.log('TOKEN FINAL →', token);
 
-        this.auth.setToken(token, rememberMe);
+        this.auth.setToken(token);
       }),
     );
   }
