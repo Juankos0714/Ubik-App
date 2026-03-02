@@ -80,7 +80,7 @@
 
   <!-- Degradado oscuro solo en home — de arriba hacia abajo -->
   @if (isHome()) {
-    <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/20 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-linear-to-b from-black/80 via-black/50 to-black/20 pointer-events-none"></div>
   }
 
   <!-- Contenido relativo sobre el degradado -->
@@ -128,6 +128,8 @@
             @case (3847261094857362) {
               <a (click)="navigateTo(ROUTES.OWNER)"
                 class="text-white/70 hover:text-white transition cursor-pointer text-sm">Propiedades</a>
+              <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
+                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Dashboard</a>
               <a (click)="navigateTo(ROUTES.PROFILE)"
                 class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
             }
@@ -161,7 +163,7 @@
         <!-- Search bar desktop -->
         <div class="hidden lg:flex w-full max-w-5xl flex-col gap-3">
           <div class="flex w-full items-stretch rounded-2xl overflow-visible
-                      border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-2xl">
+                      border border-white/10 bg-white/6 backdrop-blur-md shadow-2xl">
 
             <!-- Departamento -->
             <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">

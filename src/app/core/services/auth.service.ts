@@ -2,6 +2,7 @@ import { Injectable, signal, computed, Inject, PLATFORM_ID, inject } from '@angu
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
 
   isAdmin = computed(() => this.role() === 7392841056473829);
   isOwner = computed(() => this.role() === 3847261094857362);
-  isUser  = computed(() => this.role() === 9182736450192837);
+  isUser = computed(() => this.role() === 9182736450192837);
 
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -41,7 +42,10 @@ export class AuthService {
   }
 
   private normalizeToken(token: string): string {
-    return token.replace(/"/g, '').replace(/^Bearer\s+/i, '').trim();
+    return token
+      .replace(/"/g, '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
   }
 
   /**
@@ -76,7 +80,7 @@ export class AuthService {
       // Usa tu base URL real. Si pones '/auth/me' y no tienes proxy/baseUrl,
       // puede intentar pegarle al frontend (localhost) y fallar.
       // Ideal: environment.apiUrl + '/auth/me'
-      const me = await firstValueFrom(this.http.get<any>('https://ubik-back.duckdns.org/auth/me'));
+      const me = await firstValueFrom(this.http.get<any>(`${environment.authUrl}/me`));
 
       this.setUser(me); // guarda en memoria + sessionStorage
     } catch (err: any) {

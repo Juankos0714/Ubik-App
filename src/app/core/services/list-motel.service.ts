@@ -24,7 +24,7 @@ export class PropertyUserService {
    * Obtiene las propiedades del usuario logueado
    */
   getMyMotels(): Observable<Motel[]> {
-    // ✅ Evita que SSR haga la llamada (sería 401 por no enviar Authorization)
+    //  Evita que SSR haga la llamada (sería 401 por no enviar Authorization)
     if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
     return this.http.get<Motel[]>(this.baseUrl);
   }
