@@ -82,10 +82,10 @@ importers:
         version: 0.15.1
     devDependencies:
       '@angular/build':
-        specifier: ^20.3.7
+        specifier: ^20.3.0
         version: 20.3.8(a291128e3421f14368f414263a8e9a54)
       '@angular/cli':
-        specifier: ^20.3.7
+        specifier: ^20.3.0
         version: 20.3.8(@types/node@20.19.24)(chokidar@4.0.3)
       '@angular/compiler-cli':
         specifier: ^20.3.0

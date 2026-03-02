@@ -3,6 +3,7 @@ import { Room } from './room.model';
 export interface Motel {
   id: number;
   name: string;
+
   address: string;
   phone_number: string;
   description: string;

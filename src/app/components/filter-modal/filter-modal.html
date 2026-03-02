@@ -1,75 +1,203 @@
-<aside class="filter bg-gray-800 p-4 rounded-lg text-amber-50 relative max-h-[80vh] overflow-y-auto">
-  <button class="absolute top-2 right-2 text-xl" (click)="close()">✕</button>
+<aside class="flex flex-col w-[360px] max-h-[85vh] bg-[#0f1014] border border-white/10 rounded-2xl overflow-hidden text-[#f0ece4] shadow-2xl lg:w-4xl">
 
-  <!-- PRECIO -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Precio</h3>
-
-    <input
-      type="number"
-      placeholder="Precio mínimo"
-      class="w-full mb-2 px-2 py-1 bg-[#1e2128] rounded"
-      (input)="onPriceMinChange($event)"
-    />
-
-    <input
-      type="number"
-      placeholder="Precio máximo"
-      class="w-full px-2 py-1 bg-[#1e2128] rounded"
-      (input)="onPriceMaxChange($event)"
-    />
-  </section>
-
-  <!-- DISPONIBILIDAD -->
-  <section class="mb-4">
-    <label class="flex gap-2">
-      <input type="checkbox" (change)="onAvailabilityChange($event)" />
-      Solo disponibles
-    </label>
-  </section>
-
-  <!-- TIPOS -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Tipo de habitación</h3>
-    @for (type of roomTypes; track type) {
-      <label class="flex gap-2 mb-1">
-        <input type="checkbox" [value]="type" (change)="onRoomTypeChange($event)" />
-        {{ type }}
-      </label>
-    }
-  </section>
-
-  <!-- CIUDADES -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Ciudad</h3>
-    @for (city of cities; track city) {
-      <label class="flex gap-2 mb-1">
-        <input type="checkbox" [value]="city" (change)="onCityChange($event)" />
-        {{ city }}
-      </label>
-    }
-  </section>
-
-  <!-- ORDEN -->
-  <section class="mb-4">
-    <h3 class="font-semibold mb-2">Ordenar por</h3>
-    <select
-      class="w-full px-2 py-1 bg-[#1e2128] rounded"
-      (change)="onSortChange($event)"
-    >
-      <option value="">Sin ordenar</option>
-      <option value="priceAsc">Precio menor a mayor</option>
-      <option value="priceDesc">Precio mayor a menor</option>
-    </select>
-  </section>
-
-  <div class="flex justify-between mt-4">
-    <button class="px-4 py-2 bg-gray-600 rounded" (click)="reset()">
-      Reiniciar
-    </button>
-
-    <button class="px-4 py-2 bg-amber-500 text-black rounded" (click)="apply()">
-      Aplicar
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/2 shrink-0">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold tracking-tight text-white">Filtros</h2>
+    </div>
+    <button
+      (click)="close()"
+      class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-colors text-sm cursor-pointer">
+      ✕
     </button>
   </div>
+
+  <!-- Body -->
+  <div class="flex-1 overflow-y-auto px-6 divide-y divide-white/5">
+
+    <!-- MOSTRAR -->
+    <section class="py-4">
+      <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Mostrar</h3>
+      <div class="flex flex-wrap gap-2">
+        @for (opt of showTypeOptions; track opt.value) {
+          <label
+            class="px-4 py-1.5 rounded-full border text-sm cursor-pointer transition-all select-none"
+            [class]="filters.showType === opt.value
+              ? 'bg-[#6E2A35]/20 border-[#8B0000] text-[#cc3a3a]'
+              : 'bg-white/3 border-white/10 text-white/50 hover:border-white/20 hover:text-white'">
+            <input type="radio" name="showType" [value]="opt.value"
+              class="hidden"
+              [checked]="filters.showType === opt.value"
+              (change)="onShowTypeChange($event)" />
+            {{ opt.label }}
+          </label>
+        }
+      </div>
+    </section>
+
+    <!-- DISPONIBILIDAD -->
+    <section class="py-4">
+      <label class="flex items-center justify-between cursor-pointer group">
+        <span class="text-sm text-white/80 group-hover:text-white transition-colors">Solo disponibles</span>
+        <div class="relative">
+          <input type="checkbox"
+            class="sr-only peer"
+            [checked]="filters.onlyAvailable"
+            (change)="onAvailabilityChange($event)" />
+          <div class="w-11 h-6 rounded-full border border-white/10 bg-white/5
+                      peer-checked:bg-linear-to-r from-[#6E2A35] to-[#A72027] peer-checked:border-[#8B0000]
+                      transition-all duration-200"></div>
+          <div class="absolute top-[3px] left-[3px] w-[18px] h-[18px] bg-white rounded-full shadow-md
+                      transition-transform duration-200 peer-checked:translate-x-5"></div>
+        </div>
+      </label>
+    </section>
+
+    <!-- PRECIO -->
+    <section class="py-4">
+      <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Rango de precio</h3>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 flex items-center gap-1.5 bg-white/4 border border-white/8 rounded-xl px-3 py-2.5
+                    focus-within:border-amber-500/50 transition-colors">
+          <span class="text-xs text-white/25 shrink-0">$</span>
+          <input type="number"
+            placeholder="Mínimo"
+            class="w-full bg-transparent outline-none text-sm text-white placeholder-white/20"
+            [value]="filters.priceMin ?? ''"
+            (input)="onPriceMinChange($event)" />
+        </div>
+        <span class="text-white/20 text-base shrink-0">—</span>
+        <div class="flex-1 flex items-center gap-1.5 bg-white/4 border border-white/8 rounded-xl px-3 py-2.5
+                    focus-within:bg-[#6E2A35] transition-colors">
+          <span class="text-xs text-white/25 shrink-0">$</span>
+          <input type="number"
+            placeholder="Máximo"
+            class="w-full bg-transparent outline-none text-sm text-white placeholder-white/20"
+            [value]="filters.priceMax ?? ''"
+            (input)="onPriceMaxChange($event)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- TIPO HABITACIÓN -->
+    @if (roomTypes.length) {
+      <section class="py-4">
+        <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Tipo de habitación</h3>
+        <div class="flex flex-wrap gap-2">
+          @for (type of roomTypes; track type) {
+            <label
+              class="px-3 py-1.5 rounded-lg border text-sm cursor-pointer transition-all select-none"
+              [class]="filters.roomTypes.includes(type)
+                ? 'bg-red-900/25 border-red-700/70 text-red-400'
+                : 'bg-white/3 border-white/10 text-white/50 hover:border-white/20 hover:text-white'">
+              <input type="checkbox"
+                class="hidden"
+                [value]="type"
+                [checked]="filters.roomTypes.includes(type)"
+                (change)="onRoomTypeChange($event)" />
+              {{ type }}
+            </label>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- SERVICIOS -->
+    @if (services.length) {
+      <section class="py-4">
+        <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Servicios</h3>
+        <div class="flex flex-wrap gap-2">
+          @for (service of services; track service.id) {
+            <label
+              class="px-3 py-1.5 rounded-lg border text-sm cursor-pointer transition-all select-none"
+              [class]="filters.serviceIds.includes(service.id)
+                ? 'bg-red-900/25 border-red-700/70 text-red-400'
+                : 'bg-white/[0.03] border-white/10 text-white/50 hover:border-white/20 hover:text-white'">
+              <input type="checkbox"
+                class="hidden"
+                [value]="service.id"
+                [checked]="filters.serviceIds.includes(service.id)"
+                (change)="onServiceChange($event)" />
+              {{ service.name }}
+            </label>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- DEPARTAMENTO -->
+    <section class="py-4">
+      <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Departamento</h3>
+      <select
+        class="w-full px-3 py-2.5 bg-white/4 border border-white/10 rounded-xl text-sm text-white/80
+               outline-none focus:bg-[#6E2A35] transition-colors cursor-pointer appearance-none"
+        (change)="onDepartmentChange($event)">
+        <option value="" class="bg-[#1a1c22]">Seleccionar departamento</option>
+        @for (dep of departments; track dep) {
+          <option [value]="dep" class="bg-[#1a1c22]"
+            [selected]="filters.department && filters.department.includes(dep)">
+            {{ dep }}
+          </option>
+        }
+      </select>
+    </section>
+
+    <!-- MUNICIPIO -->
+    @if (municipalities.length) {
+      <section class="py-4">
+        <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Municipio</h3>
+        <select
+          class="w-full px-3 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white/80
+                 outline-none focus:border-amber-500/50 transition-colors cursor-pointer appearance-none"
+          (change)="onMunicipalityChange($event)">
+          <option value="" class="bg-[#1a1c22]">Seleccionar municipio</option>
+          @for (city of municipalities; track city) {
+            <option [value]="city" class="bg-[#1a1c22]"
+              [selected]="filters.cities.includes(city)">
+              {{ city }}
+            </option>
+          }
+        </select>
+      </section>
+    }
+
+    <!-- ORDENAR -->
+    <section class="py-4">
+      <h3 class="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-3">Ordenar por precio</h3>
+      <div class="flex flex-wrap gap-2">
+        @for (opt of sortOptions; track opt.value) {
+          <label
+            class="px-4 py-1.5 rounded-full border text-sm cursor-pointer transition-all select-none"
+            [class]="filters.sortBy === (opt.value || null)
+              ? 'bg-amber-400/15 border-amber-500 text-amber-300'
+              : 'bg-white/[0.03] border-white/10 text-white/50 hover:border-white/20 hover:text-white'">
+            <input type="radio" name="sortBy" [value]="opt.value"
+              class="hidden"
+              [checked]="filters.sortBy === (opt.value || null)"
+              (change)="onSortChange($event)" />
+            {{ opt.label }}
+          </label>
+        }
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="flex gap-3 px-6 py-4 border-t border-white/5 bg-black/20 shrink-0">
+    <button
+      (click)="reset()"
+      class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-white/40
+             hover:bg-white/5 hover:text-white hover:border-white/20 transition-all cursor-pointer">
+      Reiniciar
+    </button>
+    <button
+      (click)="apply()"
+      class="flex-[2] py-2.5 rounded-xl bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white
+             text-black text-sm font-semibold hover:opacity-90 hover:-translate-y-px
+             active:translate-y-0 transition-all cursor-pointer">
+      Aplicar filtros
+    </button>
+  </div>
+
 </aside>

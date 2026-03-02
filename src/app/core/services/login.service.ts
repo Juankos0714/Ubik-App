@@ -9,7 +9,7 @@ import {
   OAuthProvider,
 } from '../../views/Forms/login/types/login.types';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../middleware/auth.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
