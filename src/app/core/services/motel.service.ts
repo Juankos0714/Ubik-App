@@ -9,16 +9,30 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class MotelService {
+
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  private baseUrl = `${environment.apiUrl}/motel`;
+  private baseUrl = `${environment.apiUrl}/motels`;
 
+  // btener TODOS los moteles (para Explore)
+
+  getMotels(): Observable<Motel[]> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return EMPTY;
+    }
+    return this.http.get<Motel[]>(this.baseUrl);
+  }
+
+  // Obtener perfil del motel logueado
+   
   getProfile(): Observable<Motel> {
     if (!isPlatformBrowser(this.platformId)) {
       return EMPTY;
     }
     return this.http.get<Motel>(`${this.baseUrl}/profile`);
   }
+
+  // Actualizar perfil del motel
 
   updateProfile(data: Partial<Motel>): Observable<Motel> {
     return this.http.put<Motel>(`${this.baseUrl}/profile`, data);

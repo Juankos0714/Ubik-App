@@ -7,11 +7,8 @@ import { switchMap } from 'rxjs/operators';
 
 import { MotelRegisterService } from '../../../../../core/services/register-motel.service';
 import { CloudinaryService } from '../../../../../core/services/Cloudinary.service';
-import { AuthService } from '../../../../../core/middleware/auth.service';
-import {
-  CreateMotelRequest,
-  DocumentType,
-} from '../types/register-establishment.types';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { CreateMotelRequest, DocumentType } from '../types/register-establishment.types';
 
 @Component({
   selector: 'app-create-motel',
@@ -22,13 +19,14 @@ import {
 export class CreateMotelComponent implements OnInit {
   form: FormGroup;
 
-  loading       = false;
+  loading = false;
   gettingLocation = false;
-  error: string | null   = null;
+  error: string | null = null;
   locationStatus: string | null = null;
 
   readonly documentTypes: DocumentType[] = ['CC', 'NIT', 'CE', 'PASAPORTE'];
 
+  profileImage: File | null = null;
   motelImages: File[]        = [];
   rntFile: File | null       = null;
   ruesFile: File | null      = null;
@@ -42,16 +40,16 @@ export class CreateMotelComponent implements OnInit {
     private router: Router,
   ) {
     this.form = this.fb.group({
-      name:                    ['', [Validators.required, Validators.minLength(3)]],
-      address:                 ['', [Validators.required]],
-      phoneNumber:             [null],
-      description:             [null],
-      city:                    ['', [Validators.required]],
-      latitude:                [null as number | null],
-      longitude:               [null as number | null],
-      ownerDocumentType:       ['CC', [Validators.required]],
-      ownerDocumentNumber:     ['', [Validators.required]],
-      ownerFullName:           ['', [Validators.required]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      address: ['', [Validators.required]],
+      phoneNumber: [null],
+      description: [null],
+      city: ['', [Validators.required]],
+      latitude: [null as number | null],
+      longitude: [null as number | null],
+      ownerDocumentType: ['CC', [Validators.required]],
+      ownerDocumentNumber: ['', [Validators.required]],
+      ownerFullName: ['', [Validators.required]],
       legalRepresentativeName: [null],
     });
   }
@@ -66,21 +64,21 @@ export class CreateMotelComponent implements OnInit {
     }
 
     this.gettingLocation = true;
-    this.locationStatus  = 'Solicitando permiso...';
-    this.error           = null;
+    this.locationStatus = 'Solicitando permiso...';
+    this.error = null;
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         this.gettingLocation = false;
         this.form.patchValue({
-          latitude:  pos.coords.latitude,
+          latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
         });
         this.locationStatus = 'Ubicación obtenida.';
       },
       (err) => {
         this.gettingLocation = false;
-        this.locationStatus  = null;
+        this.locationStatus = null;
         const msg: Record<number, string> = {
           1: 'Permiso de ubicación denegado.',
           2: 'Ubicación no disponible.',
@@ -115,6 +113,10 @@ export class CreateMotelComponent implements OnInit {
     return input.files && input.files.length > 0 ? input.files[0] : null;
   }
 
+  onProfileImageSelected(evt: Event): void {
+    this.profileImage = this.extractFirstFile(evt);
+  }
+
   // ─── Submit ─────────────────────────────────────────────────────────────────
   submit(): void {
     this.error = null;
@@ -129,6 +131,11 @@ export class CreateMotelComponent implements OnInit {
       return;
     }
 
+    if (!this.profileImage) {
+      this.error = 'Debes subir la foto de perfil del motel.';
+      return;
+    }
+
     const userId: number | undefined = this.auth.user()?.id;
     if (!userId) {
       this.error = 'No hay usuario logueado.';
@@ -140,16 +147,19 @@ export class CreateMotelComponent implements OnInit {
 
     const rnt$      = this.cloudinary.uploadFile(this.rntFile, 'legal');
     const rues$     = this.cloudinary.uploadFile(this.ruesFile, 'legal');
-    const images$   = this.motelImages.length
-      ? this.cloudinary.uploadMultiple(this.motelImages, 'gallery')
-      : of([] as string[]);
+    const profile$  = this.cloudinary.uploadFile(this.profileImage, 'profile');
+
+
     const legalDoc$ = this.legalDocumentFile
       ? this.cloudinary.uploadFile(this.legalDocumentFile, 'legal')
       : of(null as string | null);
 
-    forkJoin({ rntUrl: rnt$, ruesUrl: rues$, imageUrls: images$, legalUrl: legalDoc$ })
+    forkJoin({ rntUrl: rnt$, ruesUrl: rues$, profileUrl: profile$, legalUrl: legalDoc$ })
       .pipe(
-        switchMap(({ rntUrl, ruesUrl, imageUrls, legalUrl }) => {
+        switchMap(({ rntUrl, ruesUrl, profileUrl, legalUrl }) => {
+          const imagesUrls = profileUrl ? [profileUrl] : [];
+
+
           const payload: CreateMotelRequest = {
             name:                    v.name,
             address:                 v.address,
@@ -159,14 +169,17 @@ export class CreateMotelComponent implements OnInit {
             propertyId:              userId,
             latitude:                v.latitude !== undefined ? v.latitude : null,
             longitude:               v.longitude !== undefined ? v.longitude : null,
-            imageUrls:               imageUrls,
+
+            imageUrls:               imagesUrls,
+
+            
             rnt:                     rntUrl,
             rues:                    ruesUrl,
             ownerDocumentType:       v.ownerDocumentType as DocumentType,
             ownerDocumentNumber:     v.ownerDocumentNumber,
             ownerFullName:           v.ownerFullName,
             legalRepresentativeName: v.legalRepresentativeName || null,
-            legalDocumentUrl:        legalUrl,
+            legalDocumentUrl: legalUrl,
           };
           return this.motelService.createMotel(payload);
         }),
@@ -178,9 +191,8 @@ export class CreateMotelComponent implements OnInit {
         },
         error: (err) => {
           this.loading = false;
-          this.error   = (err && err.error && err.error.message)
-            ? err.error.message
-            : 'Error creando el motel.';
+          this.error =
+            err && err.error && err.error.message ? err.error.message : 'Error creando el motel.';
         },
       });
   }

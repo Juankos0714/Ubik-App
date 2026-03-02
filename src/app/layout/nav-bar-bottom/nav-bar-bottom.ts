@@ -16,7 +16,7 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { AuthService } from '../../core/middleware/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 const ROUTES = {
   HOME: '/',

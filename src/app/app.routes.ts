@@ -6,7 +6,7 @@ import { Explore } from './views/explore/explore';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { UserProfile } from './views/user-profile/profile/user-profile';
-import { Dashboard } from './views/dashboard/dashboard';
+import { DashboardAdmin } from './views/dashboard/admin/admin';
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
@@ -27,6 +27,8 @@ import { RegisterOwner } from './views/Forms/register/registes-user-owner/regist
 
 import { EditProfileComponent } from './views/user-profile/edit-profile/edit-profile.component';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
+import { permissionGuard } from './core/guards/permission.guard';
+import { DashboardOwner } from './views/dashboard/owner/owner';
 
 
 export const routes: Routes = [
@@ -43,7 +45,16 @@ export const routes: Routes = [
 
   { path: 'register-user', component: RegisterUser },
   { path: 'register-owner', component: RegisterOwner },
-  { path: 'dashboard', component: Dashboard },
+  { 
+    path: 'dashboard/admin',
+    canActivate: [permissionGuard('view_dashboard')],
+    component: DashboardAdmin
+  },
+  { 
+    path: 'dashboard/owner',
+    canActivate: [permissionGuard('view_dashboard')],
+    component: DashboardOwner
+  },
   { path: 'login', component: LoginComponent },
   { path: 'create-motel', component: CreateMotelComponent },
 

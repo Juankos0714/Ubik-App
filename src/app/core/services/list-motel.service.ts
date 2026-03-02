@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable, EMPTY } from 'rxjs';
-import { AuthService } from '../middleware/auth.service';
+import { AuthService } from './auth.service';
 import { Users } from '../models/users.model';
 import { Motel } from '../models/motel.model';
 
