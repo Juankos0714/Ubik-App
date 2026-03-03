@@ -11,7 +11,8 @@ import { Dashboard } from './views/dashboard/dashboard';
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
 /** Register  */ 
-import { CreateMotelComponent } from './views/Forms/register/establecimiento/components/create-motel.component';
+import { CreateMotelComponent } from './views/Forms/create-motel/components/create-motel.component';
+import { CreateRoomComponent } from './views/Forms/create-room/components/create-room.component';
 
 import { RegisterUser } from './views/Forms/register/register-user-client/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
@@ -43,9 +44,11 @@ export const routes: Routes = [
 
   { path: 'register-user', component: RegisterUser },
   { path: 'register-owner', component: RegisterOwner },
+  
   { path: 'dashboard', component: Dashboard },
   { path: 'login', component: LoginComponent },
   { path: 'create-motel', component: CreateMotelComponent },
+  { path: 'create-room', component: CreateRoomComponent },
 
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'listProperty', component: PropertyUserComponent },

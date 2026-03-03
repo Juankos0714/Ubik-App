@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 import { PropertyUserService } from '../../core/services/list-motel.service';
@@ -24,6 +24,7 @@ export class PropertyUserComponent implements OnInit {
   constructor(
     private propertyUserService: PropertyUserService,
     @Inject(PLATFORM_ID) platformId: Object,
+    private router: Router,
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
@@ -70,6 +71,12 @@ export class PropertyUserComponent implements OnInit {
         alert('No se pudo eliminar. Revisa permisos o el endpoint.');
       },
     });
+  }
+
+  createRoom(motelId: number) {
+    // ✅ Si tu ruta es /create-room
+    this.router.navigate(['/create-room'], { queryParams: { motelId } });
+
   }
 
   trackById(_index: number, item: MotelListItem) {

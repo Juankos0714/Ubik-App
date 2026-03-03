@@ -148,6 +148,61 @@
 
       <hr class="md:col-span-2 border-white/10 my-2" />
 
+      <!-- Galería (opcional) -->
+      <h4 class="md:col-span-2 text-lg font-semibold tracking-wide text-white/90">
+        Galería (opcional)
+      </h4>
+
+      <div class="md:col-span-2 flex flex-col gap-2">
+        <label class="text-sm text-white/80">Subir imágenes para la galería (puedes seleccionar varias)</label>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            #galleryInput
+            class="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-white file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-white/15 transition"
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="onMotelImagesSelected($event)"
+          />
+
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10 transition disabled:opacity-50"
+            [disabled]="!motelImages.length || loading"
+            (click)="clearGallery(galleryInput)"
+          >
+            Limpiar
+          </button>
+        </div>
+
+        @if (motelImages.length) {
+          <div class="mt-2 rounded-xl border border-white/10 bg-black/20 p-3">
+            <div class="text-sm text-white/70 mb-2">
+              Seleccionadas: <b>{{ motelImages.length }}</b>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              @for (img of motelImages; track img.name; let i = $index) {
+                <div class="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <span class="text-sm text-white/70 truncate">{{ img.name }}</span>
+                  <button
+                    type="button"
+                    class="text-xs px-3 py-1 rounded-lg bg-red-600/80 hover:bg-red-600 transition"
+                    [disabled]="loading"
+                    (click)="removeMotelImage(i)"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <hr class="md:col-span-2 border-white/10 my-2" />
+
       <!-- Documentos RNT / RUES -->
       <h4 class="md:col-span-2 text-lg font-semibold tracking-wide text-white/90">
         Documentos (RNT / RUES)

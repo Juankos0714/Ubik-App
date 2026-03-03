@@ -18,3 +18,4 @@
   longitude: number;
   isAvailable: boolean;
 }
+
