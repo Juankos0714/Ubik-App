@@ -11,8 +11,8 @@ import { forkJoin, of, throwError } from 'rxjs';
 import { switchMap, map, finalize } from 'rxjs/operators';
 
 import { MotelService } from '../../../../core/services/motel.service';
-import { CloudinaryService } from '../../../../core/services/Cloudinary.service'; // ⚠️ revisa mayúsculas/minúsculas del archivo real
-import { AuthService } from '../../../../core/middleware/auth.service';
+import { CloudinaryService } from '../../../../core/services/Cloudinary.service'; 
+import { AuthService } from '../../../../core/services/auth.service';
 import { CreateMotelRequest, DocumentType } from '../types/create-motel.types';
 import { Motel } from '../../../../core/models/motel.model';
 

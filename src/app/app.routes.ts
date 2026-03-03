@@ -6,7 +6,7 @@ import { Explore } from './views/explore/explore';
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { UserProfile } from './views/user-profile/profile/user-profile';
-import { Dashboard } from './views/dashboard/dashboard';
+import { DashboardAdmin } from './views/dashboard/admin/admin';
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
@@ -17,23 +17,23 @@ import { CreateRoomComponent } from './views/Forms/create-room/components/create
 import { RegisterUser } from './views/Forms/register/register-user-client/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
 
-
 // import { RegisterEstablishmentComponent } from './views/Forms/register/establecimiento/components/register-establishment';
 // import { RegisterPropertyEst } from './views/Forms/register/register-propertyEst/components/register-propertyEst';
 // import { PropertyUserComponent } from './views/Propertys-user/property-user.component';
-
 
 import { ProductRoom } from './views/product-room/product-room';
 import { RegisterOwner } from './views/Forms/register/registes-user-owner/register-owner';
 
 import { EditProfileComponent } from './views/user-profile/edit-profile/edit-profile.component';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
-
+import { permissionGuard } from './core/guards/permission.guard';
+import { DashboardOwner } from './views/dashboard/owner/owner';
+import { MotelProfile } from './views/motel-profile/motel-profile';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
-//  { path: 'profile-motel', component: MotelProfile },
+  { path: 'motelProfile/:id', component: MotelProfile },
 
   { path: 'rooms-motel', component: RoomsMotel },
   { path: 'rooms-offerts', component: RoomsOfferts },
@@ -44,8 +44,16 @@ export const routes: Routes = [
 
   { path: 'register-user', component: RegisterUser },
   { path: 'register-owner', component: RegisterOwner },
-  
-  { path: 'dashboard', component: Dashboard },
+  {
+    path: 'dashboard/admin',
+    canActivate: [permissionGuard('view_dashboard')],
+    component: DashboardAdmin,
+  },
+  {
+    path: 'dashboard/owner',
+    canActivate: [permissionGuard('view_dashboard')],
+    component: DashboardOwner,
+  },
   { path: 'login', component: LoginComponent },
   { path: 'create-motel', component: CreateMotelComponent },
   { path: 'create-room', component: CreateRoomComponent },
@@ -60,4 +68,6 @@ export const routes: Routes = [
   /* editar perfil */
   { path: 'edit-profile', component: EditProfileComponent },
 
+  /*========== WILDCARD ROUTE ==========*/
+  { path: '**', redirectTo: '' },
 ];

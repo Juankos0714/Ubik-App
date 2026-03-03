@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { filter, switchMap, take, tap, catchError, of, finalize } from 'rxjs';
-import { AuthService } from '../../../core/middleware/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 import { UsersService, UpdateUserProfileDto } from '../../../core/services/user.service';
 import { Users } from '../../../core/models/users.model';
@@ -56,7 +56,7 @@ export class EditProfileComponent {
           this.loading = false;
           this.errorMsg = 'No se pudo cargar el perfil.';
           return of(null);
-        })
+        }),
       )
       .subscribe();
   }
@@ -81,47 +81,47 @@ export class EditProfileComponent {
   }
 
   onSave() {
-  this.errorMsg = null;
+    this.errorMsg = null;
 
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.saving = true;
+
+    const dto: UpdateUserProfileDto = {
+      username: this.form.value.username!,
+      email: this.form.value.email!,
+      phoneNumber: this.form.value.phoneNumber || '',
+      anonymous: !!this.form.value.anonymous,
+      birthDate: this.form.value.birthDate ?? null,
+      longitude: this.form.value.longitude ?? null,
+      latitude: this.form.value.latitude ?? null,
+    };
+
+    this.usersService
+      .updateProfile(dto)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.saving = false;
+          this.cdr.markForCheck(); // 🔥 importante si estás zoneless/OnPush estricto
+        }),
+        tap(() => {
+          this.router.navigate(['/userProfile']);
+        }),
+        catchError(() => {
+          this.errorMsg = 'No se pudo guardar. Intenta de nuevo.';
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
-
-  this.saving = true;
-
-  const dto: UpdateUserProfileDto = {
-    username: this.form.value.username!,
-    email: this.form.value.email!,
-    phoneNumber: this.form.value.phoneNumber || '',
-    anonymous: !!this.form.value.anonymous,
-    birthDate: this.form.value.birthDate ?? null,
-    longitude: this.form.value.longitude ?? null,
-    latitude: this.form.value.latitude ?? null,
-  };
-
-  this.usersService
-    .updateProfile(dto)
-    .pipe(
-      take(1),
-      finalize(() => {
-        this.saving = false;
-        this.cdr.markForCheck(); // 🔥 importante si estás zoneless/OnPush estricto
-      }),
-      tap(() => {
-        this.router.navigate(['/userProfile']);
-      }),
-      catchError(() => {
-        this.errorMsg = 'No se pudo guardar. Intenta de nuevo.';
-        return of(null);
-      }),
-    )
-    .subscribe();
-}
 
   onBirthDateChange(event: Event) {
     const input = event.target as HTMLInputElement;
-  
+
     this.form.patchValue({ birthDate: input.valueAsDate });
   }
 
@@ -153,7 +153,7 @@ export class EditProfileComponent {
         // ✅ limpia cache del perfil en el front
         this.usersService.clearProfile();
 
-        this.AuthService.logout(); 
+        this.AuthService.logout();
 
         this.router.navigate(['/login']);
       });

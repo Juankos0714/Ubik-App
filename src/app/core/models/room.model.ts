@@ -1,5 +1,5 @@
-  import { RoomService } from './room_services.model';
-  import { RoomImage } from './room_images.model';
+  // import { RoomServiceRelation } from './room_services_relation.model';
+  // import { RoomImage } from './room_images.model';
 
   export interface Room {
   id: number;

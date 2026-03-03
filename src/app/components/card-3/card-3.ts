@@ -7,19 +7,27 @@ import { RouterLink } from "@angular/router";
 
 export interface Card3Informacion {
   id: number;
-  motelId: number;
+
+  // discriminador
+  type: 'room' | 'motel';
+
+  // Datos generales
   motelName: string;
-  numberHab: string;
-  roomType: string;
   descripcion: string;
   image: string;
   location: string;
   adress: string;
-  price: number;
-  isAvailable: boolean;
-  serviceIds: number[];
-  lat: number;
-  lng: number;
+
+  lat?: number;
+  lng?: number;
+
+  // Solo ROOM
+  motelId?: number;
+  numberHab?: string;
+  roomType?: string;
+  price?: number;
+  isAvailable?: boolean;
+  serviceIds?: number[];
 }
 
 @Component({
@@ -48,10 +56,16 @@ export class Card3 {
   }
 
   onViewLocation() {
+    
+    if (this.card.lat == null || this.card.lng == null) {
+      console.warn('El Motel no ha registrado su ubicacion en el mapa');
+      return;
+    }
+    
     this.viewLocation.emit({
       lat: this.card.lat,
       lng: this.card.lng,
-      name: this.card.roomType,
+      name: this.card.roomType ?? this.card.motelName,
       id: this.card.id,
     });
   }

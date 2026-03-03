@@ -2,47 +2,56 @@
 
   <div class="relative h-52 overflow-hidden">
 
-  <!-- Imagen -->
-  <img
-    [src]="card.image"
-    [alt]="card.roomType"
-    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-  />
+    <!-- Imagen -->
+    <img
+      [src]="card.image"
+      [alt]="card.motelName"
+      class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+    />
 
-  <!-- Degradado inferior -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+    <!-- Degradado inferior -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
-  <!-- Ubicación (arriba izquierda) -->
-  <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white">
-    {{ card.location }}
-  </div>
+    <!-- Ubicación (arriba izquierda) -->
+    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white">
+      {{ card.location }}
+    </div>
 
-  <!-- Estado disponible (arriba derecha) -->
-  <div
-    class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium"
-    [ngClass]="card.isAvailable ? 'bg-green-600/80 text-white' : 'bg-gray-700 text-white'"
-  >
-    {{ card.isAvailable ? 'Disponible' : 'No disponible' }}
-  </div>
-
-  <!-- Información inferior derecha -->
-  <div class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-end">
-
-    <div>
-     <a
-        [routerLink]="['/motelProfile', card.motelId]"
-        class="text-sm text-gray-300 hover:text-gray-100"
+    <!-- ✅ Badge disponibilidad: solo para rooms -->
+    @if (card.type === 'room') {
+      <div
+        class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium"
+        [ngClass]="card.isAvailable ? 'bg-green-600/80 text-white' : 'bg-gray-700 text-white'"
       >
-        {{ card.motelName }}
-      </a>
-      <h3 class="text-lg font-semibold text-white">
-        {{ card.roomType }}
-      </h3>
+        {{ card.isAvailable ? 'Disponible' : 'No disponible' }}
+      </div>
+    }
+
+    <!-- Información inferior -->
+    <div class="absolute bottom-0 left-0 w-full p-4 flex justify-between items-end">
+      <div>
+        <!-- ✅ Link al motel solo si hay motelId (rooms) -->
+        @if (card.type === 'room' && card.motelId) {
+          <a
+            [routerLink]="['/motelProfile', card.motelId]"
+            class="text-sm text-gray-300 hover:text-gray-100"
+          >
+            {{ card.motelName }}
+          </a>
+        } @else {
+          <span class="text-sm text-gray-300">{{ card.motelName }}</span>
+        }
+
+        <!-- ✅ roomType solo si es room -->
+        @if (card.type === 'room') {
+          <h3 class="text-lg font-semibold text-white">
+            {{ card.roomType }}
+          </h3>
+        }
+      </div>
     </div>
 
   </div>
-
-</div>
 
   <div class="p-5 flex flex-col flex-1">
 
@@ -53,9 +62,15 @@
     <div class="mt-auto">
 
       <div class="flex items-center justify-between mb-4">
-        <span class="text-amber-400 font-bold text-xl">
-          $ {{ card.price | number }}
-        </span>
+        <!-- ✅ Precio solo si es room -->
+        @if (card.type === 'room') {
+          <span class="text-amber-400 font-bold text-xl">
+            $ {{ card.price | number }}
+          </span>
+        } @else {
+          <span class="text-amber-400/60 text-sm italic">Ver habitaciones</span>
+        }
+
         <span class="text-xs text-gray-500">
           {{ card.adress }}
         </span>
@@ -63,11 +78,20 @@
 
       <div class="flex gap-3 flex-col">
 
-        <app-button-01
-          text="Reservar"
-          [fullWidth]="true"
-          (clicked)="openPayment()">
-        </app-button-01>
+        <!-- ✅ Reservar solo para rooms; para moteles mostrar "Ver motel" -->
+        @if (card.type === 'room') {
+          <app-button-01
+            text="Reservar"
+            [fullWidth]="true"
+            (clicked)="openPayment()">
+          </app-button-01>
+        } @else {
+          <a
+            [routerLink]="['/motelProfile', card.id]"
+            class="w-full text-center bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg px-4 py-2 transition">
+            Ver motel
+          </a>
+        }
 
         <button
           (click)="onViewLocation()"

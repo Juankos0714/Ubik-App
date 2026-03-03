@@ -9,7 +9,7 @@ import {
   OAuthProvider,
 } from '../../views/Forms/login/types/login.types';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../middleware/auth.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -54,14 +54,14 @@ export class LoginService {
           token = rawToken.replace(/"/g, '').trim();
         }
 
-        // ✅ Normalizar por si viene "Bearer xxx"
+        //  Normalizar por si viene "Bearer xxx"
         token = token
           .toString()
           .replace(/"/g, '')
           .replace(/^Bearer\s+/i, '')
           .trim();
 
-        console.log('TOKEN FINAL →', token);
+        // console.log('TOKEN FINAL →', token);
 
         this.auth.setToken(token);
       }),

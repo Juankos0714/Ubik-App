@@ -5,7 +5,7 @@ import { LoginService } from '../../../core/services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';
 import { FormsModule } from '@angular/forms';
 import { Inputcomponent } from '../../../components/input/input';
-import { AuthService } from '../../../core/middleware/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Button01 } from '../../../components/button-01/button-01';
 import { validateLoginForm } from './utils/login-validation.utils';
 
@@ -111,7 +111,7 @@ export class LoginComponent {
           const apiMsg = err?.error?.message || err?.message;
 
           // Si tu API NO diferencia usuario/password (lo normal), muestra genérico:
-          const msg = 'Credenciales incorrectas'
+          const msg = 'Credenciales incorrectas';
 
           this.errors.set([{ field: 'form', message: msg }]);
 
@@ -119,7 +119,7 @@ export class LoginComponent {
           // this.errors.set([{ field: 'password', message: msg }]);
         },
       });
-    }
+  }
   /* =======================
      ERRORS
      ======================= */
