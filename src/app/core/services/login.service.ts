@@ -54,14 +54,14 @@ export class LoginService {
           token = rawToken.replace(/"/g, '').trim();
         }
 
-        // ✅ Normalizar por si viene "Bearer xxx"
+        //  Normalizar por si viene "Bearer xxx"
         token = token
           .toString()
           .replace(/"/g, '')
           .replace(/^Bearer\s+/i, '')
           .trim();
 
-        console.log('TOKEN FINAL →', token);
+        // console.log('TOKEN FINAL →', token);
 
         this.auth.setToken(token);
       }),

@@ -27,11 +27,12 @@ import { EditProfileComponent } from './views/user-profile/edit-profile/edit-pro
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
 import { permissionGuard } from './core/guards/permission.guard';
 import { DashboardOwner } from './views/dashboard/owner/owner';
+import { MotelProfile } from './views/motel-profile/motel-profile';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
-  //  { path: 'profile-motel', component: MotelProfile },
+  { path: 'motelProfile/:id', component: MotelProfile },
 
   { path: 'rooms-motel', component: RoomsMotel },
   { path: 'rooms-offerts', component: RoomsOfferts },
