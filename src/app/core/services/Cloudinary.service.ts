@@ -25,33 +25,46 @@ export class CloudinaryService {
   }
 
   // ─── Upload único ────────────────────────────────────────────────────────────
-uploadFile(file: File, folderSuffix: string): Observable<string> {
-  const resource  = file.type.startsWith('image/') ? 'image' : 'raw';
-  const url       = 'https://api.cloudinary.com/v1_1/' + this.cloudName + '/' + resource + '/upload';
-  const publicId  = this.baseFolder + '/' + folderSuffix + '/' + Date.now() + '_' + file.name.replace(/\s+/g, '_');
+  private safeName(name: string) {
+    return name
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quita tildes
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_.-]/g, '')
+      .slice(0, 80);
+  }
 
-  const body = new FormData();
-  body.append('file',          file);
-  body.append('upload_preset', this.uploadPreset);
-  body.append('public_id',     publicId);   
+  uploadFile(file: File, folderSuffix: string): Observable<string> {
+    const resource = file.type.startsWith('image/') ? 'image' : 'raw';
+    const url = `https://api.cloudinary.com/v1_1/${this.cloudName}/${resource}/upload`;
 
-  return this.http
-    .post<CloudinaryResponse>(url, body)
-    .pipe(map(res => res.secure_url));
-}
+    const rand = Math.random().toString(36).slice(2, 8);
+    const publicId = `${this.baseFolder}/${folderSuffix}/${Date.now()}_${rand}_${this.safeName(file.name)}`;
+
+    const body = new FormData();
+    body.append('file', file);
+    body.append('upload_preset', this.uploadPreset);
+    body.append('public_id', publicId);
+
+    return this.http.post<CloudinaryResponse>(url, body).pipe(
+      map(res => res.secure_url)
+    );
+  }
 
   // ─── Upload múltiple (falla silenciosa por archivo) ──────────────────────────
   uploadMultiple(files: File[], folderSuffix: string): Observable<string[]> {
-    if (!files || files.length === 0) { return of([]); }
+    if (!files?.length) return of([]);
 
-    const uploads: Observable<string>[] = files.map((file) =>
+    const uploads = files.map(file =>
       this.uploadFile(file, folderSuffix).pipe(
-        catchError(function() { return of(''); })
+        catchError(err => {
+          console.warn('[Cloudinary] Falló:', file.name, err);
+          return of(null);
+        })
       )
     );
 
     return forkJoin(uploads).pipe(
-      map(function(urls) { return urls.filter(function(u) { return u !== ''; }); })
+      map(urls => urls.filter((u): u is string => !!u))
     );
   }
 

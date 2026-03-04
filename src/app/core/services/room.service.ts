@@ -1,8 +1,12 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, EMPTY } from 'rxjs';
+
 import { environment } from '../../../environments/environment';
 import { Room } from '../models/room.model';
+
+import type { Service, RoomCreatePayload } from '../../views/Forms/create-room/types/create-room.type';
 
 export interface AvailabilityResult {
   available: boolean;
@@ -20,49 +24,84 @@ export interface RoomReservation {
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
-  private readonly API_URL = `${environment.apiUrl}/rooms`;
+  private readonly baseUrl = environment.apiUrl;
+  private readonly roomsUrl = `${this.baseUrl}/rooms`;
 
-  constructor(private http: HttpClient) {}
+  /**
+   * Ajusta esta ruta si tu backend usa otra:
+   * - `${baseUrl}/services`
+   * - `${baseUrl}/rooms/services`
+   * - `${baseUrl}/room-services`
+   */
+  private readonly servicesUrl = `${this.baseUrl}/services`;
+
+  private readonly isBrowser: boolean;
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) platformId: Object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  private inBrowser<T>(obs: Observable<T>): Observable<T> {
+    return this.isBrowser ? obs : (EMPTY as unknown as Observable<T>);
+  }
+
+  // ───────────────────────── Rooms ─────────────────────────
+
+  createRoom(payload: RoomCreatePayload): Observable<Room> {
+    return this.inBrowser(this.http.post<Room>(this.roomsUrl, payload));
+  }
 
   getRooms(): Observable<Room[]> {
-    return this.http.get<Room[]>(this.API_URL);
+    return this.inBrowser(this.http.get<Room[]>(this.roomsUrl));
   }
 
   getRoomById(id: number): Observable<Room> {
-    return this.http.get<Room>(`${this.API_URL}/${id}`);
+    return this.inBrowser(this.http.get<Room>(`${this.roomsUrl}/${id}`));
   }
 
   getRoomsByMotel(motelId: number): Observable<Room[]> {
-    return this.http.get<Room[]>(`${this.API_URL}/motel/${motelId}`);
+    // Mantengo el patrón de tu backend: /motels/:motelId/rooms
+    return this.inBrowser(this.http.get<Room[]>(`${this.baseUrl}/motels/${motelId}/rooms`));
   }
 
-  /**
-   * Verifica si una habitación está disponible en un rango de fecha/hora.
-   */
+  // ─────────────────────── Services ────────────────────────
+
+  getAllServices(): Observable<Service[]> {
+    return this.inBrowser(this.http.get<Service[]>(this.servicesUrl));
+  }
+
+  // ─────────────────── Availability / Reservations ───────────────────
+
   checkAvailability(
     roomId: number,
     date: string,
     startTime: string,
     endTime: string,
   ): Observable<AvailabilityResult> {
-    const params = { date, startTime, endTime };
-    return this.http.get<AvailabilityResult>(`${this.API_URL}/${roomId}/availability`, { params });
+    const params = new HttpParams()
+      .set('date', date)
+      .set('startTime', startTime)
+      .set('endTime', endTime);
+
+    return this.inBrowser(
+      this.http.get<AvailabilityResult>(`${this.roomsUrl}/${roomId}/availability`, { params }),
+    );
   }
 
-  /**
-   * Obtiene todas las reservas de una habitación para una fecha específica.
-   * Útil para mostrar los horarios ocupados en el selector de tiempo.
-   */
   getReservationsForDate(roomId: number, date: string): Observable<RoomReservation[]> {
-    return this.http.get<RoomReservation[]>(`${this.API_URL}/${roomId}/reservations`, {
-      params: { date },
-    });
+    const params = new HttpParams().set('date', date);
+
+    return this.inBrowser(
+      this.http.get<RoomReservation[]>(`${this.roomsUrl}/${roomId}/reservations`, { params }),
+    );
   }
 
-  /**
-   * Suscribir email para ser notificado cuando la habitación esté disponible.
-   */
   subscribeAvailability(roomId: number, email: string): Observable<void> {
-    return this.http.post<void>(`${this.API_URL}/${roomId}/notify-available`, { email });
+    return this.inBrowser(
+      this.http.post<void>(`${this.roomsUrl}/${roomId}/notify-available`, { email }),
+    );
   }
 }

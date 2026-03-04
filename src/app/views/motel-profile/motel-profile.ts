@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 
 // ── Servicios ────────────────────────────────────────────────────────────────
-import { MotelRegisterService } from '../../core/services/register-motel.service';
+import { MotelService } from '../../core/services/motel.service';
 import { RoomService }          from '../../core/services/room.service';
 import { AuthService }          from '../../core/services/auth.service';
 import { ServiceService }       from '../../core/services/services.service';
@@ -51,7 +51,7 @@ interface MotelEditForm {
 export class MotelProfile implements OnInit {
 
   private route        = inject(ActivatedRoute);
-  private motelService = inject(MotelRegisterService);
+  private motelService = inject(MotelService);
   private roomService  = inject(RoomService);
   private authService  = inject(AuthService);
   private svcService   = inject(ServiceService);

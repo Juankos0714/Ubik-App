@@ -83,7 +83,7 @@ export class Explore implements OnInit {
 
     forkJoin({
       rooms:    this.roomService.getRooms(),
-      motels:   this.motelService.getMotels(),
+      motels:   this.motelService.getMyMotels(),
       services: this.serviceService.getServices(),
     }).subscribe({
       next: ({ rooms, motels, services }) => {
