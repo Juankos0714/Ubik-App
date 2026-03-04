@@ -59,21 +59,12 @@ export class MotelService {
   // ────────────────────────────────────────────────────────────────────────────
   // NUEVO CONTRATO: IMÁGENES
   // ────────────────────────────────────────────────────────────────────────────
-
-  /**
-   * 🏗 CREAR MOTEL + IMÁGENES (galería) en un paso
-   * POST /api/motels/with-images
-   * Body: FormData { motelData: JSON string, images: File[] }
-   */
   createMotelWithImages(payload: CreateMotelRequest) {
     return this.http.post<Motel>(`${this.apiUrl}/motels/with-images`, payload);
   }
 
-  /**
-   * 📤 SUBIR UNA IMAGEN (devuelve URL)
-   * POST /api/images/upload?folder=ubik
-   * Body: FormData { file }
-   */
+  
+  //SUBIR UNA IMAGEN (devuelve URL) 
   uploadImage(file: File, folder: string = 'Ubik'): Observable<UploadImageResponse> {
     if (!this.isBrowser) return EMPTY as Observable<UploadImageResponse>;
     const fd = new FormData();
@@ -81,30 +72,18 @@ export class MotelService {
     return this.http.post<UploadImageResponse>(`${this.apiUrl}/images/upload?folder=${folder}`, fd);
   }
 
-  /**
-   * 🟢 ASOCIAR COMO PERFIL
-   * PUT /motels/{id}/images/profile
-   * Body: { url }
-   */
+  // ASOCIAR COMO PERFIL
   setProfileImage(id: number, url: string) {
     return this.http.put<void>(`${this.apiUrl}/motels/${id}/images/profile`, { url });
   }
 
-  /**
-   * 🔵 ASOCIAR COMO PORTADA
-   * PUT /motels/{id}/images/cover
-   * Body: { url }
-   */
+  // ASOCIAR COMO PORTADA
   setCoverImage(motelId: number, url: string): Observable<Motel> {
     if (!this.isBrowser) return EMPTY as Observable<Motel>;
     return this.http.put<Motel>(`${this.apiUrl}/motels/${motelId}/images/cover`, { url });
   }
 
-  /**
-   * 🟣 GALERÍA (recomendado) — un solo paso
-   * POST /api/motels/{id}/images
-   * Body: FormData { images: File[] }
-   */
+  // GALERÍA
   addGalleryImages(motelId: number, images: File[]): Observable<{ count: number; urls: string[] }> {
     if (!this.isBrowser) return EMPTY as Observable<{ count: number; urls: string[] }>;
     const fd = new FormData();

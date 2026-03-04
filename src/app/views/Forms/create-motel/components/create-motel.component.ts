@@ -7,14 +7,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin, of, throwError } from 'rxjs';
-import { switchMap, map, finalize } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { switchMap, finalize } from 'rxjs/operators';
 
 import { MotelService } from '../../../../core/services/motel.service';
-import { CloudinaryService } from '../../../../core/services/Cloudinary.service'; 
+import { CloudinaryService } from '../../../../core/services/Cloudinary.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CreateMotelRequest, DocumentType } from '../types/create-motel.types';
-import { Motel } from '../../../../core/models/motel.model';
 
 @Component({
   selector: 'app-create-motel',
@@ -45,7 +44,6 @@ export class CreateMotelComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
   ) {
-    // NonNullable para que TS no te ponga "payload" en rojo con string|null
     this.form = this.fb.group({
       name: this.fb.control('', {
         validators: [Validators.required, Validators.minLength(3)],
@@ -69,9 +67,6 @@ export class CreateMotelComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // ─────────────────────────────────────────────────────────────
-  // Template methods
-  // ─────────────────────────────────────────────────────────────
   getUserLocation(): void {
     this.error = null;
 
@@ -139,9 +134,6 @@ export class CreateMotelComponent implements OnInit {
     this.legalDocumentFile = input.files?.[0] ?? null;
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // Submit
-  // ─────────────────────────────────────────────────────────────
   submit(): void {
     this.error = null;
 
@@ -167,7 +159,6 @@ export class CreateMotelComponent implements OnInit {
     }
 
     this.loading = true;
-
     const v = this.form.getRawValue();
 
     // 1) Subir a Cloudinary
@@ -192,7 +183,7 @@ export class CreateMotelComponent implements OnInit {
       galleryUrls: gallery$,
     })
       .pipe(
-        // 2) Crear motel con JSON (SEGÚN TU DOC)
+        // 2) Crear motel enviando PERFIL + GALERÍA en la MISMA imageUrls[]
         switchMap(({ rntUrl, ruesUrl, legalUrl, profileUrl, galleryUrls }) => {
           const payload: CreateMotelRequest = {
             name: v.name,
@@ -214,22 +205,10 @@ export class CreateMotelComponent implements OnInit {
             legalRepresentativeName: v.legalRepresentativeName ?? null,
             legalDocumentUrl: legalUrl,
 
-            imageUrls: galleryUrls ?? [],
+            imageUrls: [...(galleryUrls ?? []), profileUrl],
           };
 
-          return this.motelService.createMotelWithImages(payload).pipe(
-            map((createdMotel: Motel) => ({ createdMotel, profileUrl })),
-          );
-        }),
-
-        // 3) Setear imagen de perfil (PUT /motels/{id}/images/profile)
-        switchMap(({ createdMotel, profileUrl }) => {
-          const motelId = Number((createdMotel as any)?.id);
-          if (!motelId || Number.isNaN(motelId)) {
-            return throwError(() => new Error('El backend no devolvió un id válido del motel.'));
-          }
-
-          return this.motelService.setProfileImage(motelId, profileUrl).pipe(map(() => createdMotel));
+          return this.motelService.createMotelWithImages(payload);
         }),
 
         finalize(() => (this.loading = false)),

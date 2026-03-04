@@ -42,7 +42,7 @@ export class PropertyUserService {
    */
   getPropertyById(id: number): Observable<Users> {
     if (!this.isBrowser) return EMPTY as Observable<Users>;
-    return this.http.get<Users>(`${this.baseUrl}/property/${id}`);
+    return this.http.get<Users>(`${this.baseUrl}/motels/${id}`);
   }
 
   /**
