@@ -36,23 +36,21 @@
         placeholder="Teléfono"
         class="bg-[#111213] border border-white/10 rounded p-3" />
 
-      <div class="flex gap-3 mt-4">
-        <div class="flex gap-3 mt-4">
-          <button
-            type="button"
-            (click)="close()"
-            class="border border-[#8B0000] text-[#cc3a3a] rounded-lg px-4 py-2">
-            Cancelar
-          </button>
+      <div class="flex gap-3 mt-4 w-full">
+        <button
+          type="button"
+          (click)="close()"
+          class="border border-[#8B0000] text-[#cc3a3a] rounded-lg px-4 py-2">
+          Cancelar
+        </button>
 
-          <button
-            type="button"
-            (click)="reserve()"
-            [disabled]="form.invalid"
-            class="bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white rounded-lg px-4 py-2 w-full">
-            Pagar y reservar
-          </button>
-        </div>
+        <button
+          type="button"
+          (click)="reserve()"
+          [disabled]="form.invalid || isSubmitting"
+          class="bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white rounded-lg px-4 py-2 w-full disabled:opacity-50">
+          {{ isSubmitting ? 'Procesando...' : 'Pagar y reservar' }}
+        </button>
       </div>
 
     </form>

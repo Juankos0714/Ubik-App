@@ -63,7 +63,7 @@ export class ProductRoom implements OnInit {
 
   openPayment() {
       this.dialog.open(PaymentModal, {
-        data: this.room?.id
+        data: { id: this.room?.id }
       });
     }
 }
