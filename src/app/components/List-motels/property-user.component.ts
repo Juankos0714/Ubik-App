@@ -4,9 +4,12 @@ import { RouterModule, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 import { PropertyUserService } from '../../core/services/list-motel.service';
-import { Motel } from '../../core/models/motel.model';
+import { Motel, MotelImage } from '../../core/models/motel.model';
 
-type MotelListItem = Motel & { mainImageUrl?: string | null };
+export type MotelListItem = Motel & {
+  // ✅ url lista para pintar en la card/lista
+  mainImageUrl: string | null;
+};
 
 @Component({
   selector: 'app-property-user',
@@ -18,6 +21,9 @@ export class PropertyUserComponent implements OnInit {
   properties: MotelListItem[] = [];
   loading = false;
   errorMsg: string | null = null;
+
+  // ✅ fallback local
+  readonly defaultImg = 'assets/images/motel-placeholder.png';
 
   private isBrowser: boolean;
 
@@ -33,6 +39,19 @@ export class PropertyUserComponent implements OnInit {
     if (this.isBrowser) this.loadProperties();
   }
 
+  // ✅ COVER → GALLERY → primera → null
+  private pickMainImage(images: MotelImage[] | null | undefined): string | null {
+    const imgs = images ?? [];
+
+    const cover = imgs.find(i => (i.role ?? '').toUpperCase() === 'COVER')?.url;
+    if (cover) return cover;
+
+    const gallery = imgs.find(i => (i.role ?? '').toUpperCase() === 'GALLERY')?.url;
+    if (gallery) return gallery;
+
+    return imgs[0]?.url ?? null;
+  }
+
   loadProperties() {
     this.loading = true;
     this.errorMsg = null;
@@ -41,15 +60,10 @@ export class PropertyUserComponent implements OnInit {
       .getMyMotels()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
-        next: (data) => {
-          this.properties = (data ?? []).map((p: any) => ({
+        next: (data: Motel[] | null | undefined) => {
+          this.properties = (data ?? []).map((p: Motel) => ({
             ...p,
-
-            mainImageUrl:
-              p.imageUrls?.[0] ??     //  lo que te devuelve la API
-              p.imagesUrls?.[0] ??    // por si alguna vez lo envías así
-              p.imagesUrl ??          //  lo que tu modelo dice que existe (singular)
-              null,
+            mainImageUrl: this.pickMainImage(p.imageUrls),
           }));
         },
         error: (err) => {
@@ -57,6 +71,11 @@ export class PropertyUserComponent implements OnInit {
           this.errorMsg = 'No se pudieron cargar tus moteles. Revisa sesión/token.';
         },
       });
+  }
+
+  // ✅ reemplaza la imagen si falla la carga
+  onImgError(ev: Event) {
+    (ev.target as HTMLImageElement).src = this.defaultImg;
   }
 
   deleteProperty(id: number) {
@@ -74,9 +93,7 @@ export class PropertyUserComponent implements OnInit {
   }
 
   createRoom(motelId: number) {
-    // ✅ Si tu ruta es /create-room
     this.router.navigate(['/create-room'], { queryParams: { motelId } });
-
   }
 
   trackById(_index: number, item: MotelListItem) {

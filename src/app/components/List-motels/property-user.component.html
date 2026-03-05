@@ -30,13 +30,14 @@
           @if (property.mainImageUrl) {
             <img
               [src]="property.mainImageUrl"
+              (error)="onImgError($event)"
               [alt]="property.name"
               class="w-full h-48 object-cover"
               loading="lazy"
             />
           } @else {
             <div class="w-full h-48 bg-zinc-800 flex items-center justify-center text-white/50">
-              Sin imagen
+              <img [src]="defaultImg">
             </div>
           }
 
