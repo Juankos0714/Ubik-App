@@ -1,39 +1,34 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 
-import { RoomService } from '../../core/services/room.service';
-import { MotelService } from '../../core/services/motel.service';
+import { RoomService }    from '../../core/services/room.service';
+import { MotelService }   from '../../core/services/motel.service';
 import { ServiceService } from '../../core/services/services.service';
 
-import { Room } from '../../core/models/room.model';
-import { Motel } from '../../core/models/motel.model';
+import { Room }    from '../../core/models/room.model';
+import { Motel }   from '../../core/models/motel.model';
 import { Service } from '../../core/models/services.model';
 
 import { FilterModal, Filters } from '../../components/filter-modal/filter-modal';
-import { Button02 } from '../../components/button-02/button-02';
+import { Button02 }             from '../../components/button-02/button-02';
 import { Card3, Card3Informacion } from '../../components/card-3/card-3';
 import { Map as MapComponent, MapPoint } from '../../components/map/map';
-import { LoadingCard3 } from '../../components/loading-card-3/loading-card-3';
-import { SearchService } from '../../core/services/search.service';
+import { LoadingCard3 }         from '../../components/loading-card-3/loading-card-3';
+import { SearchService }        from '../../core/services/search.service';
 
 /**
  * Normaliza un string para comparación robusta:
- * - Minúsculas
- * - Sin tildes ni diacríticos
- * - Sin puntos (para "D.C." → "dc")
- * - Trim
- *
- * Ejemplo: "Bogotá D.C." → "bogota dc"
- *          "antioquia"   → "antioquia"
+ * minúsculas, sin tildes, sin puntos, trim.
+ * Ej: "Bogotá D.C." → "bogota dc"
  */
 function normalize(str: string): string {
   return (str ?? '')
     .toLowerCase()
-    .normalize('NFD')                        // descompone tildes
-    .replace(/[\u0300-\u036f]/g, '')         // elimina los diacríticos
-    .replace(/\./g, '')                      // elimina puntos
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\./g, '')
     .trim();
 }
 
@@ -88,7 +83,7 @@ export class Explore implements OnInit {
 
     forkJoin({
       rooms:    this.roomService.getRooms(),
-      motels:   this.motelService.getMotels(),
+      motels:   this.motelService.getMyMotels(),
       services: this.serviceService.getServices(),
     }).subscribe({
       next: ({ rooms, motels, services }) => {
@@ -98,12 +93,13 @@ export class Explore implements OnInit {
 
         const roomCards: Card3Informacion[] = (rooms as Room[]).map(room => ({
           id:          room.id,
-          type:        'room',
+          type:        'room' as const,
           motelId:     room.motelId,
           motelName:   room.motelName,
           numberHab:   room.number,
           roomType:    room.roomType,
           descripcion: room.description,
+          // Room.imageUrls es string[] → acceso directo
           image:       room.imageUrls?.[0] ?? './assets/images/ubikLogo.jpg',
           location:    room.motelCity,
           adress:      room.motelAddress,
@@ -116,21 +112,20 @@ export class Explore implements OnInit {
 
         const motelCards: Card3Informacion[] = (motels as Motel[]).map(motel => ({
           id:          motel.id,
-          type:        'motel',
+          type:        'motel' as const,
           motelName:   motel.name,
-          descripcion: motel.description,
-          image:       motel.imagesUrls?.[0] ?? './assets/images/ubikLogo.jpg',
+          descripcion: motel.description ?? '',
+          image:       motel.imageUrls?.[0]?.url ?? './assets/images/ubikLogo.jpg',
           location:    motel.city,
           adress:      motel.address,
-          lat:         motel.latitude,
-          lng:         motel.longitude,
+          lat:         motel.latitude ?? undefined,
+          lng:         motel.longitude ?? undefined,
         }));
 
         this.roomTypes = [...new Set((rooms as Room[]).map(r => r.roomType))];
         this.cities    = [...new Set((rooms as Room[]).map(r => r.motelCity))];
         this.allCards  = [...roomCards, ...motelCards];
 
-        // ✅ FIX: leer el estado ANTES de clear(), los datos ya están listos
         this.applyHeaderSearch();
 
         this.loading = false;
@@ -142,7 +137,7 @@ export class Explore implements OnInit {
     });
   }
 
-  // ── Header search ─────────────────────────────────────────────
+  // ── Header search ─────────────────────────────────────────────────────────
   private applyHeaderSearch() {
     const { department, city, query } = this.searchService.state();
 
@@ -155,7 +150,6 @@ export class Explore implements OnInit {
 
     const merged: Filters = {
       ...this.currentFilters,
-      // ✅ Guardar tal cual — la comparación normalizada ocurre en applyFilters
       cities:     city       ? [city]       : this.currentFilters.cities,
       department: department ? [department] : this.currentFilters.department,
     };
@@ -163,11 +157,11 @@ export class Explore implements OnInit {
     this.currentFilters = merged;
     this.applyFilters(merged, query);
 
-    // ✅ FIX: limpiar DESPUÉS de aplicar, no antes
+    // Limpiar DESPUÉS de aplicar
     this.searchService.clear();
   }
 
-  // ── Modal de filtros ──────────────────────────────────────────
+  // ── Modal de filtros ──────────────────────────────────────────────────────
   openModal() {
     const dialogRef = this.dialog.open<Filters>(FilterModal, {
       data: {
@@ -186,7 +180,7 @@ export class Explore implements OnInit {
     });
   }
 
-  // ── Filtrado principal ────────────────────────────────────────
+  // ── Filtrado principal ────────────────────────────────────────────────────
   applyFilters(filters: Filters, textQuery = '') {
     let result = [...this.allCards];
 
@@ -213,7 +207,6 @@ export class Explore implements OnInit {
       );
     }
 
-    // ✅ Filtro ciudad con normalización (sin tildes, sin mayúsculas)
     if (filters.cities.length) {
       const normalizedCities = filters.cities.map(normalize);
       result = result.filter(r =>
@@ -223,8 +216,6 @@ export class Explore implements OnInit {
       );
     }
 
-    // ✅ Filtro departamento con normalización robusta
-    //    Busca en location Y adress, soporta "bogota", "Bogotá D.C.", "bogota dc"
     if (filters.department?.length) {
       const normalizedDep = normalize(filters.department[0]);
       result = result.filter(r =>
@@ -241,15 +232,14 @@ export class Explore implements OnInit {
       );
     }
 
-    // ✅ Búsqueda de texto libre también normalizada
     if (textQuery.trim()) {
       const q = normalize(textQuery);
       result = result.filter(c =>
         normalize(
-          c.motelName        +
+          c.motelName            +
           (c.roomType    ?? '') +
-          c.location         +
-          c.adress           +
+          c.location            +
+          c.adress              +
           (c.descripcion ?? '')
         ).includes(q)
       );

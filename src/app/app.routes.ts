@@ -10,8 +10,9 @@ import { DashboardAdmin } from './views/dashboard/admin/admin';
 /* login */
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
-/** Register  */
-import { CreateMotelComponent } from './views/Forms/register/establecimiento/components/create-motel.component';
+/** Register  */ 
+import { CreateMotelComponent } from './views/Forms/create-motel/components/create-motel.component';
+import { CreateRoomComponent } from './views/Forms/create-room/components/create-room.component';
 
 import { RegisterUser } from './views/Forms/register/register-user-client/components/register-user';
 import { RegisterSelect } from './views/Forms/register/register-select/register-select';
@@ -27,6 +28,7 @@ import { EditProfileComponent } from './views/user-profile/edit-profile/edit-pro
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
 import { permissionGuard } from './core/guards/permission.guard';
 import { DashboardOwner } from './views/dashboard/owner/owner';
+import { MotelProfile } from './views/motel-profile/motel-profile';
 
 import { PaymentSuccessComponent } from './views/payment/payment-success';
 import { PaymentFailureComponent } from './views/payment/payment-failure';
@@ -34,7 +36,7 @@ import { PaymentFailureComponent } from './views/payment/payment-failure';
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
-  //  { path: 'profile-motel', component: MotelProfile },
+  { path: 'motelProfile/:id', component: MotelProfile },
 
   { path: 'rooms-motel', component: RoomsMotel },
   { path: 'rooms-offerts', component: RoomsOfferts },
@@ -61,6 +63,7 @@ export const routes: Routes = [
   },
   { path: 'login', component: LoginComponent },
   { path: 'create-motel', component: CreateMotelComponent },
+  { path: 'create-room', component: CreateRoomComponent },
 
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'listProperty', component: PropertyUserComponent },
