@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { Map as AppMap } from '../../components/map/map';
@@ -12,7 +12,7 @@ import { Dialog } from '@angular/cdk/dialog';
   selector: 'app-product-room',
   standalone: true,
   templateUrl: './product-room.html',
-  imports: [CommonModule, AppMap, Button01],
+  imports: [CommonModule, AppMap, Button01, RouterLink],
 })
 export class ProductRoom implements OnInit {
   private roomService = inject(RoomService);
@@ -59,11 +59,11 @@ export class ProductRoom implements OnInit {
     });
   }
 
-  constructor(private dialog: Dialog) {}
+  constructor(private dialog: Dialog) { }
 
   openPayment() {
-      this.dialog.open(PaymentModal, {
-        data: { id: this.room?.id }
-      });
-    }
+    this.dialog.open(PaymentModal, {
+      data: { id: this.room?.id }
+    });
+  }
 }
