@@ -13,7 +13,7 @@ import { Dialog } from '@angular/cdk/dialog';
   selector: 'app-product-room',
   standalone: true,
   templateUrl: './product-room.html',
-  imports: [CommonModule, FormsModule, AppMap, Button01, RouterLink],
+  imports: [CommonModule, FormsModule, AppMap, RouterLink],
 })
 export class ProductRoom implements OnInit {
   private roomService = inject(RoomService);
