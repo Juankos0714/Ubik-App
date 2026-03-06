@@ -1,24 +1,111 @@
-<div class="relative overflow-hidden rounded-xl bg-gray-900 text-white h-50 max-w-sm min-w-xs ">
-    <!-- Imagen de fondo -->
-    <div class="absolute inset-0">
-        <img [src]="cardHabitacion.imagen" alt="habitacion" class="h-full w-full object-cover opacity-40 "/>
+<div class="group relative flex flex-col w-72 rounded-3xl overflow-hidden
+            bg-zinc-900 border border-white/[0.07]
+            shadow-xl shadow-black/40
+            hover:shadow-2xl hover:shadow-red-900/20
+            hover:-translate-y-2 hover:border-white/15
+            transition-all duration-300 ease-out cursor-pointer">
+
+  <!-- ══ IMAGEN ════════════════════════════════════════════════════ -->
+  <div class="relative h-44 overflow-hidden shrink-0">
+    <img
+      [src]="cardHabitacion.imagen"
+      [alt]="cardHabitacion.nombre"
+      class="w-full h-full object-cover
+             group-hover:scale-105 transition-transform duration-700 ease-out"
+    />
+    <!-- Gradiente inferior -->
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent
+                group-hover:via-zinc-900/10 transition-all duration-300"></div>
+
+    <!-- Número de habitación ── arriba izquierda -->
+    @if (cardHabitacion.number) {
+      <div class="absolute top-3 left-3
+                  bg-black/70 backdrop-blur-md border border-white/10
+                  rounded-xl px-2.5 py-1 shadow-lg">
+        <span class="text-[10px] font-bold text-gray-300 tracking-widest uppercase">
+          Hab. {{ cardHabitacion.number }}
+        </span>
+      </div>
+    }
+
+    <!-- Tipo de habitación ── arriba derecha -->
+    @if (cardHabitacion.tipo) {
+      <div class="absolute top-3 right-3
+                  bg-red-500/20 backdrop-blur-md border border-red-500/30
+                  rounded-xl px-2.5 py-1 shadow-lg">
+        <span class="text-[10px] font-bold text-red-300 tracking-wider uppercase">
+          {{ cardHabitacion.tipo }}
+        </span>
+      </div>
+    }
+
+    <!-- Precio ── abajo derecha solapado -->
+    @if (cardHabitacion.price) {
+      <div class="absolute bottom-3 right-3 flex flex-col items-end
+                  bg-black/70 backdrop-blur-md border border-white/10
+                  rounded-2xl px-3 py-1.5 shadow-lg">
+        <span class="text-[8px] font-semibold text-gray-400 uppercase tracking-[0.15em] leading-none">
+          por noche
+        </span>
+        <span class="text-sm font-bold text-white leading-tight mt-0.5">
+          {{ cardHabitacion.price | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- ══ CONTENIDO ═════════════════════════════════════════════════ -->
+  <div class="flex flex-col flex-1 px-4 py-4 gap-3">
+
+    <!-- Nombre + descripción -->
+    <div class="flex flex-col gap-1.5">
+      <h3 class="text-white font-bold text-base leading-snug line-clamp-1 tracking-tight">
+        {{ cardHabitacion.nombre }}
+      </h3>
+      @if (cardHabitacion.descripcion) {
+        <p class="text-gray-500 text-[11px] line-clamp-2 leading-relaxed">
+          {{ cardHabitacion.descripcion }}
+        </p>
+      }
     </div>
 
-    <!-- Contenido -->
-    <div class="relative p-4">
-        <h2 class="text-2xl font-bold tracking-wide">{{cardHabitacion.nombre}}</h2>
-        <p class="mt-2 text-sm leading-relaxed text-gray-200 h-17 max-h-full line-clamp-2">
-            {{cardHabitacion.descripcion}}
-        </p>
-    </div>
+    <div class="flex-1"></div>
+
+    <!-- Servicios -->
+    @if (cardHabitacion.servicios.length) {
+      <div class="flex flex-wrap gap-1.5">
+        @for (servicio of cardHabitacion.servicios; track servicio) {
+          <span class="text-[10px] font-medium text-gray-400
+                       bg-white/[0.05] border border-white/[0.07]
+                       rounded-lg px-2 py-1 leading-none">
+            {{ servicio }}
+          </span>
+        }
+      </div>
+    }
 
     <!-- Divider -->
-    <div class="mt-3 w-full border-t border-white"></div>
+    <div class="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
 
-    <!-- Características -->
-    <div class="relative flex justify-between px-8 py-2 text-base font-semibold">
-        @for (servicio of cardHabitacion.servicios; track servicio) {
-            <span>{{servicio}}</span>
-        }
+    <!-- Footer -->
+    <div class="flex items-center justify-between ">
+      <div class="flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] rounded-xl px-2.5 py-1.5">
+        <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-400
+                     shadow-[0_0_6px_theme(colors.emerald.400)]"></span>
+        <span class="text-[11px] font-medium text-emerald-400">Disponible</span>
+      </div>
+      <span class="flex items-center gap-1 text-[11px] font-semibold
+                   text-red-400 group-hover:text-red-300
+                   bg-red-500/10 group-hover:bg-red-500/20
+                   border border-red-500/20 group-hover:border-red-400/40
+                   rounded-xl px-3 py-1.5 transition-all duration-200">
+        Ver hab.
+        <svg class="w-3 h-3 group-hover:translate-x-0.5 transition-transform duration-200"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+        </svg>
+      </span>
     </div>
+
+  </div>
 </div>
