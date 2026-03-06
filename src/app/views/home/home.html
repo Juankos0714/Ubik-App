@@ -1,4 +1,4 @@
-<div class="w-full px-4 sm:px-6 lg:px-8 lg:max-w-[1400px] lg:mx-auto flex flex-col gap-20 mt-12 pb-24">
+<div class="w-full px-4 sm:px-6 lg:px-8 lg:max-w-1400px lg:mx-auto flex flex-col gap-20 mt-12 pb-24">
 
   <!-- ── Moteles Cercanos ─────────────────────────────────────── -->
   <section>
@@ -16,7 +16,7 @@
       <button
         (click)="scrollLeft(nearbyMotelsCarousel)"
         class="hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
+               w-12 h-12 items-center justify-center rounded-full
                bg-black/70 border border-white/20 text-white text-xl
                opacity-0 group-hover:opacity-100 hover:bg-black/90
                transition-all duration-200 cursor-pointer shadow-lg">
@@ -37,7 +37,7 @@
         } @else {
           @for (motel of motelesCercanos; track motel.id) {
             <div class="snap-start shrink-0">
-              <app-card [card]="motel"></app-card>
+              <app-card-motel [motel]="motel"></app-card-motel>
             </div>
           }
         }

@@ -1,39 +1,94 @@
-<div
-  class="shrink-0 w-60 sm:w-64 md:w-72 
-         min-h-80 sm:min-h-[340px] md:min-h-[360px]
-         max-h-80 sm:max-h-[340px] md:max-h-[360px]
-         bg-[#1e2128] rounded-2xl overflow-hidden shadow-lg
-         flex flex-col"
->
-  <img
-    [src]="card.imageUrls.length ? card.imageUrls[0] : './assets/images/ubikLogo.jpg'"
-    class="w-full h-40 object-cover"
-  />
+<div class="group relative flex flex-col w-72 rounded-3xl overflow-hidden
+            bg-zinc-900 border border-white/[0.07]
+            shadow-xl shadow-black/40
+            hover:shadow-2xl hover:shadow-red-900/20
+            hover:-translate-y-2 hover:border-white/15
+            transition-all duration-300 ease-out
+            min-h-80 sm:min-h-[340px] md:min-h-[360px]
+            max-h-80 sm:max-h-[340px] md:max-h-[360px]">
 
-  <div class="p-4 flex flex-col flex-1">
-    <h2 class="text-white font-bold mb-1 truncate">
-      {{ card.roomType }}
-    </h2>
+  <!-- ══ IMAGEN ════════════════════════════════════════════════════ -->
+  <div class="relative h-44 overflow-hidden shrink-0">
+    <img
+      [src]="card.imageUrls.length ? card.imageUrls[0] : './assets/images/ubikLogo.jpg'"
+      [alt]="card.roomType"
+      class="w-full h-full object-cover
+             group-hover:scale-105 transition-transform duration-700 ease-out"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent
+                group-hover:via-zinc-900/10 transition-all duration-300"></div>
 
-    @if (showDescription) {
-      <p class="text-gray-300 text-xs mb-3 line-clamp-2 overflow-hidden text-ellipsis">
+    <!-- Tipo de habitación ── arriba izquierda -->
+    <div class="absolute top-3 left-3
+                bg-black/70 backdrop-blur-md border border-white/10
+                rounded-xl px-2.5 py-1 shadow-lg">
+      <span class="text-[10px] font-bold text-gray-300 tracking-widest uppercase">
+        {{ card.roomType }}
+      </span>
+    </div>
+
+    <!-- Precio ── arriba derecha -->
+    @if (card.price) {
+      <div class="absolute top-3 right-3 flex flex-col items-end
+                  bg-black/70 backdrop-blur-md border border-white/10
+                  rounded-2xl px-3 py-1.5 shadow-lg">
+          <span class="text-[11px] font-medium"
+                [class]="card.isAvailable ? 'text-emerald-400' : 'text-gray-600'">
+            {{ card.isAvailable ? 'Disponible' : 'Ocupada' }}
+          </span>
+        <span class="text-sm font-bold text-white leading-tight mt-0.5">
+          {{ card.price | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+        </span>
+      </div>
+    }
+
+    <!-- Motel ── abajo izquierda -->
+    @if (card.motelName) {
+      <div class="absolute bottom-3 left-3 flex items-center gap-1.5">
+        <svg class="w-3 h-3 shrink-0 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+            clip-rule="evenodd"/>
+        </svg>
+        <span class="text-[10px] text-gray-300 font-medium drop-shadow line-clamp-1">{{ card.motelName }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- ══ CONTENIDO ═════════════════════════════════════════════════ -->
+  <div class="flex flex-col flex-1 px-4 py-4 gap-3">
+
+    <!-- Descripción -->
+    @if (showDescription && card.description) {
+      <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed">
         {{ card.description }}
       </p>
     }
 
-    <div class="flex justify-between gap-2 mt-auto">
-      <app-button-01
-        text="Reserva"
-        [routerLink]="['/roominfo']"
-        [id]="card.id"
-        action="reservar"
-      ></app-button-01>
+    <div class="flex-1"></div>
 
-      <app-button-02
-        text="Ver más"
-        [routerLink]="'/roominfo'"
-        [queryParams]="{ id: card.id }"
-      ></app-button-02>
+    <!-- Divider -->
+    <div class="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+    <!-- Footer: disponibilidad + botones -->
+    <div class="flex items-center justify-between gap-1 flex-col">
+
+
+      <!-- Botones -->
+      <div class="flex gap-8">
+        <app-button-01
+          text="Reservar"
+          [id]="card.id"
+          action="reservar"
+        ></app-button-01>
+        <app-button-02
+          text="Ver más"
+          [routerLink]="'/roominfo'"
+          [queryParams]="{ id: card.id }"
+        ></app-button-02>
+      </div>
+
     </div>
+
   </div>
 </div>
