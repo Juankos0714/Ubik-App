@@ -47,7 +47,7 @@ interface MotelEditForm {
   selector: 'app-motel-profile',
   standalone: true,
   templateUrl: './motel-profile.html',
-  imports: [CommonModule, FormsModule, RouterLink, Card],
+  imports: [CommonModule, FormsModule, Card],
 })
 export class MotelProfile implements OnInit {
 

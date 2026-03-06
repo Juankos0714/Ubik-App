@@ -72,6 +72,11 @@ export class MotelService {
     if (!this.isBrowser) return EMPTY as Observable<Motel>;
     return this.http.get<Motel>(`${this.apiUrl}/profile`);
   }
+  // Traer todos los moteles 
+  getMotels(): Observable<Motel[]> {
+    if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
+    return this.http.get<Motel[]>(`${this.apiUrl}/motels`);
+  }
 
   // ────────────────────────────────────────────────────────────────────────────
   // IMÁGENES

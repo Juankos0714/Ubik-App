@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
+import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
+import { PaymentService } from '../../core/services/payment.service';
 import { RoomService, RoomReservation } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { environment } from '../../../environments/environment';
@@ -37,11 +38,21 @@ interface WeekDay {
 export class PaymentModal implements OnInit {
   room: Room | null = null;
   loading = true;
+  isSubmitting = false;
   error = false;
   reserving = false;
   formTouched = false;
 
   form!: FormGroup;
+
+  // ── Stripe ───────────────────────────────────────────────────────────────
+  stripe: Stripe | null = null;
+  elements: StripeElements | null = null;
+  clientSecret: string | null = null;
+  paymentId: number | null = null;
+  processingPayment = false;
+  paymentError: string | null = null;
+  paymentSuccess = false;
 
   // ── Mobile wizard ────────────────────────────────────────────────────────
   mobileStep = 1;
@@ -99,9 +110,11 @@ export class PaymentModal implements OnInit {
     private dialogRef: DialogRef<any>,
     @Inject(DIALOG_DATA) public data: { id?: number; date?: string; time?: string },
     private roomService: RoomService,
+    private paymentService: PaymentService,
     private fb: FormBuilder,
     private http: HttpClient,
-  ) {}
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -113,6 +126,7 @@ export class PaymentModal implements OnInit {
 
     this.buildCalendar();
     this.initializeTimeSlots();
+    this.initializeStripe();
 
     const id = this.data?.id;
     if (!id) {
@@ -144,6 +158,21 @@ export class PaymentModal implements OnInit {
         this.error = true;
         this.loading = false;
       },
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // Stripe Initialization
+  // ══════════════════════════════════════════════════════════════════════════
+  private initializeStripe(): void {
+    this.paymentService.getStripeConfig().subscribe({
+      next: async (config) => {
+        this.stripe = await loadStripe(config.publishableKey);
+      },
+      error: (err) => {
+        console.error('Error loading Stripe config:', err);
+        this.error = true;
+      }
     });
   }
 
@@ -552,6 +581,7 @@ export class PaymentModal implements OnInit {
     if (!this.canReserve || !this.room) return;
 
     this.reserving = true;
+    this.paymentError = null;
 
     const payload = {
       roomId: this.room.id,
@@ -567,19 +597,120 @@ export class PaymentModal implements OnInit {
       phone: this.form.value.phone,
     };
 
-    this.http
-      .post<{ checkoutUrl: string }>(`${environment.apiUrl}/reservations`, payload)
-      .subscribe({
-        next: (res) => {
-          this.reserving = false;
-          this.dialogRef.close({ success: true, payload });
-          if (res?.checkoutUrl) window.location.href = res.checkoutUrl;
-        },
-        error: (err) => {
-          console.error('Error creando reserva:', err);
-          this.reserving = false;
-        },
+    // First create the reservation
+    this.paymentService.createReservation(
+      payload.roomId,
+      payload.motelId,
+      payload.totalPrice,
+      101, // Mock user ID or extracted correctly from token/auth context
+      `${payload.date}T${payload.startTime}:00`,
+      `${payload.date}T${payload.endTime}:00`
+    ).subscribe({
+      next: (res: any) => {
+        const reservationId = res.id;
+
+        // Next, create the Payment Intent for Stripe
+        this.paymentService.createPaymentIntent(reservationId, payload.totalPrice).subscribe({
+          next: (intentRes) => {
+            this.reserving = false;
+            this.clientSecret = intentRes.clientSecret;
+            this.paymentId = intentRes.paymentId;
+
+            // Move to Stripe Payment step
+            this.mobileStep = 3;
+            this.mountStripeElements();
+          },
+          error: (err) => {
+            console.error('Error creating payment intent:', err);
+            this.paymentError = 'No se pudo inicializar el pago seguro.';
+            this.reserving = false;
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error creando reserva:', err);
+        this.paymentError = 'Error al crear la reserva.';
+        this.reserving = false;
+      },
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // Stripe Payment Flow
+  // ══════════════════════════════════════════════════════════════════════════
+  private mountStripeElements(): void {
+    if (!this.stripe || !this.clientSecret) return;
+
+    // Force Angular to re-render the @if(mobileStep === 3) block
+    // so #payment-element exists in the DOM before mount() is called
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      // Detectar qué contenedor existe en el DOM (desktop o mobile)
+      const container =
+        document.getElementById('payment-element-desktop') ||
+        document.getElementById('payment-element-mobile');
+
+      if (!container) {
+        console.error('Stripe: no se encontró #payment-element-desktop ni #payment-element-mobile en el DOM');
+        return;
+      }
+
+      this.elements = this.stripe!.elements({
+        clientSecret: this.clientSecret!,
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorPrimary: '#A72027',
+            colorBackground: '#1a1a1f',
+            colorText: '#ffffff',
+            colorDanger: '#ff4d4f',
+            fontFamily: 'DM Sans, sans-serif',
+            borderRadius: '8px',
+          }
+        }
       });
+
+      const paymentElement = this.elements.create('payment');
+      paymentElement.mount(`#${container.id}`);
+
+      // Notificar a Angular que this.elements ya está listo para habilitar el botón
+      this.cdr.detectChanges();
+    }, 400);
+  }
+
+  async confirmPayment(): Promise<void> {
+    if (!this.stripe || !this.elements) return;
+
+    this.processingPayment = true;
+    this.paymentError = null;
+
+    const { error } = await this.stripe.confirmPayment({
+      elements: this.elements,
+      confirmParams: {
+        // Return URL is usually required for some payment methods, like 3D Secure
+        // You can point this back to your booking page or a specific success route
+        return_url: window.location.origin + '/reservations/success',
+      },
+      redirect: 'if_required' // We handle success locally down below without full redirect if possible
+    });
+
+    if (error) {
+      // Show error to your customer (e.g., insufficient funds)
+      this.paymentError = error.message || 'El pago fue rechazado o cancelado.';
+      this.processingPayment = false;
+      this.cdr.detectChanges(); // Forzar re-render para mostrar el mensaje de error
+    } else {
+      // The payment has been processed!
+      this.processingPayment = false;
+      this.paymentSuccess = true;
+      this.cdr.detectChanges(); // Forzar re-render para mostrar el estado de éxito
+
+      // Give the user a moment to see the success state, then close the modal
+      setTimeout(() => {
+        this.dialogRef.close({ success: true, paymentId: this.paymentId });
+      }, 2000);
+    }
   }
 
   close(): void {

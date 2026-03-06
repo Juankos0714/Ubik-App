@@ -30,6 +30,9 @@ import { permissionGuard } from './core/guards/permission.guard';
 import { DashboardOwner } from './views/dashboard/owner/owner';
 import { MotelProfile } from './views/motel-profile/motel-profile';
 
+import { PaymentSuccessComponent } from './views/payment/payment-success';
+import { PaymentFailureComponent } from './views/payment/payment-failure';
+
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
@@ -37,6 +40,10 @@ export const routes: Routes = [
 
   { path: 'rooms-motel', component: RoomsMotel },
   { path: 'rooms-offerts', component: RoomsOfferts },
+
+  /*========== PAYMENTS ==========*/
+  { path: 'payment/success', component: PaymentSuccessComponent },
+  { path: 'payment/failure', component: PaymentFailureComponent },
 
   /*========== REGISTER / LOGUIN ==========*/
 
