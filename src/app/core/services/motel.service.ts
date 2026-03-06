@@ -23,8 +23,35 @@ export class MotelService {
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // MOTEL CRUD (tu base)
+  // PÚBLICO — No requiere autenticación
   // ────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Trae TODOS los moteles públicos (para la página Explore).
+   * Usa el endpoint público /motels sin requerir token.
+   */
+  getAllMotels(): Observable<Motel[]> {
+    if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
+    return this.http.get<Motel[]>(`${this.apiUrl}/motels`);
+  }
+
+  getMotelById(id: number): Observable<Motel> {
+    if (!this.isBrowser) return EMPTY as Observable<Motel>;
+    return this.http.get<Motel>(`${this.apiUrl}/motels/${id}`);
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // PRIVADO — Requiere autenticación (solo para el dueño)
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Solo trae los moteles del usuario logueado (dueño).
+   * Usar en dashboard/owner, NO en Explore.
+   */
+  getMyMotels(): Observable<Motel[]> {
+    if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
+    return this.http.get<Motel[]>(`${this.apiUrl}/auth/motels/my-motels`);
+  }
 
   createMotel(payload: CreateMotelRequest): Observable<Motel> {
     if (!this.isBrowser) return EMPTY as Observable<Motel>;
@@ -34,16 +61,6 @@ export class MotelService {
   updateMotel(id: number, payload: Partial<CreateMotelRequest>): Observable<Motel> {
     if (!this.isBrowser) return EMPTY as Observable<Motel>;
     return this.http.put<Motel>(`${this.apiUrl}/motels/${id}`, payload);
-  }
-
-  getMyMotels(): Observable<Motel[]> {
-    if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
-    return this.http.get<Motel[]>(`${this.apiUrl}/auth/motels/my-motels`);
-  }
-
-  getMotelById(id: number): Observable<Motel> {
-    if (!this.isBrowser) return EMPTY as Observable<Motel>;
-    return this.http.get<Motel>(`${this.apiUrl}/motels/${id}`);
   }
 
   deleteMotel(id: number): Observable<void> {
@@ -62,14 +79,13 @@ export class MotelService {
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // NUEVO CONTRATO: IMÁGENES
+  // IMÁGENES
   // ────────────────────────────────────────────────────────────────────────────
+
   createMotelWithImages(payload: CreateMotelRequest) {
     return this.http.post<Motel>(`${this.apiUrl}/motels/with-images`, payload);
   }
 
-  
-  //SUBIR UNA IMAGEN (devuelve URL) 
   uploadImage(file: File, folder: string = 'Ubik'): Observable<UploadImageResponse> {
     if (!this.isBrowser) return EMPTY as Observable<UploadImageResponse>;
     const fd = new FormData();
@@ -77,18 +93,15 @@ export class MotelService {
     return this.http.post<UploadImageResponse>(`${this.apiUrl}/images/upload?folder=${folder}`, fd);
   }
 
-  // ASOCIAR COMO PERFIL
   setProfileImage(id: number, url: string) {
     return this.http.put<void>(`${this.apiUrl}/motels/${id}/images/profile`, { url });
   }
 
-  // ASOCIAR COMO PORTADA
   setCoverImage(motelId: number, url: string): Observable<Motel> {
     if (!this.isBrowser) return EMPTY as Observable<Motel>;
     return this.http.put<Motel>(`${this.apiUrl}/motels/${motelId}/images/cover`, { url });
   }
 
-  // GALERÍA
   addGalleryImages(motelId: number, images: File[]): Observable<{ count: number; urls: string[] }> {
     if (!this.isBrowser) return EMPTY as Observable<{ count: number; urls: string[] }>;
     const fd = new FormData();
@@ -96,28 +109,15 @@ export class MotelService {
     return this.http.post<{ count: number; urls: string[] }>(`${this.apiUrl}/motels/${motelId}/images`, fd);
   }
 
-  /**
-   * 🔴 ELIMINAR IMAGEN por ID
-   * DELETE /motels/{id}/images/{imageId}
-   */
   deleteImageById(motelId: number, imageId: number): Observable<{ ok: true }> {
     if (!this.isBrowser) return EMPTY as Observable<{ ok: true }>;
     return this.http.delete<{ ok: true }>(`${this.apiUrl}/motels/${motelId}/images/${imageId}`);
   }
 
-  /**
-   * 🔴 ELIMINAR IMAGEN por URL(s)
-   * DELETE /api/motels/{id}/images
-   * Body: string[]
-   *
-   * ⚠️ En Angular HttpClient, para enviar body en DELETE debes usar request(...)
-   */
   deleteImagesByUrl(motelId: number, urls: string[]): Observable<{ deleted: number }> {
     if (!this.isBrowser) return EMPTY as Observable<{ deleted: number }>;
     return this.http.request<{ deleted: number }>('DELETE', `${this.apiUrl}/motels/${motelId}/images`, {
       body: urls,
     });
   }
-
-
 }

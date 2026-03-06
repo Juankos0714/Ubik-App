@@ -4,11 +4,10 @@
   <div class="flex justify-between items-center mb-6 gap-4">
     <h1 class="text-3xl font-bold">Mis Propiedades</h1>
 
-    <button
-      class="bg-gradient-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45] hover:to-[#B73037] px-4 py-2 rounded-lg transition"
+    <app-button-01
+      text="+ Agregar Motel"
       routerLink="/create-motel">
-      + Crear Propiedad
-    </button>
+    </app-button-01>
   </div>
 
   <!-- Loading / Empty / List -->
@@ -26,7 +25,7 @@
       @for (property of properties; track property.id) {
         <div class="bg-zinc-900 rounded-xl overflow-hidden shadow-lg border border-white/5">
 
-          <!-- Imagen (array) -->
+          <!-- Imagen -->
           @if (property.mainImageUrl) {
             <img
               [src]="property.mainImageUrl"
@@ -42,41 +41,29 @@
           }
 
           <div class="p-4">
-            <h2 class="text-xl font-semibold">
-              {{ property.name }}
-            </h2>
-
-            <p class="opacity-70 text-sm mb-1">
-              📍 {{ property.city }}
-            </p>
-
-            <p class="opacity-70 text-sm mb-2">
-              🏠 {{ property.address }}
-            </p>
-
-            <p class="text-sm mb-3 line-clamp-2 opacity-90">
-              {{ property.description }}
-            </p>
+            <h2 class="text-xl font-semibold">{{ property.name }}</h2>
+            <p class="opacity-70 text-sm mb-1">📍 {{ property.city }}</p>
+            <p class="opacity-70 text-sm mb-2">🏠 {{ property.address }}</p>
+            <p class="text-sm mb-3 line-clamp-2 opacity-90">{{ property.description }}</p>
 
             <!-- Acciones -->
-            <div class="flex gap-2">
-              <button
-                class="bg-linear-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45]hover:to-[#B73037]   px-3 py-1 rounded transition"
-                [routerLink]="['/edit-property', property.id]">
-                Editar
-              </button>
+            <div class="flex gap-2 flex-wrap">
 
-              <button
-                class="bg-linear-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45]hover:to-[#B73037] px-3 py-1 rounded transition"
-                (click)="deleteProperty(property.id)">
-                Eliminar
-              </button>
+              <app-button-01
+                text="Página del Motel"
+                [routerLink]="['/motelProfile', property.id]">
+              </app-button-01>
 
-              <button
-                class="bg-linear-to-r from-[#6E2A35] to-[#A72027] hover:from-[#7E3A45]hover:to-[#B73037] px-3 py-1 rounded transition"
-                (click)="createRoom(property.id)">
-                Crear Habitación
-              </button>
+              <app-button-01
+                text="Eliminar"
+                (clicked)="deleteProperty(property.id)">
+              </app-button-01>
+
+              <app-button-01
+                text="Crear Habitación"
+                (clicked)="createRoom(property.id)">
+              </app-button-01>
+
             </div>
           </div>
         </div>

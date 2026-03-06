@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 
 import { PropertyUserService } from '../../core/services/list-motel.service';
 import { Motel, MotelImage } from '../../core/models/motel.model';
+import { Button01 } from "../button-01/button-01";
 
 export type MotelListItem = Motel & {
   // ✅ url lista para pintar en la card/lista
@@ -14,7 +15,7 @@ export type MotelListItem = Motel & {
 @Component({
   selector: 'app-property-user',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Button01],
   templateUrl: './property-user.component.html',
 })
 export class PropertyUserComponent implements OnInit {

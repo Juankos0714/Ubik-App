@@ -19,6 +19,7 @@ import { Service } from '../../core/models/services.model';
 
 // ── Modal de pago ─────────────────────────────────────────────────────────────
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
+import { Card } from '../../components/card/card';
 
 // ── Tipos auxiliares ──────────────────────────────────────────────────────────
 interface CalendarDay {
@@ -46,7 +47,7 @@ interface MotelEditForm {
   selector: 'app-motel-profile',
   standalone: true,
   templateUrl: './motel-profile.html',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, Card],
 })
 export class MotelProfile implements OnInit {
 
@@ -134,11 +135,13 @@ export class MotelProfile implements OnInit {
 
   private loadRooms(motelId: number): void {
     this.loading = true;
-    this.roomService.getRoomsByMotel(motelId).subscribe({
-      next: (rooms) => {
-        this.rooms = rooms;
+    // Usamos getRooms() público y filtramos por motelId en el cliente,
+    // ya que getRoomsByMotel() puede requerir autenticación.
+    this.roomService.getRooms().subscribe({
+      next: (allRooms) => {
+        this.rooms = allRooms.filter(r => r.motelId === motelId);
         const now = new Date();
-        rooms.forEach((r) =>
+        this.rooms.forEach((r) =>
           this.calendarStates.set(r.id, {
             year: now.getFullYear(), month: now.getMonth(),
             selectedDay: null, selectedTime: null,

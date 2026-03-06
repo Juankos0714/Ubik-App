@@ -33,7 +33,7 @@
         <!-- ✅ Link al motel solo si hay motelId (rooms) -->
         @if (card.type === 'room' && card.motelId) {
           <a
-            [routerLink]="['/motelProfile', card.motelId]"
+            [routerLink]="['/motelProfile', card.motelId!]"
             class="text-sm text-gray-300 hover:text-gray-100"
           >
             {{ card.motelName }}
@@ -78,19 +78,27 @@
 
       <div class="flex gap-3 flex-col">
 
-        <!-- ✅ Reservar solo para rooms; para moteles mostrar "Ver motel" -->
         @if (card.type === 'room') {
-          <app-button-01
-            text="Reservar"
-            [fullWidth]="true"
-            (clicked)="openPayment()">
-          </app-button-01>
+          <!-- Reservar + Ver más info lado a lado -->
+          <div class="flex gap-2">
+            <app-button-01
+              text="Reservar"
+              [fullWidth]="true"
+              (clicked)="openPayment()">
+            </app-button-01>
+
+            <app-button-01
+              text="Ver más info"
+              [fullWidth]="true"
+              [routerLink]="['/motelProfile', card.motelId!]">
+            </app-button-01>
+          </div>
         } @else {
-          <a
-            [routerLink]="['/motelProfile', card.id]"
-            class="w-full text-center bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg px-4 py-2 transition">
-            Ver motel
-          </a>
+          <app-button-01
+            text="Ver motel"
+            [fullWidth]="true"
+            [routerLink]="['/motelProfile', card.id]">
+          </app-button-01>
         }
 
         <button
