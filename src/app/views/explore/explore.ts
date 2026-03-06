@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { RoomService }    from '../../core/services/room.service';
@@ -12,11 +13,13 @@ import { Motel }   from '../../core/models/motel.model';
 import { Service } from '../../core/models/services.model';
 
 import { FilterModal, Filters } from '../../components/filter-modal/filter-modal';
+import { Button01 }             from '../../components/button-01/button-01';
 import { Button02 }             from '../../components/button-02/button-02';
 import { Card3, Card3Informacion } from '../../components/card-3/card-3';
 import { Map as MapComponent, MapPoint } from '../../components/map/map';
 import { LoadingCard3 }         from '../../components/loading-card-3/loading-card-3';
 import { SearchService }        from '../../core/services/search.service';
+import { PaymentModal }         from '../../components/payment-modal/payment-modal';
 
 /**
  * Normaliza un string para comparación robusta:
@@ -36,7 +39,7 @@ function normalize(str: string): string {
   selector: 'app-explore',
   standalone: true,
   templateUrl: './explore.html',
-  imports: [CommonModule, Button02, Card3, MapComponent, LoadingCard3],
+  imports: [CommonModule, Button01, Button02, Card3, MapComponent, LoadingCard3, RouterLink],
 })
 export class Explore implements OnInit {
 
@@ -45,6 +48,9 @@ export class Explore implements OnInit {
   private serviceService = inject(ServiceService);
   private dialog         = inject(Dialog);
   private searchService  = inject(SearchService);
+
+  /** Referencia al mapa mobile para forzar invalidateSize al abrir */
+  @ViewChild('mobileMap') mobileMapRef?: MapComponent;
 
   allCards: Card3Informacion[] = [];
   cards:    Card3Informacion[] = [];
@@ -60,6 +66,12 @@ export class Explore implements OnInit {
   activePoint:  MapPoint | null = null;
   skeletonItems = Array.from({ length: 5 });
   searchInputValue = '';
+
+  // ── Mobile map state ────────────────────────────────────────────────────
+  mobileMapOpen    = false;
+  mobileMapCard:   Card3Informacion | null = null;
+  mobileMapPoints: MapPoint[] = [];
+  mobileActivePoint: MapPoint | null = null;
 
   currentFilters: Filters = {
     priceMin:      null,
@@ -83,12 +95,11 @@ export class Explore implements OnInit {
 
     forkJoin({
       rooms:    this.roomService.getRooms(),
-      motels:   this.motelService.getMyMotels(),
+      motels:   this.motelService.getAllMotels(),   // ✅ endpoint público, sin auth
       services: this.serviceService.getServices(),
     }).subscribe({
       next: ({ rooms, motels, services }) => {
 
-        // Deduplicar servicios por id (fix NG0955)
         this.services = [...new Map((services as Service[]).map(s => [s.id, s])).values()];
 
         const roomCards: Card3Informacion[] = (rooms as Room[]).map(room => ({
@@ -99,7 +110,6 @@ export class Explore implements OnInit {
           numberHab:   room.number,
           roomType:    room.roomType,
           descripcion: room.description,
-          // Room.imageUrls es string[] → acceso directo
           image:       room.imageUrls?.[0] ?? './assets/images/ubikLogo.jpg',
           location:    room.motelCity,
           adress:      room.motelAddress,
@@ -115,10 +125,14 @@ export class Explore implements OnInit {
           type:        'motel' as const,
           motelName:   motel.name,
           descripcion: motel.description ?? '',
-          image:       motel.imageUrls?.[0]?.url ?? './assets/images/ubikLogo.jpg',
+          // imageUrls es MotelImage[] con campo .url
+          image:       motel.imageUrls?.find(i => i.role === 'COVER')?.url
+                    ?? motel.imageUrls?.[0]?.url
+                    ?? './assets/images/ubikLogo.jpg',
           location:    motel.city,
           adress:      motel.address,
-          lat:         motel.latitude ?? undefined,
+          // Convertir null → undefined para el filtro del mapa
+          lat:         motel.latitude  ?? undefined,
           lng:         motel.longitude ?? undefined,
         }));
 
@@ -157,7 +171,6 @@ export class Explore implements OnInit {
     this.currentFilters = merged;
     this.applyFilters(merged, query);
 
-    // Limpiar DESPUÉS de aplicar
     this.searchService.clear();
   }
 
@@ -254,8 +267,13 @@ export class Explore implements OnInit {
 
   private mapPoints(cards: Card3Informacion[]): MapPoint[] {
     return cards
-      .filter(c => c.lat != null && c.lng != null)
-      .map(c => ({ lat: c.lat!, lng: c.lng!, name: c.motelName, id: c.id }));
+      .filter(c => c.lat != null && c.lng != null && c.lat !== 0 && c.lng !== 0)
+      .map(c => ({
+        lat:  c.lat!,
+        lng:  c.lng!,
+        name: c.type === 'room' ? `${c.motelName} — ${c.roomType}` : c.motelName,
+        id:   c.id,
+      }));
   }
 
   onSearchInput(value: string) {
@@ -267,5 +285,48 @@ export class Explore implements OnInit {
     }
 
     this.applyFilters(this.currentFilters, value);
+  }
+
+  // ── Ver ubicación: desktop vs mobile ─────────────────────────────────────
+
+  onViewLocation(event: { lat: number; lng: number; name: string; id: number }) {
+    const card = this.allCards.find(c => c.id === event.id) ?? null;
+
+    const isMobile = window.innerWidth < 1024; // lg breakpoint
+
+    if (isMobile) {
+      // Abrir modal de mapa mobile
+      this.mobileMapCard   = card;
+      this.mobileMapPoints = card?.lat != null && card?.lng != null
+        ? [{ lat: card.lat!, lng: card.lng!, name: event.name, id: event.id }]
+        : [];
+      this.mobileActivePoint = this.mobileMapPoints[0] ?? null;
+      this.mobileMapOpen = true;
+
+      // Bloquear scroll del body mientras el modal está abierto
+      document.body.style.overflow = 'hidden';
+
+      // Forzar recálculo del tamaño del mapa tras render
+      setTimeout(() => this.mobileMapRef?.invalidateSize(), 200);
+
+    } else {
+      // Desktop: comportamiento original, hacer pan en el mapa de la derecha
+      this.activePoint = event;
+    }
+  }
+
+  closeMobileMap() {
+    this.mobileMapOpen     = false;
+    this.mobileMapCard     = null;
+    this.mobileActivePoint = null;
+    document.body.style.overflow = '';
+  }
+
+  openPaymentFromMap() {
+    if (!this.mobileMapCard) return;
+    this.dialog.open(PaymentModal, {
+      data: { id: this.mobileMapCard.id }
+    });
+    this.closeMobileMap();
   }
 }

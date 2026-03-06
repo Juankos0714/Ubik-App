@@ -8,6 +8,8 @@ import {
   SimpleChanges,
   ElementRef,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { getUserLocation } from './geolocation';
@@ -31,6 +33,9 @@ export class Map implements AfterViewInit, OnChanges {
   @Input() points: MapPoint[] = [];
   @Input() active: MapPoint | null = null;
 
+  /** Emite cuando el usuario hace click en un marker de motel/habitación */
+  @Output() markerClicked = new EventEmitter<MapPoint>();
+
   @ViewChild('mapContainer', { static: false })
   mapContainer!: ElementRef<HTMLDivElement>;
 
@@ -40,9 +45,14 @@ export class Map implements AfterViewInit, OnChanges {
   private L!: typeof import('leaflet');
   private markerLayer!: import('leaflet').LayerGroup;
   private userLatLng?: [number, number];
+  private watchId?: number;
 
   private userIcon!: import('leaflet').Icon;
   private motelIcon!: import('leaflet').Icon;
+  private userMarker?: import('leaflet').Marker;
+
+  /** Flag: ya se hizo el zoom inicial al usuario (para no repetirlo) */
+  private userZoomDone = false;
 
   /* =========================
      INIT
@@ -81,11 +91,19 @@ export class Map implements AfterViewInit, OnChanges {
 
     setTimeout(() => this.map.invalidateSize());
 
-    await this.initializeLocation();
-
-    // 🔥 Si ya había puntos antes de que el mapa terminara de cargar
+    // 1️⃣ Primero pintar los markers que ya hayan llegado
     if (this.points.length) {
       this.renderMarkers();
+    }
+
+    // 2️⃣ Luego (en paralelo, sin bloquear) iniciar geolocalización
+    this.initializeLocation();
+  }
+
+  ngOnDestroy() {
+    // Limpiar el watcher de geolocalización al destruir el componente
+    if (typeof navigator !== 'undefined' && this.watchId != null) {
+      navigator.geolocation.clearWatch(this.watchId);
     }
   }
 
@@ -98,41 +116,114 @@ export class Map implements AfterViewInit, OnChanges {
 
     if (changes['points']) {
       this.renderMarkers();
+
+      // Si los puntos acaban de llegar y ya tenemos ubicación del usuario
+      // pero aún no hicimos zoom → programar el zoom con delay
+      const pointsJustArrived = changes['points'].previousValue?.length === 0
+                             && this.points.length > 0;
+
+      if (pointsJustArrived && this.userLatLng && !this.userZoomDone) {
+        setTimeout(() => {
+          if (this.userLatLng && !this.userZoomDone) {
+            this.userZoomDone = true;
+            this.map.flyTo(this.userLatLng, 14, { animate: true, duration: 1.8 });
+          }
+        }, 2000);
+      }
     }
 
     if (changes['active'] && this.active) {
-      this.map.flyTo([this.active.lat, this.active.lng], 17);
+      this.map.flyTo([this.active.lat, this.active.lng], 17, {
+        animate: true,
+        duration: 1.2,
+      });
     }
   }
 
   /* =========================
-     USER LOCATION
+     USER LOCATION — TIEMPO REAL
   ========================== */
 
   private async initializeLocation() {
+    if (!navigator.geolocation) {
+      console.warn('Geolocalización no soportada');
+      return;
+    }
+
+    // Obtener posición inicial
     try {
       const location = await getUserLocation();
-
       this.userLatLng = [location.latitude, location.longitude];
+      this.placeUserMarker(this.userLatLng);
 
-      this.L.marker(this.userLatLng, { icon: this.userIcon })
-        .addTo(this.map)
-        .bindPopup('Tú estás aquí');
+      // ⏳ Solo hacer zoom al usuario si ya hay puntos (moteles) cargados.
+      // Si no hay puntos, significa que las habitaciones/moteles no cargaron — no hacemos zoom.
+      if (!this.userZoomDone && this.points.length > 0) {
+        setTimeout(() => {
+          if (this.userLatLng && !this.userZoomDone && this.points.length > 0) {
+            this.userZoomDone = true;
+            this.map.flyTo(this.userLatLng, 14, {
+              animate: true,
+              duration: 1.8,
+            });
+          }
+        }, 2000);
+      }
     } catch {
-      console.warn('No se pudo obtener ubicación');
+      console.warn('No se pudo obtener ubicación inicial');
+    }
+
+    // Seguimiento en tiempo real — solo actualiza el marker, no hace zoom
+    this.watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const newLatLng: [number, number] = [
+          pos.coords.latitude,
+          pos.coords.longitude,
+        ];
+        this.userLatLng = newLatLng;
+        this.placeUserMarker(newLatLng);
+      },
+      (err) => console.warn('watchPosition error:', err),
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 5000,
+      }
+    );
+  }
+
+  private placeUserMarker(latLng: [number, number]) {
+    if (!this.map || !this.L) return;
+
+    if (this.userMarker) {
+      // Mover suavemente el marker existente
+      this.userMarker.setLatLng(latLng);
+    } else {
+      this.userMarker = this.L.marker(latLng, { icon: this.userIcon })
+        .addTo(this.map)
+        .bindPopup('📍 Tú estás aquí');
     }
   }
+
+  /* =========================
+     MARKERS
+  ========================== */
 
   private renderMarkers() {
     if (!this.markerLayer) return;
 
-    // Limpiar markers anteriores
     this.markerLayer.clearLayers();
 
     for (const p of this.points) {
-      this.L.marker([p.lat, p.lng], { icon: this.motelIcon })
-        .bindPopup(p.name)
-        .addTo(this.markerLayer);
+      const marker = this.L.marker([p.lat, p.lng], { icon: this.motelIcon })
+        .bindPopup(p.name);
+
+      // Emitir evento al hacer click en un marker
+      marker.on('click', () => {
+        this.markerClicked.emit(p);
+      });
+
+      marker.addTo(this.markerLayer);
     }
 
     this.adjustView();
@@ -145,11 +236,9 @@ export class Map implements AfterViewInit, OnChanges {
   private adjustView() {
     if (!this.map) return;
 
+    // Solo usar los puntos de los moteles para el fitBounds inicial
+    // El zoom al usuario se hace por separado con delay
     const allPoints: [number, number][] = this.points.map(p => [p.lat, p.lng]);
-
-    if (this.userLatLng) {
-      allPoints.push(this.userLatLng);
-    }
 
     if (allPoints.length === 0) return;
 
@@ -160,5 +249,10 @@ export class Map implements AfterViewInit, OnChanges {
 
     const bounds = this.L.latLngBounds(allPoints);
     this.map.fitBounds(bounds, { padding: [50, 50] });
+  }
+
+  /** Fuerza recálculo del tamaño (útil al mostrar/ocultar el mapa en mobile) */
+  invalidateSize() {
+    setTimeout(() => this.map?.invalidateSize(), 100);
   }
 }
