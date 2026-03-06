@@ -12,33 +12,60 @@ export class AuthService {
   private _user = signal<any | null>(null);
   private _token = signal<string | null>(null);
 
-  // Opcional pero muy útil para guards/UI
   private _initialized = signal(false);
 
   user = computed(() => this._user());
   token = computed(() => this._token());
   role = computed(() => this._user()?.roleId ?? null);
   isLogged = computed(() => !!this._token());
-
   initialized = computed(() => this._initialized());
 
   isAdmin = computed(() => this.role() === 7392841056473829);
   isOwner = computed(() => this.role() === 3847261094857362);
   isUser = computed(() => this.role() === 9182736450192837);
 
+  // ===================== NUEVO: expiración + timer =====================
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'user';
+  private readonly EXPIRES_KEY = 'auth_expires_at';
+  private readonly DEFAULT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
+  private logoutTimer: ReturnType<typeof setTimeout> | null = null;
+  // ====================================================================
+
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
-
     if (!this.isBrowser) return;
 
-    // ✅ TOKEN: SOLO localStorage (persistente)
-    const rawToken = localStorage.getItem('auth_token');
+    const rawToken = localStorage.getItem(this.TOKEN_KEY);
     const token = rawToken ? this.normalizeToken(rawToken) : null;
-    if (token) this._token.set(token);
 
-    // ✅ USER: SOLO sessionStorage (no persistente)
-    const storedUser = sessionStorage.getItem('user');
+    // ✅ si hay token, valida expiración antes de setearlo
+    if (token) {
+      const expiresAt = this.getExpiresAtFromStorageOrToken(token);
+      if (!expiresAt || Date.now() >= expiresAt) {
+        this.logout();
+      } else {
+        this._token.set(token);
+        this.scheduleAutoLogout(expiresAt);
+      }
+    }
+
+    // ✅ USER (como lo tenías: localStorage)
+    const storedUser = localStorage.getItem(this.USER_KEY);
     if (storedUser) this._user.set(JSON.parse(storedUser));
+
+    // Opcional: revalidar al volver a la pestaña (por si expiró mientras estaba en background)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.checkExpiryAndLogoutIfNeeded();
+    });
+    window.addEventListener('focus', () => this.checkExpiryAndLogoutIfNeeded());
+
+    // Opcional: sincroniza logout entre pestañas
+    window.addEventListener('storage', (e) => {
+      if (e.key === this.TOKEN_KEY && !e.newValue) this.logout();
+      if (e.key === this.EXPIRES_KEY) this.checkExpiryAndLogoutIfNeeded();
+    });
   }
 
   private normalizeToken(token: string): string {
@@ -48,10 +75,75 @@ export class AuthService {
       .trim();
   }
 
+  // ===================== NUEVO: helpers expiración =====================
+
+  private getJwtExpMs(token: string): number | null {
+    // Si tu token NO es JWT, devuelve null y usamos DEFAULT_TTL_MS
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    try {
+      const payload = JSON.parse(this.base64UrlDecode(parts[1]));
+      const expSec = payload?.exp;
+      if (typeof expSec !== 'number') return null;
+      return expSec * 1000;
+    } catch {
+      return null;
+    }
+  }
+
+  private base64UrlDecode(input: string): string {
+    const pad = '='.repeat((4 - (input.length % 4)) % 4);
+    const base64 = (input + pad).replace(/-/g, '+').replace(/_/g, '/');
+    return decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+  }
+
+  private getExpiresAtFromStorageOrToken(token: string): number | null {
+    const raw = localStorage.getItem(this.EXPIRES_KEY);
+    const stored = raw ? Number(raw) : NaN;
+    if (!Number.isNaN(stored) && stored > 0) return stored;
+
+    // Si no estaba guardado, intenta leer exp del JWT; si no, usa 24h desde ahora
+    const fromJwt = this.getJwtExpMs(token);
+    return fromJwt ?? (Date.now() + this.DEFAULT_TTL_MS);
+  }
+
+  private persistExpiresAt(expiresAtMs: number) {
+    localStorage.setItem(this.EXPIRES_KEY, String(expiresAtMs));
+  }
+
+  private scheduleAutoLogout(expiresAtMs: number) {
+    if (!this.isBrowser) return;
+
+    if (this.logoutTimer) clearTimeout(this.logoutTimer);
+
+    const remaining = expiresAtMs - Date.now();
+    if (remaining <= 0) {
+      this.logout();
+      return;
+    }
+
+    this.logoutTimer = setTimeout(() => this.logout(), remaining);
+  }
+
+  private checkExpiryAndLogoutIfNeeded() {
+    if (!this.isBrowser) return;
+    const token = this._token();
+    if (!token) return;
+
+    const expiresAt = this.getExpiresAtFromStorageOrToken(token);
+    if (!expiresAt || Date.now() >= expiresAt) this.logout();
+  }
+
+  // ====================================================================
+
   /**
    * ✅ Llamar al arrancar la app (APP_INITIALIZER / provideAppInitializer)
-   * - Si hay token y NO hay user en session → pide /auth/me
-   * - Solo borra token si el backend responde 401/403
    */
   async restoreSession(): Promise<void> {
     if (!this.isBrowser) {
@@ -59,7 +151,7 @@ export class AuthService {
       return;
     }
 
-    const rawToken = localStorage.getItem('auth_token');
+    const rawToken = localStorage.getItem(this.TOKEN_KEY);
     const token = rawToken ? this.normalizeToken(rawToken) : null;
 
     if (!token) {
@@ -67,30 +159,33 @@ export class AuthService {
       return;
     }
 
-    this._token.set(token);
+    // ✅ valida expiración antes de continuar
+    const expiresAt = this.getExpiresAtFromStorageOrToken(token);
+    if (!expiresAt || Date.now() >= expiresAt) {
+      this.logout();
+      this._initialized.set(true);
+      return;
+    }
 
-    // Si ya tienes user en sessionStorage, no hace falta pegarle a /me
+    // ✅ set token + programa auto logout
+    this._token.set(token);
+    this.persistExpiresAt(expiresAt);
+    this.scheduleAutoLogout(expiresAt);
+
+    // Si ya tienes user en memoria, no hace falta pegarle a /me
     if (this._user()) {
       this._initialized.set(true);
       return;
     }
 
     try {
-      // ⚠️ IMPORTANTE:
-      // Usa tu base URL real. Si pones '/auth/me' y no tienes proxy/baseUrl,
-      // puede intentar pegarle al frontend (localhost) y fallar.
-      // Ideal: environment.apiUrl + '/auth/me'
       const me = await firstValueFrom(this.http.get<any>(`${environment.authUrl}/me`));
-
-      this.setUser(me); // guarda en memoria + sessionStorage
+      this.setUser(me);
     } catch (err: any) {
       const status = err?.status;
-
-      // ✅ Solo si token inválido / expirado
       if (status === 401 || status === 403) {
         this.logout();
       } else {
-        // ❗ No borres token si fue 404/500/CORS/etc
         console.warn('restoreSession: falló /me, pero se mantiene el token', err);
       }
     } finally {
@@ -106,19 +201,21 @@ export class AuthService {
 
     if (!this.isBrowser) return;
 
-    localStorage.setItem('auth_token', normalized);
-    sessionStorage.removeItem('auth_token'); // por si quedó algo viejo
+    localStorage.setItem(this.TOKEN_KEY, normalized);
+    sessionStorage.removeItem(this.TOKEN_KEY);
+
+    // ✅ NUEVO: guarda expiración (JWT exp si existe, si no 24h fijo)
+    const expiresAt = this.getJwtExpMs(normalized) ?? (Date.now() + this.DEFAULT_TTL_MS);
+    this.persistExpiresAt(expiresAt);
+    this.scheduleAutoLogout(expiresAt);
   }
 
-  /* ================= USER (sessionStorage) ================= */
+  /* ================= USER (localStorage como lo tenías) ================= */
 
   setUser(user: any) {
     this._user.set(user);
-
     if (!this.isBrowser) return;
-
-    sessionStorage.setItem('user', JSON.stringify(user));
-    localStorage.removeItem('user'); // limpieza de tu versión anterior
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
   /* ================= LOGOUT ================= */
@@ -129,11 +226,15 @@ export class AuthService {
 
     if (!this.isBrowser) return;
 
-    localStorage.removeItem('auth_token');
-    sessionStorage.removeItem('user');
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+      this.logoutTimer = null;
+    }
 
-    // limpieza por compatibilidad con versiones anteriores
-    sessionStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.EXPIRES_KEY);
+    sessionStorage.removeItem('user'); 
+    sessionStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
   }
 }

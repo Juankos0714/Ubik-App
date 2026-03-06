@@ -9,7 +9,7 @@ import { Motel } from '../models/motel.model';
 
 @Injectable({ providedIn: 'root' })
 export class PropertyUserService {
-  private baseUrl = `${environment.apiUrl}/auth/motels/my-motels`;
+  private baseUrl = `${environment.apiUrl}`;
   private isBrowser: boolean;
 
   constructor(
@@ -24,9 +24,8 @@ export class PropertyUserService {
    * Obtiene las propiedades del usuario logueado
    */
   getMyMotels(): Observable<Motel[]> {
-    //  Evita que SSR haga la llamada (sería 401 por no enviar Authorization)
     if (!this.isBrowser) return EMPTY as Observable<Motel[]>;
-    return this.http.get<Motel[]>(this.baseUrl);
+    return this.http.get<Motel[]>(`${this.baseUrl}/auth/motels/my-motels`);
   }
 
   /**
@@ -34,15 +33,16 @@ export class PropertyUserService {
    */
   deleteProperty(id: number): Observable<void> {
     if (!this.isBrowser) return EMPTY as Observable<void>;
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/motels/${id}`);
   }
+
 
   /**
    * Obtener una propiedad por id (para editar)
    */
   getPropertyById(id: number): Observable<Users> {
     if (!this.isBrowser) return EMPTY as Observable<Users>;
-    return this.http.get<Users>(`${this.baseUrl}/property/${id}`);
+    return this.http.get<Users>(`${this.baseUrl}/motels/${id}`);
   }
 
   /**

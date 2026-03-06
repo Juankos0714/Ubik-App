@@ -36,14 +36,17 @@ export interface CreateMotelRequest {
   description: string | null;
   city: string;
   propertyId: number;
-  imageUrls: string[];
   latitude: number | null;
   longitude: number | null;
+
   rues: string;
   rnt: string;
+
   ownerDocumentType: DocumentType;
   ownerDocumentNumber: string;
   ownerFullName: string;
   legalRepresentativeName: string | null;
   legalDocumentUrl: string | null;
+
+  imageUrls: string[];
 }

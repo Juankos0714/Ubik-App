@@ -1,135 +1,360 @@
-<div class="w-full px-4 sm:px-6 md:px-8 lg:max-w-[1200px] lg:mx-auto mt-16 mb-16">
-  @if(loading){
+<div class="min-h-screen text-white font-['DM_Sans',sans-serif]">
 
-    <div class="p-8 bg-white/5 rounded-lg text-center">Cargando habitación...</div>
-
-  } @else if (error) {
-
-    <div class="p-8 bg-red-600/10 text-red-500 rounded-lg">
-      Error al cargar la habitación.
+  <!-- ── LOADING ── -->
+  @if (loading) {
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="flex flex-col items-center gap-4 text-white/40">
+        <svg class="animate-spin w-8 h-8" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        <span class="text-sm tracking-widest uppercase">Cargando habitación...</span>
+      </div>
     </div>
-
   }
 
-  @if(!loading && !error && room){
-    <ng-container >
-      <nav class="text-sm text-gray-300 mb-4">
-        <a class="hover:underline" routerLink="/explore">Explorar</a>
-        <span class="px-2">/</span>
-        <span class="text-white">Habitación {{ room.number }}</span>
-      </nav>
+  <!-- ── ERROR ── -->
+  @if (!loading && error) {
+    <div class="flex items-center justify-center min-h-screen px-6">
+      <div class="bg-red-900/20 border border-red-600/30 rounded-2xl p-8 text-center max-w-md">
+        <svg class="w-12 h-12 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+        </svg>
+        <p class="text-red-400 font-semibold">Error al cargar la habitación</p>
+      </div>
+    </div>
+  }
 
-      <div class="bg-white/3 rounded-xl p-6 lg:p-8 grid gap-6 lg:grid-cols-3">
-        <!-- LEFT: Images + basic info -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
-          <!-- Images carousel -->
-          <div class="rounded-lg overflow-hidden bg-black/20">
-            <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide p-4">
-              @if (room.imageUrls && room.imageUrls.length > 0) {
-                @for (photo of room.imageUrls; track $index) {
-                  <img
-                    [src]="photo"
-                    [alt]="'Imagen habitación ' + room.number"
-                    [title]="'Imagen habitación ' + room.number"
-                    class="w-[320px] sm:w-[420px] md:w-[520px] h-60 md:h-72 object-cover rounded-lg shrink-0 snap-center"
-                  />
-                }
-              } @else {
-                <img
-                  src="./assets/images/ubikLogo.jpg"
-                  alt="Imagen por defecto"
-                  title="Imagen por defecto"
-                  class="w-full h-72 object-cover rounded-lg"
-                />
-              }
+  <!-- ── CONTENIDO ── -->
+  @if (!loading && !error && room) {
+
+    <!-- CARRUSEL HERO — full width -->
+    <div class="relative w-full h-[55vh] md:h-[65vh] overflow-hidden bg-black">
+
+      <!-- Slides -->
+      <div
+        class="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)]"
+        [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'"
+      >
+        @if (room.imageUrls && room.imageUrls.length > 0) {
+          @for (photo of room.imageUrls; track $index) {
+            <div class="relative shrink-0 w-full h-full">
+              <img
+                [src]="photo"
+                [alt]="'Imagen ' + ($index + 1) + ' — ' + room.roomType"
+                class="w-full h-full object-cover"
+              />
+              <!-- Viñeta lateral para profundidad -->
+              <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
+              <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80"></div>
             </div>
+          }
+        } @else {
+          <div class="shrink-0 w-full h-full">
+            <img src="./assets/images/ubikLogo.jpg" alt="Sin imagen" class="w-full h-full object-cover opacity-40"/>
           </div>
+        }
+      </div>
 
-          <!-- Title / price / meta -->
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-semibold">
-                {{ room.roomType }} — {{ room.number }}
-              </h1>
-              <p class="text-sm text-gray-300 mt-1">{{ room.motelCity }} • {{ room.motelAddress }}</p>
-            </div>
+      <!-- Flechas de navegación -->
+      @if (room.imageUrls && room.imageUrls.length > 1) {
+        <button
+          (click)="prevSlide()"
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/50 backdrop-blur-sm border border-white/15 flex items-center justify-center hover:bg-black/70 transition-all duration-200 z-10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button
+          (click)="nextSlide()"
+          class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/50 backdrop-blur-sm border border-white/15 flex items-center justify-center hover:bg-black/70 transition-all duration-200 z-10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
 
-            <div class="flex items-center gap-4">
-              <div
-                class="px-3 py-1 rounded-full text-sm font-medium"
-                [ngClass]="room.isAvailable ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-200'"
-              >
-                @if(room.isAvailable){
-                  <span >Disponible</span>
-                }@else if(!room.isAvailable){
-                  <span>No disponible</span>
-                }
-              </div>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <section class="bg-white/5 rounded-lg p-4">
-            <h3 class="font-semibold mb-2">Descripción</h3>
-            <p class="text-gray-200">{{ room.description }}</p>
-          </section>
-
-          <!-- Services / Features -->
-          <section class="bg-white/5 rounded-lg p-4">
-            <h3 class="font-semibold mb-3">Servicios</h3>
-            <div class="flex flex-wrap gap-2">
-              @if (room.serviceIds && room.serviceIds.length) {
-                @for (svc of room.serviceIds; track $index) {
-                  <span class="px-3 py-1 bg-white/6 rounded-full text-sm">
-                    <!-- {{ svc?.service_id?.[0]?.name ?? 'Servicio' }} -->
-                      servicio
-                  </span>
-                }
-              } @else {
-                <span class="text-gray-400">Sin servicios listados</span>
-              }
-            </div>
-          </section>
+        <!-- Dots indicadores -->
+        <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          @for (photo of room.imageUrls; track $index) {
+            <button
+              (click)="goToSlide($index)"
+              class="transition-all duration-300 rounded-full"
+              [ngClass]="currentSlide === $index
+                ? 'w-6 h-2 bg-white'
+                : 'w-2 h-2 bg-white/40 hover:bg-white/70'"
+            ></button>
+          }
         </div>
 
-        <!-- RIGHT: Booking & Map -->
-        <aside class="flex flex-col gap-6">
-          <div class="p-4 rounded-lg bg-white/5">
-            <div class="flex items-baseline justify-between">
-              <div>
-                <div class="text-3xl font-bold">${{ room.price }}</div>
-              </div>
-            </div>
+        <!-- Contador -->
+        <div class="absolute bottom-5 right-5 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white/70 z-10">
+          {{ currentSlide + 1 }} / {{ room.imageUrls.length }}
+        </div>
+      }
 
-            <div class="mt-4">
-              <app-button-01
-                text="Reservar"
-                [fullWidth]="true"
-                (clicked)="openPayment()">
-              </app-button-01>
-            </div>
+      <!-- Thumbnails strip (desktop) -->
+      @if (room.imageUrls && room.imageUrls.length > 1) {
+        <div class="absolute bottom-0 left-0 right-0 hidden md:flex gap-2 px-6 pb-4 justify-center z-10">
+          @for (photo of room.imageUrls.slice(0, 6); track $index) {
+            <button
+              (click)="goToSlide($index)"
+              class="shrink-0 w-16 h-10 rounded-lg overflow-hidden border-2 transition-all duration-200"
+              [ngClass]="currentSlide === $index ? 'border-white opacity-100' : 'border-transparent opacity-50 hover:opacity-80'"
+            >
+              <img [src]="photo" class="w-full h-full object-cover"/>
+            </button>
+          }
+        </div>
+      }
 
-            <div class="mt-4 text-sm text-gray-300">
-              <div><strong>Dirección:</strong> {{ room.motelAddress }}</div>
-              <div class="mt-1"><strong>Ciudad:</strong> {{ room.motelCity }}</div>
-              <div class="mt-1"><strong>Horas:</strong> </div>
-            </div>
-          </div>
+      <!-- Breadcrumb + acciones sobre el hero -->
+      <div class="absolute top-0 left-0 right-0 flex items-center justify-between px-6 pt-6 z-10">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-white/60 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full">
+          @if (room.motelId) {
+            <a [routerLink]="['/motelProfile', room.motelId]" class="hover:text-white transition-colors">
+              {{ room.motelName }}
+            </a>
+            <span class="text-white/30">›</span>
+          }
+          <span class="text-white">Hab. {{ room.number }}</span>
+        </nav>
 
-          <div class="rounded-lg overflow-hidden bg-white/5 h-64">
-            <h4 class="px-4 pt-4 text-sm text-gray-300">Ubicación</h4>
-            <div class="p-4 h-[calc(100%-40px)]">
-              <app-map [points]="points"></app-map>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-lg bg-white/5">
-            <h4 class="font-semibold mb-2">Contacto del motel</h4>
-            <p class="text-sm text-gray-300">Teléfono: {{ room.motelPhoneNumber }}</p>
-          </div>
-        </aside>
+        <!-- Acciones: favorito + compartir -->
+        <div class="flex items-center gap-2">
+          <!-- Favorito -->
+          <button
+            (click)="toggleFavorite()"
+            class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/15 flex items-center justify-center transition-all duration-300"
+            [ngClass]="isFavorite ? 'text-red-400 border-red-500/50 bg-red-900/30' : 'text-white/60 hover:text-white hover:border-white/40'"
+            [title]="isFavorite ? 'Quitar de favoritos' : 'Guardar en favoritos'"
+          >
+            <svg class="w-5 h-5 transition-transform duration-200" [class.scale-125]="isFavorite"
+              [attr.fill]="isFavorite ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </button>
+        </div>
       </div>
-    </ng-container>
+
+      <!-- Badge disponibilidad sobre el hero -->
+      <div class="absolute top-20 left-6 z-10">
+        <span
+          class="px-3 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-sm"
+          [ngClass]="room.isAvailable
+            ? 'bg-green-900/60 border-green-500/50 text-green-300'
+            : 'bg-gray-900/60 border-gray-500/30 text-gray-400'"
+        >
+          {{ room.isAvailable ? '● Disponible' : '○ No disponible' }}
+        </span>
+      </div>
+
+    </div>
+    <!-- FIN CARRUSEL HERO -->
+
+    <!-- ── CONTENIDO PRINCIPAL ── -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- ── COLUMNA IZQUIERDA ── -->
+      <div class="lg:col-span-2 flex flex-col gap-8">
+
+        <!-- Título + meta -->
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <p class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase mb-1">{{ room.roomType }}</p>
+            <h1 class="text-3xl md:text-4xl font-['Cormorant_Garamond',serif] font-bold leading-tight">
+              Habitación {{ room.number }}
+            </h1>
+            <p class="text-white/50 text-sm mt-2 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-[#c8a97e] shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              {{ room.motelCity }} · {{ room.motelAddress }}
+            </p>
+          </div>
+          <!-- Link al motel -->
+          @if (room.motelId) {
+            <a
+              [routerLink]="['/motelProfile', room.motelId]"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:border-[#A72027]/60 hover:bg-[#6E2A35]/10 transition-all duration-300 text-sm text-white/70 hover:text-white shrink-0 group"
+            >
+              <svg class="w-4 h-4 text-[#c8a97e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              <span>{{ room.motelName }}</span>
+              <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          }
+        </div>
+
+        <!-- Descripción -->
+        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6">
+          <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase mb-3">Descripción</h2>
+          <p class="text-white/70 leading-relaxed text-sm">{{ room.description }}</p>
+        </div>
+
+        <!-- Servicios -->
+        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6">
+          <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase mb-4">Servicios incluidos</h2>
+          @if (room.serviceIds && room.serviceIds.length) {
+            <div class="flex flex-wrap gap-2">
+              @for (svcId of room.serviceIds; track $index) {
+                <span class="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white/70">
+                  @if (getServiceIcon(svcId)) {
+                    <i [class]="getServiceIcon(svcId) + ' text-[#c8a97e] text-xs'"></i>
+                  } @else {
+                    <svg class="w-3.5 h-3.5 text-[#c8a97e]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  }
+                  {{ getServiceName(svcId) }}
+                </span>
+              }
+            </div>
+          } @else {
+            <p class="text-white/30 text-sm">Sin servicios registrados.</p>
+          }
+        </div>
+
+        <!-- Mapa (mobile — se muestra aquí en móvil) -->
+        <div class="lg:hidden bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
+          <div class="px-6 pt-5 pb-3">
+            <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
+          </div>
+          <div class="h-56">
+            <app-map [points]="points"></app-map>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── COLUMNA DERECHA — SIDEBAR STICKY ── -->
+      <aside class="flex flex-col gap-5 lg:sticky lg:top-8 lg:self-start">
+
+        <!-- Card precio + reserva -->
+        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 flex flex-col gap-5">
+
+          <!-- Precio -->
+          <div>
+            <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Precio por noche</p>
+            <div class="flex items-baseline gap-1">
+              <span class="text-4xl font-['Cormorant_Garamond',serif] font-bold text-white">${{ room.price | number }}</span>
+              <span class="text-white/40 text-sm">COP</span>
+            </div>
+          </div>
+
+          <div class="w-full h-px bg-white/[0.07]"></div>
+
+          <!-- Estado de reserva -->
+          @if (room.isAvailable) {
+
+            <!-- DISPONIBLE: mostrar botón de reserva -->
+            <div class="flex flex-col gap-3">
+              <p class="text-xs text-white/50 leading-relaxed">
+                Esta habitación está disponible. Realiza tu reserva ahora y confirma tu estadía.
+              </p>
+              <button
+                (click)="openPayment()"
+                class="w-full bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-semibold py-3.5 rounded-xl hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 shadow-lg shadow-[#6E2A35]/30 text-sm tracking-wide"
+              >
+                Reservar ahora
+              </button>
+            </div>
+
+          } @else {
+
+            <!-- NO DISPONIBLE: formulario de notificación -->
+            <div class="flex flex-col gap-4">
+
+              <div class="flex items-start gap-3 p-3 bg-amber-900/20 border border-amber-600/30 rounded-xl">
+                <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                </svg>
+                <p class="text-amber-300/80 text-xs leading-relaxed">
+                  Esta habitación no está disponible ahora mismo. Déjanos tu email y te avisamos cuando se libere.
+                </p>
+              </div>
+
+              <!-- Input email notificación -->
+              <div class="flex flex-col gap-2">
+                <label class="text-white/40 text-xs uppercase tracking-widest">Tu email</label>
+                <input
+                  [(ngModel)]="notifyEmail"
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors"
+                />
+              </div>
+
+              @if (notifySuccess) {
+                <div class="flex items-center gap-2 text-green-400 text-xs bg-green-900/20 border border-green-600/30 rounded-lg px-3 py-2">
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  ¡Te avisaremos cuando esté disponible!
+                </div>
+              }
+
+              <button
+                (click)="subscribeNotification()"
+                [disabled]="!notifyEmail || notifyLoading"
+                class="w-full border border-[#8B0000] text-[#cc3a3a] py-3 rounded-xl text-sm font-semibold hover:bg-[#6E2A35]/20 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {{ notifyLoading ? 'Enviando...' : 'Avísame cuando esté disponible' }}
+              </button>
+
+            </div>
+          }
+
+          <div class="w-full h-px bg-white/[0.07]"></div>
+
+          <!-- Info del motel -->
+          <div class="flex flex-col gap-2 text-sm text-white/50">
+            <div class="flex justify-between">
+              <span>Dirección</span>
+              <span class="text-white/80 text-right max-w-[55%]">{{ room.motelAddress }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Ciudad</span>
+              <span class="text-white/80">{{ room.motelCity }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Teléfono</span>
+              <span class="text-white/80">{{ room.motelPhoneNumber }}</span>
+            </div>
+          </div>
+
+          <!-- Link al motel (sidebar) -->
+          @if (room.motelId) {
+            <a
+              [routerLink]="['/motelProfile', room.motelId]"
+              class="flex items-center justify-center gap-2 w-full border border-white/10 text-white/60 py-2.5 rounded-xl text-sm hover:border-white/30 hover:text-white transition-all duration-300"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              Ver motel completo
+            </a>
+          }
+
+        </div>
+
+        <!-- Mapa (desktop) -->
+        <div class="hidden lg:block bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
+          <div class="px-5 pt-4 pb-2">
+            <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
+          </div>
+          <div class="h-52">
+            <app-map [points]="points"></app-map>
+          </div>
+        </div>
+
+      </aside>
+    </div>
   }
-  
 </div>
