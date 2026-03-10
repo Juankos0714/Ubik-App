@@ -19,7 +19,7 @@ export class PaymentService {
   constructor(private http: HttpClient) { }
 
   createReservation(roomId: number, motelId: number, totalPrice: number, userId: number, checkInDate: string, checkOutDate: string) {
-    return this.http.post<{ id: number }>(this.RESERVATION_URL, {
+    return this.http.post<{ id: number, confirmationCode?: string }>(this.RESERVATION_URL, {
       roomId,
       motelId,
       totalPrice,

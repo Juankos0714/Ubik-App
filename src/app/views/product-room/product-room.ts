@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { Map as AppMap } from '../../components/map/map';
@@ -112,11 +112,19 @@ export class ProductRoom implements OnInit {
     }, 1200);
   }
 
+  private router = inject(Router);
+
   constructor(private dialog: Dialog) { }
 
   openPayment() {
-    this.dialog.open(PaymentModal, {
+    const dialogRef = this.dialog.open(PaymentModal, {
       data: { id: this.room?.id }
+    });
+
+    dialogRef.closed.subscribe((result: any) => {
+      if (result?.success) {
+        this.router.navigate(['/payment/success'], { state: { paymentDetails: result.details } });
+      }
     });
   }
 }

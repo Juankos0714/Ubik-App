@@ -33,7 +33,7 @@ export class Button01 {
   constructor(
     private router: Router,
     private dialog: Dialog
-  ) {}
+  ) { }
 
   handleClick() {
 
@@ -44,8 +44,14 @@ export class Button01 {
 
       if (!this.id) return;
 
-      this.dialog.open(PaymentModal, {
+      const dialogRef = this.dialog.open(PaymentModal, {
         data: { id: this.id }
+      });
+
+      dialogRef.closed.subscribe((result: any) => {
+        if (result?.success) {
+          this.router.navigate(['/payment/success'], { state: { paymentDetails: result.details } });
+        }
       });
 
       return;

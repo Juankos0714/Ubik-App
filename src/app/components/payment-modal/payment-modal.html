@@ -358,6 +358,16 @@
         </div>
         }
 
+        <!-- PAYMENT ERROR MOBILE -->
+        @if (paymentError && mobileStep === 2) {
+        <div class="mb-3 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
+          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          {{ paymentError }}
+        </div>
+        }
+
         <!-- ACCIONES -->
         <div class="flex gap-3">
           <button type="button" (click)="mobileStep = 1"
@@ -797,6 +807,16 @@
             Pago exitoso. ¡Reserva confirmada!
           </div>
           }
+          }
+
+          <!-- PAYMENT ERROR DESKTOP -->
+          @if (paymentError && mobileStep !== 3) {
+          <div class="mb-2 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            {{ paymentError }}
+          </div>
           }
 
           <div class="flex gap-2">

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Dialog } from '@angular/cdk/dialog';
 import { Button01 } from '../button-01/button-01';
 import { PaymentModal } from '../payment-modal/payment-modal';
-import { RouterLink } from "@angular/router";
+import { RouterLink, Router } from "@angular/router";
 
 export interface Card3Informacion {
   id: number;
@@ -47,21 +47,27 @@ export class Card3 {
     id: number;
   }>();
 
-  constructor(private dialog: Dialog) {}
+  constructor(private dialog: Dialog, private router: Router) { }
 
   openPayment() {
-    this.dialog.open(PaymentModal, {
+    const dialogRef = this.dialog.open(PaymentModal, {
       data: { id: this.card.id }
+    });
+
+    dialogRef.closed.subscribe((result: any) => {
+      if (result?.success) {
+        this.router.navigate(['/payment/success'], { state: { paymentDetails: result.details } });
+      }
     });
   }
 
   onViewLocation() {
-    
+
     if (this.card.lat == null || this.card.lng == null) {
       console.warn('El Motel no ha registrado su ubicacion en el mapa');
       return;
     }
-    
+
     this.viewLocation.emit({
       lat: this.card.lat,
       lng: this.card.lng,

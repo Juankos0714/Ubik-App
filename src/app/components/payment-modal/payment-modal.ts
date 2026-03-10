@@ -53,6 +53,7 @@ export class PaymentModal implements OnInit {
   processingPayment = false;
   paymentError: string | null = null;
   paymentSuccess = false;
+  confirmationCode: string | null = null;
 
   // ── Mobile wizard ────────────────────────────────────────────────────────
   mobileStep = 1;
@@ -608,6 +609,7 @@ export class PaymentModal implements OnInit {
     ).subscribe({
       next: (res: any) => {
         const reservationId = res.id;
+        this.confirmationCode = res.confirmationCode || null;
 
         // Next, create the Payment Intent for Stripe
         this.paymentService.createPaymentIntent(reservationId, payload.totalPrice).subscribe({
@@ -629,7 +631,14 @@ export class PaymentModal implements OnInit {
       },
       error: (err) => {
         console.error('Error creando reserva:', err);
-        this.paymentError = 'Error al crear la reserva.';
+        // Intentar parsear el mensaje de error del backend si existe
+        if (err.error && err.error.message) {
+          this.paymentError = err.error.message;
+        } else if (err.error && typeof err.error === 'string') {
+          this.paymentError = err.error;
+        } else {
+          this.paymentError = 'Error al crear la reserva. Por favor intenta de nuevo.';
+        }
         this.reserving = false;
       },
     });
@@ -708,7 +717,18 @@ export class PaymentModal implements OnInit {
 
       // Give the user a moment to see the success state, then close the modal
       setTimeout(() => {
-        this.dialogRef.close({ success: true, paymentId: this.paymentId });
+        this.dialogRef.close({
+          success: true,
+          paymentId: this.paymentId,
+          details: {
+            date: this.selectedDate!.toISOString().split('T')[0],
+            startTime: this.startTime,
+            endTime: this.endTime,
+            totalPrice: this.totalPrice,
+            roomName: this.room?.roomType || this.room?.motelName,
+            confirmationCode: this.confirmationCode
+          }
+        });
       }, 2000);
     }
   }
