@@ -1,14 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UsersService } from '../../../core/services/user.service';
-import { Users } from '../../../core/models/users.model';
-import { Button01 } from "../../../components/button-01/button-01";
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [ CommonModule, Button01 ],
+  imports: [ CommonModule, RouterLink ],
   templateUrl: './user-profile.html',
 })
 export class UserProfile implements OnInit {
