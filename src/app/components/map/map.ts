@@ -91,12 +91,12 @@ export class Map implements AfterViewInit, OnChanges {
 
     setTimeout(() => this.map.invalidateSize());
 
-    // 1️⃣ Primero pintar los markers que ya hayan llegado
+    //  Primero pintar los markers que ya hayan llegado
     if (this.points.length) {
       this.renderMarkers();
     }
 
-    // 2️⃣ Luego (en paralelo, sin bloquear) iniciar geolocalización
+    //  Luego (en paralelo, sin bloquear) iniciar geolocalización
     this.initializeLocation();
   }
 
@@ -156,7 +156,7 @@ export class Map implements AfterViewInit, OnChanges {
       this.userLatLng = [location.latitude, location.longitude];
       this.placeUserMarker(this.userLatLng);
 
-      // ⏳ Solo hacer zoom al usuario si ya hay puntos (moteles) cargados.
+      //  Solo hacer zoom al usuario si ya hay puntos (moteles) cargados.
       // Si no hay puntos, significa que las habitaciones/moteles no cargaron — no hacemos zoom.
       if (!this.userZoomDone && this.points.length > 0) {
         setTimeout(() => {
