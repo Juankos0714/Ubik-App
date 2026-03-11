@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
-import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
 import { PaymentService } from '../../core/services/payment.service';
@@ -32,7 +31,7 @@ interface WeekDay {
 @Component({
   selector: 'app-payment-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   templateUrl: './payment-modal.html',
 })
 export class PaymentModal implements OnInit {
@@ -41,9 +40,6 @@ export class PaymentModal implements OnInit {
   isSubmitting = false;
   error = false;
   reserving = false;
-  formTouched = false;
-
-  form!: FormGroup;
 
   // ── Stripe ───────────────────────────────────────────────────────────────
   stripe: Stripe | null = null;
@@ -112,19 +108,53 @@ export class PaymentModal implements OnInit {
     @Inject(DIALOG_DATA) public data: { id?: number; date?: string; time?: string },
     private roomService: RoomService,
     private paymentService: PaymentService,
-    private fb: FormBuilder,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
   ) { }
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      document: ['', Validators.required],
-      phone: ['', Validators.required],
-    });
+  private buildCheckInOutDateTimes(): { checkIn: Date; checkOut: Date; checkInIso: string; checkOutIso: string } | null {
+    if (!this.selectedDate || !this.startTime || !this.endTime) return null;
 
+    const [startHour] = this.startTime.split(':').map(Number);
+    const [endHour] = this.endTime.split(':').map(Number);
+
+    const checkIn = new Date(this.selectedDate);
+    checkIn.setHours(startHour, 0, 0, 0);
+
+    const checkOut = new Date(this.selectedDate);
+    checkOut.setHours(endHour, 0, 0, 0);
+    if (this.crossesMidnight) checkOut.setDate(checkOut.getDate() + 1);
+
+    return {
+      checkIn,
+      checkOut,
+      checkInIso: checkIn.toISOString(),
+      checkOutIso: checkOut.toISOString(),
+    };
+  }
+
+  private setEndDateFromTimes(): void {
+    if (!this.selectedDay?.date || !this.startTime || !this.endTime) {
+      this._endDate = null;
+      return;
+    }
+
+    if (!this.crossesMidnight) {
+      this._endDate = null;
+      return;
+    }
+
+    const next = new Date(this.selectedDay.date);
+    next.setDate(next.getDate() + 1);
+    next.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    this._endDate = { day: next.getDate(), date: next, isPast: next < today };
+  }
+
+  ngOnInit(): void {
     this.buildCalendar();
     this.initializeTimeSlots();
     this.initializeStripe();
@@ -143,12 +173,19 @@ export class PaymentModal implements OnInit {
 
         if (this.data.date) {
           const pre = new Date(this.data.date + 'T00:00:00');
-          this.selectedDay = { day: pre.getDate(), date: pre, isPast: false };
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          pre.setHours(0, 0, 0, 0);
+
+          if (pre >= today) {
+            this.selectedDay = { day: pre.getDate(), date: pre, isPast: false };
+            this.loadReservationsForDate(pre);
+            this.mobileStep = 2;
+          }
+
           this.calYear = pre.getFullYear();
           this.calMonth = pre.getMonth();
           this.buildCalendar();
-          this.loadReservationsForDate(pre);
-          this.mobileStep = 2;
         }
 
         if (this.data.time) {
@@ -227,8 +264,24 @@ export class PaymentModal implements OnInit {
       error: () => {
         // If endpoint doesn't exist yet, continue with all slots available
         this.reservations = [];
+        this.updateTimeSlotAvailability();
       },
     });
+  }
+
+  private isSelectedDateToday(): boolean {
+    if (!this.selectedDay?.date) return false;
+    const today = new Date();
+    const sel = this.selectedDay.date;
+    return sel.getFullYear() === today.getFullYear() &&
+      sel.getMonth() === today.getMonth() &&
+      sel.getDate() === today.getDate();
+  }
+
+  private isPastTime(time: string): boolean {
+    if (!this.isSelectedDateToday()) return false;
+    const [h] = time.split(':').map(Number);
+    return h <= new Date().getHours();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -241,9 +294,10 @@ export class PaymentModal implements OnInit {
     // Update entry slots - mark slots that overlap with reservations as unavailable
     this.entrySlots = this.entrySlots.map((slot) => {
       const reservation = this.findOverlappingReservation(slot.time, '23:59', false);
+      const past = this.isPastTime(slot.time);
       return {
         ...slot,
-        available: !reservation,
+        available: !reservation && !past,
         reservation: reservation || undefined,
       };
     });
@@ -402,6 +456,7 @@ export class PaymentModal implements OnInit {
     this.selectedDay = day;
     this.startTime = '';
     this.endTime = '';
+    this._endDate = null;
     this.availabilityOk = null;
     this.availabilityMsg = '';
 
@@ -476,6 +531,7 @@ export class PaymentModal implements OnInit {
 
     this.startTime = slot.time;
     this.endTime = '';
+    this._endDate = null;
     this.availabilityOk = null;
     this.availabilityMsg = '';
 
@@ -508,6 +564,7 @@ export class PaymentModal implements OnInit {
     if (!slot.available) return;
 
     this.endTime = slot.time;
+    this.setEndDateFromTimes();
     this.verifyAvailability();
   }
 
@@ -570,7 +627,8 @@ export class PaymentModal implements OnInit {
       !!this.startTime &&
       !!this.endTime &&
       this.totalHours > 0 &&
-      this.form.valid
+      !this.checkingAvailability &&
+      this.availabilityOk !== false
     );
   }
 
@@ -578,8 +636,20 @@ export class PaymentModal implements OnInit {
   // Reserva → Mercado Pago
   // ══════════════════════════════════════════════════════════════════════════
   reserve(): void {
-    this.formTouched = true;
     if (!this.canReserve || !this.room) return;
+
+    const dateTimes = this.buildCheckInOutDateTimes();
+    if (!dateTimes) return;
+
+    const now = new Date();
+    if (dateTimes.checkIn <= now) {
+      this.paymentError = 'La hora de entrada debe ser en el futuro.';
+      return;
+    }
+    if (dateTimes.checkOut <= dateTimes.checkIn) {
+      this.paymentError = 'La hora de salida debe ser posterior a la entrada.';
+      return;
+    }
 
     this.reserving = true;
     this.paymentError = null;
@@ -592,10 +662,6 @@ export class PaymentModal implements OnInit {
       endTime: this.endTime,
       hours: this.totalHours,
       totalPrice: this.totalPrice,
-      fullName: this.form.value.fullName,
-      email: this.form.value.email,
-      document: this.form.value.document,
-      phone: this.form.value.phone,
     };
 
     // First create the reservation
@@ -604,8 +670,8 @@ export class PaymentModal implements OnInit {
       payload.motelId,
       payload.totalPrice,
       101, // Mock user ID or extracted correctly from token/auth context
-      `${payload.date}T${payload.startTime}:00`,
-      `${payload.date}T${payload.endTime}:00`
+      dateTimes.checkInIso,
+      dateTimes.checkOutIso,
     ).subscribe({
       next: (res: any) => {
         const reservationId = res.id;
@@ -636,6 +702,9 @@ export class PaymentModal implements OnInit {
           this.paymentError = err.error.message;
         } else if (err.error && typeof err.error === 'string') {
           this.paymentError = err.error;
+        } else if (err.error && typeof err.error === 'object') {
+          const msgs = Object.values(err.error).filter((v): v is string => typeof v === 'string' && v.trim().length > 0);
+          this.paymentError = msgs.length > 0 ? msgs.join(' ') : 'Error al crear la reserva. Por favor intenta de nuevo.';
         } else {
           this.paymentError = 'Error al crear la reserva. Por favor intenta de nuevo.';
         }
@@ -650,42 +719,54 @@ export class PaymentModal implements OnInit {
   private mountStripeElements(): void {
     if (!this.stripe || !this.clientSecret) return;
 
-    // Force Angular to re-render the @if(mobileStep === 3) block
-    // so #payment-element exists in the DOM before mount() is called
+    // 1) Forzar que Angular renderice el @if(mobileStep === 3)
     this.cdr.detectChanges();
 
-    setTimeout(() => {
-      // Detectar qué contenedor existe en el DOM (desktop o mobile)
-      const container =
-        document.getElementById('payment-element-desktop') ||
-        document.getElementById('payment-element-mobile');
+    // 2) Usar rAF + timeout para garantizar que el browser ya pintó el DOM
+    requestAnimationFrame(() => {
+      setTimeout(() => this.tryMountStripe(8), 50);
+    });
+  }
 
-      if (!container) {
-        console.error('Stripe: no se encontró #payment-element-desktop ni #payment-element-mobile en el DOM');
-        return;
+  private tryMountStripe(attemptsLeft: number): void {
+    const container =
+      document.getElementById('payment-element-desktop') ||
+      document.getElementById('payment-element-mobile');
+
+    if (!container) {
+      if (attemptsLeft > 0) {
+        requestAnimationFrame(() => {
+          setTimeout(() => this.tryMountStripe(attemptsLeft - 1), 100);
+        });
+      } else {
+        console.error('Stripe: no se encontró el contenedor tras múltiples intentos');
       }
+      return;
+    }
 
-      this.elements = this.stripe!.elements({
-        clientSecret: this.clientSecret!,
-        appearance: {
-          theme: 'night',
-          variables: {
-            colorPrimary: '#A72027',
-            colorBackground: '#1a1a1f',
-            colorText: '#ffffff',
-            colorDanger: '#ff4d4f',
-            fontFamily: 'DM Sans, sans-serif',
-            borderRadius: '8px',
-          }
+    // Limpiar por si se montó antes
+    container.innerHTML = '';
+
+    this.elements = this.stripe!.elements({
+      clientSecret: this.clientSecret!,
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#A72027',
+          colorBackground: '#1a1a1f',
+          colorText: '#ffffff',
+          colorDanger: '#ff4d4f',
+          fontFamily: 'DM Sans, sans-serif',
+          borderRadius: '8px',
         }
-      });
+      }
+    });
 
-      const paymentElement = this.elements.create('payment');
-      paymentElement.mount(`#${container.id}`);
+    const paymentElement = this.elements.create('payment');
+    paymentElement.mount(`#${container.id}`);
 
-      // Notificar a Angular que this.elements ya está listo para habilitar el botón
-      this.cdr.detectChanges();
-    }, 400);
+    // Habilitar el botón "Confirmar Pago"
+    this.cdr.detectChanges();
   }
 
   async confirmPayment(): Promise<void> {
@@ -710,12 +791,12 @@ export class PaymentModal implements OnInit {
       this.processingPayment = false;
       this.cdr.detectChanges(); // Forzar re-render para mostrar el mensaje de error
     } else {
-      // The payment has been processed!
+      // The payment has been processed! soy imbecil
       this.processingPayment = false;
       this.paymentSuccess = true;
-      this.cdr.detectChanges(); // Forzar re-render para mostrar el estado de éxito
+      this.cdr.detectChanges(); // Forzar re-render para mostrar el estado de éxito, perdon soy imbecil
 
-      // Give the user a moment to see the success state, then close the modal
+      // Give the user a moment to see the success state, then close the modal, me gusta tati
       setTimeout(() => {
         this.dialogRef.close({
           success: true,
@@ -738,7 +819,7 @@ export class PaymentModal implements OnInit {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // Helper getters for template compatibility
+  // Helper getters for template compatibility and readability jajaxd
   // ══════════════════════════════════════════════════════════════════════════
   get timeSlots(): string[] {
     return this.ALL_SLOTS;
@@ -750,8 +831,8 @@ export class PaymentModal implements OnInit {
 
   weekDayMark(day: WeekDay): 'start' | 'end' | null {
     if (!this.selectedDay?.date) return null;
-    const selStr = this.selectedDay.date.toISOString();
-    if (day.date.toISOString() === selStr) return 'start';
+    if (day.date.toDateString() === this.selectedDay.date.toDateString()) return 'start';
+    if (this._endDate?.date && day.date.toDateString() === this._endDate.date.toDateString()) return 'end';
     return null;
   }
 }

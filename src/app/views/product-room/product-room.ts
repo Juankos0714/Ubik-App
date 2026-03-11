@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
+import { validateEmail } from '../../core/utils/validation.utils';
 import { Map as AppMap } from '../../components/map/map';
 import { Button01 } from "../../components/button-01/button-01";
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
@@ -35,6 +36,7 @@ export class ProductRoom implements OnInit {
   notifyEmail = '';
   notifyLoading = false;
   notifySuccess = false;
+  notifyError: string | null = null;
 
   ngOnInit(): void {
     const idFromQuery = Number(this.route.snapshot.queryParamMap.get('id'));
@@ -104,12 +106,31 @@ export class ProductRoom implements OnInit {
 
   // ── Notificación disponibilidad ──
   subscribeNotification(): void {
-    if (!this.notifyEmail) return;
+    this.notifySuccess = false;
+    this.notifyError = null;
+
+    const email = this.notifyEmail.trim();
+    const emailError = validateEmail(email);
+    if (emailError) {
+      this.notifyError = emailError;
+      return;
+    }
+    if (!this.room) {
+      this.notifyError = 'No se pudo identificar la habitación.';
+      return;
+    }
+
     this.notifyLoading = true;
-    setTimeout(() => {
-      this.notifyLoading = false;
-      this.notifySuccess = true;
-    }, 1200);
+    this.roomService.subscribeAvailability(this.room.id, email).subscribe({
+      next: () => {
+        this.notifyLoading = false;
+        this.notifySuccess = true;
+      },
+      error: () => {
+        this.notifyLoading = false;
+        this.notifyError = 'No se pudo registrar el correo. Intenta de nuevo.';
+      },
+    });
   }
 
   private router = inject(Router);

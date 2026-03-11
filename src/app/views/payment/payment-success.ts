@@ -6,7 +6,9 @@ import { QRCodeComponent } from 'angularx-qrcode';
 @Component({
   selector: 'app-payment-success',
   standalone: true,
+
   imports: [CommonModule, RouterModule, QRCodeComponent],
+  
   template: `
     <div class="flex flex-col items-center justify-center py-16 px-4">
       <div class="text-center mb-10">

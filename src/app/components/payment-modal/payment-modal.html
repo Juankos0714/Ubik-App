@@ -59,7 +59,6 @@
       </p>
     </div>
 
-    <form [formGroup]="form">
       <!-- PASO 1: FECHA -->
       @if (mobileStep === 1) {
       <div class="px-5 pt-4 pb-6">
@@ -338,26 +337,6 @@
         </div>
         }
 
-        <!-- DATOS — solo si disponible -->
-        @if (startTime && endTime && availabilityOk === true) {
-        <div class="flex flex-col gap-3">
-          <p class="text-white/40 text-[10px] uppercase tracking-widest">
-            Tus datos para la reserva
-          </p>
-          <input formControlName="fullName" placeholder="Nombre completo"
-            class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-          <input formControlName="email" type="email" placeholder="Correo electrónico"
-            class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-          <input formControlName="document" placeholder="Número de documento"
-            class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-          <input formControlName="phone" placeholder="Teléfono"
-            class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-          @if (form.invalid && formTouched) {
-          <p class="text-xs text-red-400">Completa todos los campos.</p>
-          }
-        </div>
-        }
-
         <!-- PAYMENT ERROR MOBILE -->
         @if (paymentError && mobileStep === 2) {
         <div class="mb-3 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
@@ -390,8 +369,6 @@
             Verificando...
             } @else if (availabilityOk === false) {
             No disponible
-            } @else if (!form.valid) {
-            Completa tus datos
             } @else {
             Pagar ${{ totalPrice | number }} COP
             }
@@ -473,8 +450,7 @@
         </div>
       </div>
       }
-    </form>
-  </div>
+    </div>
   <!-- FIN MOBILE -->
 
   <!-- ═══════════════ DESKTOP ═══════════════ -->
@@ -746,23 +722,12 @@
       }
     </div>
 
-    <!-- COL 3: Datos + CTA -->
+    <!-- COL 3: Confirmar y Pagar -->
     <div class="flex-1 flex flex-col overflow-y-auto min-w-0">
       <div class="px-5 pt-4 pb-2 shrink-0">
-        <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Tus datos</p>
+        <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Confirmar y pagar</p>
       </div>
-      <form [formGroup]="form" class="flex-1 flex flex-col px-4 pb-4 gap-3">
-        <input formControlName="fullName" placeholder="Nombre completo"
-          class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-        <input formControlName="email" type="email" placeholder="Correo electrónico"
-          class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-        <input formControlName="document" placeholder="Número de documento"
-          class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-        <input formControlName="phone" placeholder="Teléfono"
-          class="bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors" />
-        @if (form.invalid && formTouched) {
-        <p class="text-xs text-red-400">Completa todos los campos.</p>
-        }
+      <div class="flex-1 flex flex-col px-4 pb-4 gap-3">
         <div class="mt-auto flex flex-col gap-3">
           @if (startTime && endTime && totalHours > 0) {
           <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3">
@@ -776,13 +741,12 @@
             </div>
             <div class="flex justify-between items-baseline">
               <span class="text-xs text-white/35">{{ totalHours }}h × ${{ room.price | number }}/h</span>
-              <span class="text-[#c8a97e] font-bold font-['Cormorant_Garamond',serif] text-2xl">${{ totalPrice | number
-                }}</span>
+              <span class="text-[#c8a97e] font-bold font-['Cormorant_Garamond',serif] text-2xl">${{ totalPrice | number }}</span>
             </div>
           </div>
           }
 
-          <!-- UI de Stripe para Desktop (Mobile Step 3 equivalente) -->
+          <!-- UI de Stripe para Desktop -->
           @if (mobileStep === 3) {
           <div class="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 mt-2 mb-2">
             <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Pago Seguro</p>
@@ -790,8 +754,7 @@
           </div>
 
           @if (paymentError) {
-          <div
-            class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
+          <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -799,8 +762,7 @@
           </div>
           }
           @if (paymentSuccess) {
-          <div
-            class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2 text-xs text-green-400">
+          <div class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2 text-xs text-green-400">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
@@ -809,7 +771,7 @@
           }
           }
 
-          <!-- PAYMENT ERROR DESKTOP -->
+          <!-- PAYMENT ERROR DESKTOP (antes de step 3) -->
           @if (paymentError && mobileStep !== 3) {
           <div class="mb-2 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -845,8 +807,6 @@
               Verificando...
               } @else if (availabilityOk === false) {
               No disponible
-              } @else if (form.invalid) {
-              Completa tus datos
               } @else {
               Continuar al Pago
               }
@@ -872,7 +832,7 @@
             }
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
   <!-- FIN DESKTOP -->
