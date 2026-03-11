@@ -10,7 +10,8 @@
       </a>
     </div>
 
-    <div class="relative group">
+    <div class="relative group
+                w-full h-30 sm:w-full sm:h-40 md:wfull md:h-50 lg:w-full lg:h-70">
 
       <!-- Flecha izquierda — solo desktop -->
       <button
@@ -26,8 +27,11 @@
       <div
         #nearbyMotelsCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
-               scrollbar-hide pb-2
-               snap-x snap-mandatory">
+               scrollbar-hide w-full h-80
+               snap-x snap-mandatory
+               rounded-2xl
+               [mask-image:linear-gradient(to_right,transparent_0%,black_3%,black_50%,transparent_100%)]
+               [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_3%,black_95%,transparent_100%)]">
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
             <div class="snap-start shrink-0">
@@ -83,7 +87,8 @@
         #destinosPopularesCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
                scrollbar-hide pb-2
-               snap-x snap-mandatory">
+               snap-x snap-mandatory
+               rounded-2xl">
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
             <div class="snap-start shrink-0">
@@ -137,8 +142,13 @@
       <div
         #ofertasCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
-               scrollbar-hide pb-2
-               snap-x snap-mandatory">
+               scrollbar-hide
+               snap-x snap-mandatory
+               rounded-2xla
+               w-max-full
+               min-w-sm
+               ">
+
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
             <div class="snap-start shrink-0">

@@ -39,7 +39,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@stripe/stripe-js": "^8.9.0",
     "@tailwindcss/postcss": "^4.1.17",
-    "angularx-qrcode": "^17.0.1",
+    "angularx-qrcode": "^20.0.0",
     "express": "^5.1.0",
     "leaflet": "^1.9.4",
     "postcss": "^8.5.6",
