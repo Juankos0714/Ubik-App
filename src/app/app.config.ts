@@ -12,7 +12,6 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 import { authInterceptor } from '../app/core/interceptors/auth-interceptor';
-import { debugInterceptor } from '../app/core/interceptors/debug-interceptor';
 import { AuthService } from './core/services/auth.service';
 
 export const appConfig: ApplicationConfig = {
@@ -21,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor, debugInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAppInitializer(() => inject(AuthService).restoreSession()),
   ],
 };

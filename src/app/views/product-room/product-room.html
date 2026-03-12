@@ -299,6 +299,14 @@
                   ¡Te avisaremos cuando esté disponible!
                 </div>
               }
+              @if (notifyError) {
+                <div class="flex items-center gap-2 text-red-300 text-xs bg-red-900/20 border border-red-600/30 rounded-lg px-3 py-2">
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                  {{ notifyError }}
+                </div>
+              }
 
               <button
                 (click)="subscribeNotification()"

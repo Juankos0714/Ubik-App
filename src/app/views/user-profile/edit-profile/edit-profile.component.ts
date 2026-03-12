@@ -41,6 +41,12 @@ export class EditProfileComponent {
   // Para usar en template si quieres mostrar datos actuales
   profile: Users | null = null;
 
+  //location 
+  gettingLocation = false;
+  locationStatus: string | null = null;
+
+  error: string | null = null;
+
   constructor() {
     // Precarga: si hay cache úsalo; si no, loadProfile()
     this.usersService.profile$
@@ -159,7 +165,49 @@ export class EditProfileComponent {
       });
   }
 
+  getUserLocation() {
+    if (!navigator.geolocation) {
+      this.locationStatus = 'Geolocalización no soportada.';
+      return;
+    }
+    this.gettingLocation = true;
+    this.locationStatus = 'Solicitando permiso...';
+    this.error = null;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.gettingLocation = false;
+        const { latitude, longitude } = pos.coords;
+        this.form.patchValue({ latitude, longitude });
+        this.locationStatus = 'Ubicación obtenida.';
+      },
+      (err) => {
+        this.gettingLocation = false;
+        this.locationStatus = null;
+        this.error =
+          err.code === err.PERMISSION_DENIED ? 'Permiso de ubicación denegado.' :
+          err.code === err.POSITION_UNAVAILABLE ? 'Ubicación no disponible.' :
+          err.code === err.TIMEOUT ? 'Timeout obteniendo ubicación.' :
+          'Error obteniendo ubicación.';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  get hasLocation(): boolean {
+    const lat = this.form.get('latitude')?.value;
+    const lng = this.form.get('longitude')?.value;
+    return typeof lat === 'number' && typeof lng === 'number';
+  }
+
+  get locationText(): string {
+    const lat = this.form.get('latitude')?.value;
+    const lng = this.form.get('longitude')?.value;
+    if (typeof lat !== 'number' || typeof lng !== 'number') return '';
+    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+
   onCancel() {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/userProfile']);
   }
 }

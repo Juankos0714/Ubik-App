@@ -1,0 +1,18 @@
+import { inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection, } from '@angular/core';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { routes } from './app.routes';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { authInterceptor } from '../app/core/interceptors/auth-interceptor';
+import { debugInterceptor } from '../app/core/interceptors/debug-interceptor';
+import { AuthService } from './core/services/auth.service';
+export const appConfig = {
+    providers: [
+        provideBrowserGlobalErrorListeners(),
+        provideZonelessChangeDetection(),
+        provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
+        provideClientHydration(withEventReplay()),
+        provideHttpClient(withFetch(), withInterceptors([authInterceptor, debugInterceptor])),
+        provideAppInitializer(() => inject(AuthService).restoreSession()),
+    ],
+};
