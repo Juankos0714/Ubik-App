@@ -1,10 +1,12 @@
 import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
 import { PaymentService } from '../../core/services/payment.service';
 import { RoomService, RoomReservation } from '../../core/services/room.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Room } from '../../core/models/room.model';
 import { environment } from '../../../environments/environment';
 
@@ -108,6 +110,8 @@ export class PaymentModal implements OnInit {
     @Inject(DIALOG_DATA) public data: { id?: number; date?: string; time?: string },
     private roomService: RoomService,
     private paymentService: PaymentService,
+    private auth: AuthService,
+    private router: Router,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
   ) { }
@@ -637,6 +641,13 @@ export class PaymentModal implements OnInit {
   // ══════════════════════════════════════════════════════════════════════════
   reserve(): void {
     if (!this.canReserve || !this.room) return;
+
+    // Si no hay sesión, cerrar modal y redirigir al login
+    if (!this.auth.isLogged()) {
+      this.dialogRef.close();
+      this.router.navigate(['/login']);
+      return;
+    }
 
     const dateTimes = this.buildCheckInOutDateTimes();
     if (!dateTimes) return;

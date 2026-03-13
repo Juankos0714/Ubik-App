@@ -8,7 +8,7 @@ import { Motel, MotelImage } from '../../core/models/motel.model';
 import { Button01 } from "../button-01/button-01";
 
 export type MotelListItem = Motel & {
-  // ✅ url lista para pintar en la card/lista
+  // url lista para pintar en la card/lista
   mainImageUrl: string | null;
 };
 

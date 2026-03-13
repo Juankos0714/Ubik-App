@@ -1,9 +1,9 @@
 <div
-  class="font-['DM_Sans',sans-serif] text-white bg-[#0c0c0e] w-full rounded-t-3xl max-h-[92vh] overflow-y-auto border-t border-white/[0.08] md:rounded-3xl md:border md:border-white/[0.08] md:max-h-[88vh] md:w-[960px] md:max-w-[95vw] md:overflow-hidden shadow-2xl shadow-black/80">
+  class="font-['DM_Sans',sans-serif] text-white bg-[#0c0c0e] w-full rounded-t-3xl max-h-[92vh] overflow-y-auto border-t border-white/8 md:rounded-3xl md:border md:border-white/8 md:max-h-[88vh] md:w-[960px] md:max-w-[95vw] md:overflow-hidden shadow-2xl shadow-black/80">
   <div class="flex justify-center pt-3 pb-1 md:hidden">
     <div class="w-10 h-1 rounded-full bg-white/20"></div>
   </div>
-  <div class="hidden md:block h-0.5 w-full bg-gradient-to-r from-[#6E2A35] via-[#A72027] to-[#6E2A35]"></div>
+  <div class="hidden md:block h-0.5 w-full bg-linear-to-r from-[#6E2A35] via-[#A72027] to-[#6E2A35]"></div>
 
   @if (loading) {
   <div class="flex items-center justify-center py-20 text-white/30 text-sm gap-3">
@@ -26,7 +26,7 @@
 
   @if (!loading && room) {
   <!-- HEADER -->
-  <div class="flex items-center justify-between px-5 md:px-6 pt-4 pb-3 md:pt-5 border-b border-white/[0.06]">
+  <div class="flex items-center justify-between px-5 md:px-6 pt-4 pb-3 md:pt-5 border-b border-white/6">
     <div>
       <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase mb-0.5">
         Confirmar reserva
@@ -50,7 +50,7 @@
       <div class="flex gap-1 mb-1.5">
         @for (s of [1, 2, 3]; track s) {
         <div class="h-1 flex-1 rounded-full transition-all duration-500" [ngClass]="
-                mobileStep >= s ? 'bg-gradient-to-r from-[#6E2A35] to-[#A72027]' : 'bg-white/10'
+                mobileStep >= s ? 'bg-linear-to-r from-[#6E2A35] to-[#A72027]' : 'bg-white/10'
               "></div>
         }
       </div>
@@ -117,7 +117,7 @@
                       'text-white/15 cursor-not-allowed': day.day && day.isPast,
                       'hover:bg-white/10 text-white/70':
                         day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
-                      'bg-gradient-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-lg':
+                      'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-lg':
                         day.day && isSelectedDate(day),
                       'bg-indigo-900/50 border border-indigo-500/50 text-indigo-200 font-semibold':
                         day.day && isEndDate(day),
@@ -153,7 +153,7 @@
           <button type="button" (click)="selectWeekDay(wd)" [disabled]="wd.isPast"
             class="flex flex-col items-center py-3 rounded-2xl border transition-all gap-0.5" [ngClass]="{
                       'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
-                      'border-[#A72027] bg-gradient-to-b from-[#6E2A35]/60 to-[#A72027]/25 shadow-lg':
+                      'border-[#A72027] bg-linear-to-b from-[#6E2A35]/60 to-[#A72027]/25 shadow-lg':
                         weekDayMark(wd) === 'start',
                       'border-indigo-500/60 bg-indigo-900/35': weekDayMark(wd) === 'end',
                       'border-white/10 hover:border-white/30 hover:bg-white/5':
@@ -194,7 +194,7 @@
         }
 
         <button type="button" (click)="mobileStep = 2" [disabled]="!selectedDate"
-          class="mt-5 w-full py-4 rounded-2xl text-sm font-semibold bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+          class="mt-5 w-full py-4 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
           {{ selectedDate ? 'Continuar — ' + selectedDateLabel : 'Selecciona un día' }}
         </button>
       </div>
@@ -213,9 +213,9 @@
             <button type="button" (click)="selectStartTime(slot)" [disabled]="!slot.available"
               class="py-3 rounded-xl text-sm border transition-all relative" [ngClass]="
                       startTime === slot.time
-                        ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                        ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                         : slot.available
-                          ? 'bg-white/[0.04] border-white/10 text-white/60 hover:border-white/30 hover:text-white'
+                          ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
                           : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'
                     ">
               {{ slot.time }}
@@ -243,9 +243,9 @@
             <button type="button" (click)="selectEndTime(slot, false)" [disabled]="!slot.available"
               class="py-3 rounded-xl text-sm border transition-all relative" [ngClass]="
                           endTime === slot.time && !crossesMidnight
-                            ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                            ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                             : slot.available
-                              ? 'bg-white/[0.04] border-white/10 text-white/60 hover:border-white/30 hover:text-white'
+                              ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
                               : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'
                         ">
               {{ slot.time }}
@@ -269,7 +269,7 @@
             <button type="button" (click)="selectEndTime(slot, true)"
               class="py-3 rounded-xl text-sm border transition-all" [ngClass]="
                         endTime === slot.time && crossesMidnight
-                          ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                          ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                           : 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/70 hover:border-indigo-500/50 hover:text-indigo-200'
                       ">
               {{ slot.time }}
@@ -354,7 +354,7 @@
             ← Fecha
           </button>
           <button type="button" (click)="reserve()" [disabled]="!canReserve || reserving"
-            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
             @if (reserving) {
             <span class="flex items-center justify-center gap-2">
               <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -397,7 +397,7 @@
           </p>
 
           <!-- Contenedor Stripe Elements -->
-          <div class="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 min-h-[150px]">
+          <div class="bg-white/2 border border-white/5 rounded-xl p-4 min-h-[150px]">
             <div id="payment-element-mobile">
               <!-- Stripe inyecta el UI aquí -->
             </div>
@@ -432,7 +432,7 @@
             Cancelar
           </button>
           <button type="button" (click)="confirmPayment()" [disabled]="processingPayment || paymentSuccess || !elements"
-            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linar-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
             @if (processingPayment) {
             <span class="flex items-center justify-center gap-2">
               <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -456,7 +456,7 @@
   <!-- ═══════════════ DESKTOP ═══════════════ -->
   <div class="hidden md:flex" style="height: calc(min(88vh, 620px) - 68px)">
     <!-- COL 1: Calendario -->
-    <div class="w-[285px] shrink-0 border-r border-white/[0.06] flex flex-col overflow-y-auto">
+    <div class="w-[285px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
       <div class="px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
         <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Fecha</p>
         <div class="flex bg-white/5 rounded-lg p-0.5">
@@ -511,7 +511,7 @@
                     'text-white/15 cursor-not-allowed': day.day && day.isPast,
                     'hover:bg-white/8 text-white/60 cursor-pointer':
                       day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
-                    'bg-gradient-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-md':
+                    'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-md':
                       day.day && isSelectedDate(day),
                     'bg-indigo-900/50 border border-indigo-500/40 text-indigo-200 font-semibold':
                       day.day && isEndDate(day),
@@ -549,7 +549,7 @@
           <button type="button" (click)="selectWeekDay(wd)" [disabled]="wd.isPast"
             class="flex flex-col items-center py-2.5 rounded-xl border transition-all gap-0.5" [ngClass]="{
                     'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
-                    'border-[#A72027] bg-gradient-to-b from-[#6E2A35]/50 to-[#A72027]/20':
+                    'border-[#A72027] bg-linar-to-b from-[#6E2A35]/50 to-[#A72027]/20':
                       weekDayMark(wd) === 'start',
                     'border-indigo-500/50 bg-indigo-900/25': weekDayMark(wd) === 'end',
                     'border-white/8 hover:border-white/25 hover:bg-white/5':
@@ -575,7 +575,7 @@
       }
 
       @if (selectedDate) {
-      <div class="px-4 py-2 border-t border-white/[0.06] mt-auto shrink-0">
+      <div class="px-4 py-2 border-t border-white/6 mt-auto shrink-0">
         <p class="text-[10px] text-white/40">📅 {{ selectedDateLabel }}</p>
         @if (crossesMidnight) {
         <p class="text-[10px] text-indigo-400/70 mt-0.5">🌙 Salida: {{ nextDayLabel }}</p>
@@ -585,7 +585,7 @@
     </div>
 
     <!-- COL 2: Horario + Precio -->
-    <div class="w-[290px] shrink-0 border-r border-white/[0.06] flex flex-col overflow-y-auto">
+    <div class="w-[290px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
       <div class="px-5 pt-4 pb-2 shrink-0">
         <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Horario y precio</p>
       </div>
@@ -606,9 +606,9 @@
             <button type="button" (click)="selectStartTime(slot)" [disabled]="!slot.available"
               class="py-2 rounded-lg text-[11px] border transition-all relative" [ngClass]="
                       startTime === slot.time
-                        ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                        ? 'bg-linar-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                         : slot.available
-                          ? 'bg-white/[0.03] border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
+                          ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
                           : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'
                     ">
               {{ slot.time }}
@@ -635,9 +635,9 @@
             <button type="button" (click)="selectEndTime(slot, false)" [disabled]="!slot.available"
               class="py-2 rounded-lg text-[11px] border transition-all relative" [ngClass]="
                           endTime === slot.time && !crossesMidnight
-                            ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                            ? 'bg-linar-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                             : slot.available
-                              ? 'bg-white/[0.03] border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
+                              ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
                               : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'
                         ">
               {{ slot.time }}
@@ -660,7 +660,7 @@
             <button type="button" (click)="selectEndTime(slot, true)"
               class="py-2 rounded-lg text-[11px] border transition-all" [ngClass]="
                         endTime === slot.time && crossesMidnight
-                          ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                          ? 'bg-linaer-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
                           : 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/60 hover:border-indigo-500/40 hover:text-indigo-200'
                       ">
               {{ slot.time }}
@@ -730,7 +730,7 @@
       <div class="flex-1 flex flex-col px-4 pb-4 gap-3">
         <div class="mt-auto flex flex-col gap-3">
           @if (startTime && endTime && totalHours > 0) {
-          <div class="bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3">
+          <div class="bg-white/3 border border-white/6 rounded-xl px-4 py-3">
             <div class="flex justify-between text-xs text-white/35 mb-1">
               <span>{{ selectedDateLabel }}
                 @if (crossesMidnight) {
@@ -748,7 +748,7 @@
 
           <!-- UI de Stripe para Desktop -->
           @if (mobileStep === 3) {
-          <div class="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 mt-2 mb-2">
+          <div class="bg-white/2 border border-white/5 rounded-xl p-4 mt-2 mb-2">
             <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Pago Seguro</p>
             <div id="payment-element-desktop"></div>
           </div>
@@ -790,7 +790,7 @@
 
             @if (mobileStep !== 3) {
             <button type="button" (click)="reserve()" [disabled]="!canReserve || reserving"
-              class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+              class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
               @if (reserving) {
               <span class="flex items-center justify-center gap-2">
                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -814,7 +814,7 @@
             } @else {
             <button type="button" (click)="confirmPayment()"
               [disabled]="processingPayment || paymentSuccess || !elements"
-              class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+              class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
               @if (processingPayment) {
               <span class="flex items-center justify-center gap-2">
                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
