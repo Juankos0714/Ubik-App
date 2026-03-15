@@ -1,13 +1,15 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, AfterViewInit, NgZone, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { LoginService } from '../../../core/services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';
 import { FormsModule } from '@angular/forms';
 import { Inputcomponent } from '../../../components/input/input';
 import { AuthService } from '../../../core/services/auth.service';
-import { Button01 } from '../../../components/button-01/button-01';
 import { validateLoginForm } from './utils/login-validation.utils';
+import { environment } from '../../../../environments/environment';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,7 @@ import { validateLoginForm } from './utils/login-validation.utils';
   imports: [CommonModule, FormsModule, Inputcomponent],
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
   formData = signal<Partial<LoginFormData>>({
     username: '',
     password: '',
@@ -35,7 +37,72 @@ export class LoginComponent {
     private loginService: LoginService,
     private auth: AuthService,
     private router: Router,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
+
+  /* =======================
+     GOOGLE SIGN-IN
+     ======================= */
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.loadGoogleScript().then(() => this.initGoogleSignIn());
+  }
+
+  private loadGoogleScript(): Promise<void> {
+    return new Promise((resolve) => {
+      if (document.getElementById('google-gsi-script')) { resolve(); return; }
+      const script = document.createElement('script');
+      script.id = 'google-gsi-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
+  }
+
+  private initGoogleSignIn(): void {
+    google.accounts.id.initialize({
+      client_id: environment.googleClientId,
+      callback: (response: any) =>
+        this.ngZone.run(() => this.handleGoogleCredential(response)),
+    });
+    const container = document.getElementById('g-signin-login');
+    if (container) {
+      google.accounts.id.renderButton(container, { type: 'standard', size: 'large' });
+    }
+  }
+
+  triggerGoogleSignIn(): void {
+    const btn = document.querySelector('#g-signin-login div[role="button"]') as HTMLElement;
+    btn?.click();
+  }
+
+  handleGoogleCredential(response: any): void {
+    const idToken: string = response.credential;
+    this.isSubmitting.set(true);
+    this.errors.set([]);
+    this.loginService.loginWithGoogle(idToken).subscribe({
+      next: () => {
+        this.loginService.getProfile().subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.router.navigate(['/']);
+          },
+          error: () => {
+            this.isSubmitting.set(false);
+            this.errors.set([{ field: 'form', message: 'Iniciaste sesión con Google, pero no se pudo cargar tu perfil.' }]);
+          },
+        });
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        this.errors.set([{ field: 'form', message: 'No se pudo iniciar sesión con Google. Intenta de nuevo.' }]);
+      },
+    });
+  }
 
   /* =======================
      FORM UPDATES
@@ -143,4 +210,5 @@ export class LoginComponent {
   navigateToPasswordReset(): void {
     this.router.navigate(['/forgot-password']); // Recuperacion de contraseña
   }
+
 }

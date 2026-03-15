@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone, Inject, PLATFORM_ID } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -9,18 +9,21 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../../../../components/input/input';
 import { RegisterService } from '../../../../../core/services/register-user.service';
 import { ValidationError } from '../types/register-user.types';
+import { environment } from '../../../../../../environments/environment';
 
 import {
   toValidatorFn,
   validatePassword,
   validatePasswordConfirmation,
 } from '../../../../../core/utils/validation.utils';
+
+declare const google: any;
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -71,7 +74,7 @@ function passwordConfirmationValidator(
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-user.html',
 })
-export class RegisterUser implements OnInit {
+export class RegisterUser implements OnInit, AfterViewInit {
   registerForm: FormGroup;
 
   // Errores backend por campo
@@ -94,7 +97,9 @@ export class RegisterUser implements OnInit {
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.registerForm = this.fb.group(
       {
@@ -137,6 +142,60 @@ export class RegisterUser implements OnInit {
     // ✅ Progreso
     this.updateProgress();
     this.registerForm.valueChanges.subscribe(() => this.updateProgress());
+  }
+
+  /* =======================
+     GOOGLE SIGN-IN
+     ======================= */
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.loadGoogleScript().then(() => this.initGoogleSignIn());
+  }
+
+  private loadGoogleScript(): Promise<void> {
+    return new Promise((resolve) => {
+      if (document.getElementById('google-gsi-script')) { resolve(); return; }
+      const script = document.createElement('script');
+      script.id = 'google-gsi-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
+  }
+
+  private initGoogleSignIn(): void {
+    google.accounts.id.initialize({
+      client_id: environment.googleClientId,
+      callback: (response: any) =>
+        this.ngZone.run(() => this.handleGoogleCredential(response)),
+    });
+    const container = document.getElementById('g-signin-register');
+    if (container) {
+      google.accounts.id.renderButton(container, { type: 'standard', size: 'large' });
+    }
+  }
+
+  triggerGoogleSignIn(): void {
+    const btn = document.querySelector('#g-signin-register div[role="button"]') as HTMLElement;
+    btn?.click();
+  }
+
+  handleGoogleCredential(response: any): void {
+    this.isSubmitting = true;
+    this.serverError = null;
+    this.registerService.registerWithGoogle(response.credential).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.serverError = 'No se pudo registrar con Google. Intenta de nuevo.';
+        this.isSubmitting = false;
+      },
+    });
   }
 
   updateProgress(): void {

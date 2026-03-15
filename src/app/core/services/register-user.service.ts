@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { ValidationError } from '../../views/Forms/register/register-user-client/types/register-user.types';
 import { RegisterFormData } from '../../views/Forms/register/register-user-client/types/register-user.types';
@@ -15,6 +16,7 @@ import {
 } from '../utils/validation.utils';
 
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 export interface RegistrationResult {
   success: boolean;
@@ -27,7 +29,7 @@ export class RegisterService {
 
   private readonly REGISTER_URL = `${environment.apiUrl}/auth/register`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
   /** VALIDACIÓN SOLO FRONTEND */
   validateClientForm(data: Partial<RegisterFormData>): ValidationError[] {
@@ -85,5 +87,24 @@ export class RegisterService {
       payload,
       { responseType: 'text' }
     );
+  }
+
+  /** Registro / login con Google (GSI ID token) */
+  registerWithGoogle(idToken: string): Observable<string> {
+    return this.http
+      .post(`${environment.apiUrl}/api/auth/google`, { idToken }, { responseType: 'text' })
+      .pipe(
+        tap((rawToken: string) => {
+          let token = (rawToken ?? '').toString().trim();
+          try {
+            const parsed = JSON.parse(rawToken);
+            token = (parsed.token || parsed.access_token || parsed.jwt || rawToken) as string;
+          } catch {
+            token = rawToken.replace(/"/g, '').trim();
+          }
+          token = token.replace(/"/g, '').replace(/^Bearer\s+/i, '').trim();
+          this.auth.setToken(token);
+        }),
+      );
   }
 }
