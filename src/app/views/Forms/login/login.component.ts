@@ -1,5 +1,6 @@
 import { Component, signal, AfterViewInit, NgZone, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { LoginService } from '../../../core/services/login.service';
 import { LoginFormData, ValidationError } from './types/login.types';

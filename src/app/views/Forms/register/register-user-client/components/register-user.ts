@@ -9,7 +9,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../../../../components/input/input';
@@ -167,20 +168,45 @@ export class RegisterUser implements OnInit, AfterViewInit {
   }
 
   private initGoogleSignIn(): void {
-    google.accounts.id.initialize({
-      client_id: environment.googleClientId,
-      callback: (response: any) =>
-        this.ngZone.run(() => this.handleGoogleCredential(response)),
-    });
-    const container = document.getElementById('g-signin-register');
-    if (container) {
-      google.accounts.id.renderButton(container, { type: 'standard', size: 'large' });
+    if (typeof google === 'undefined' || !google.accounts) {
+      console.error('La librería de Google Sign-In no está cargada correctamente.');
+      this.serverError = 'Error al cargar el autenticador de Google. Por favor, recarga la página.';
+      return;
+    }
+
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) =>
+          this.ngZone.run(() => this.handleGoogleCredential(response)),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      const container = document.getElementById('g-signin-register');
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          type: 'standard',
+          size: 'large',
+          theme: 'outline',
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left'
+        });
+      }
+    } catch (error) {
+      console.error('Error inicializando Google Sign-In en registro:', error);
     }
   }
 
   triggerGoogleSignIn(): void {
     const btn = document.querySelector('#g-signin-register div[role="button"]') as HTMLElement;
-    btn?.click();
+    if (btn) {
+      btn.click();
+    } else {
+      console.warn('Botón de Google no encontrado en el registro, intentando prompt...');
+      google.accounts.id.prompt();
+    }
   }
 
   handleGoogleCredential(response: any): void {

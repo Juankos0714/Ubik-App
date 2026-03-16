@@ -92,7 +92,7 @@ export class RegisterService {
   /** Registro / login con Google (GSI ID token) */
   registerWithGoogle(idToken: string): Observable<string> {
     return this.http
-      .post(`${environment.apiUrl}/api/auth/google`, { idToken }, { responseType: 'text' })
+      .post(`${environment.apiUrl}/auth/google`, { idToken }, { responseType: 'text' })
       .pipe(
         tap((rawToken: string) => {
           let token = (rawToken ?? '').toString().trim();
