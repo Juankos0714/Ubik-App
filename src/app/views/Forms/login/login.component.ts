@@ -64,20 +64,47 @@ export class LoginComponent implements AfterViewInit {
   }
 
   private initGoogleSignIn(): void {
-    google.accounts.id.initialize({
-      client_id: environment.googleClientId,
-      callback: (response: any) =>
-        this.ngZone.run(() => this.handleGoogleCredential(response)),
-    });
-    const container = document.getElementById('g-signin-login');
-    if (container) {
-      google.accounts.id.renderButton(container, { type: 'standard', size: 'large' });
+    if (typeof google === 'undefined' || !google.accounts) {
+      console.error('La librería de Google Sign-In no está cargada correctamente.');
+      this.errors.set([{ field: 'form', message: 'Error al cargar el autenticador de Google. Por favor, recarga la página.' }]);
+      return;
+    }
+
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) =>
+          this.ngZone.run(() => this.handleGoogleCredential(response)),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      const container = document.getElementById('g-signin-login');
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          type: 'standard',
+          size: 'large',
+          theme: 'outline',
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left'
+        });
+      }
+    } catch (error) {
+      console.error('Error inicializando Google Sign-In:', error);
     }
   }
 
   triggerGoogleSignIn(): void {
+    // Intentar primero el trigger programático si el botón oculto falla
     const btn = document.querySelector('#g-signin-login div[role="button"]') as HTMLElement;
-    btn?.click();
+    if (btn) {
+      btn.click();
+    } else {
+      // Fallback: intentar abrir el prompt de One Tap o re-inicializar si es necesario
+      console.warn('Botón de Google no encontrado en el DOM, intentando prompt...');
+      google.accounts.id.prompt();
+    }
   }
 
   handleGoogleCredential(response: any): void {

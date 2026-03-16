@@ -97,7 +97,7 @@ export class LoginService {
 
   loginWithGoogle(idToken: string): Observable<string> {
     return this.http
-      .post(`${this.apiUrl}/auth/oauth/google`, { idToken }, { responseType: 'text' })
+      .post(`${this.apiUrl}/auth/google`, { idToken }, { responseType: 'text' })
       .pipe(
         tap((rawToken: string) => {
           let token = (rawToken ?? '').toString().trim();
