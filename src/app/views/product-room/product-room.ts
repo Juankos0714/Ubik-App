@@ -9,6 +9,7 @@ import { Map as AppMap } from '../../components/map/map';
 import { Button01 } from "../../components/button-01/button-01";
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 import { Dialog } from '@angular/cdk/dialog';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-product-room',
@@ -19,6 +20,7 @@ import { Dialog } from '@angular/cdk/dialog';
 export class ProductRoom implements OnInit {
   private roomService = inject(RoomService);
   private route = inject(ActivatedRoute);
+  public authService = inject(AuthService);
 
   room: Room | null = null;
   loading = false;

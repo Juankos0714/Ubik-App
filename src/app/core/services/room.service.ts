@@ -63,8 +63,11 @@ export class RoomService {
   }
 
   getRoomsByMotel(motelId: number): Observable<Room[]> {
-    // Mantengo el patrón de tu backend: /motels/:motelId/rooms
     return this.inBrowser(this.http.get<Room[]>(`${this.baseUrl}/motels/${motelId}/rooms`));
+  }
+
+  updateRoom(id: number, payload: any): Observable<Room> {
+    return this.inBrowser(this.http.put<Room>(`${this.roomsUrl}/${id}`, payload));
   }
 
   // ─────────────────────── Services ────────────────────────
