@@ -41,7 +41,7 @@ import { CreateRoomComponent } from './views/Forms/create-room/components/create
 
 // ----------------------------------------------------------------------------------------------------
 
-import { MotelProfile } from './views/motel-profile/motel-profile';
+import { MotelProfile } from './views/motel-profile/motel-profile'; // Perfil detallado de un motel
 import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
