@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone, Inject, PLATFORM_ID } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,11 +10,13 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../../../components/input/input';
 import { RegisterServiceOwner } from '../../../../core/services/register-user-est.service';
 import { ValidationError } from '../register-user-client/types/register-user.types';
+import { environment } from '../../../../../environments/environment';
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -33,6 +35,8 @@ function adultValidator(minAge = 18): ValidatorFn {
   };
 }
 
+declare const google: any;
+
 function matchFields(field1: string, field2: string): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
     const a = group.get(field1)?.value;
@@ -48,7 +52,7 @@ function matchFields(field1: string, field2: string): ValidatorFn {
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-owner.html',
 })
-export class RegisterOwner implements OnInit {
+export class RegisterOwner implements OnInit, AfterViewInit {
   registerForm: FormGroup;
 
   // Errores backend por campo
@@ -73,7 +77,9 @@ export class RegisterOwner implements OnInit {
   constructor(
     private fb: FormBuilder,
     private registerService: RegisterServiceOwner,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.registerForm = this.fb.group(
       {
@@ -109,6 +115,87 @@ export class RegisterOwner implements OnInit {
         delete errors['usernameTaken'];
         c.setErrors(Object.keys(errors).length ? errors : null);
       }
+    });
+  }
+
+  /* =======================
+     GOOGLE SIGN-IN
+     ======================= */
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.loadGoogleScript().then(() => this.initGoogleSignIn());
+  }
+
+  private loadGoogleScript(): Promise<void> {
+    return new Promise((resolve) => {
+      if (document.getElementById('google-gsi-script')) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'google-gsi-script';
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      document.head.appendChild(script);
+    });
+  }
+
+  private initGoogleSignIn(): void {
+    if (typeof google === 'undefined' || !google.accounts) {
+      console.error('La librería de Google Sign-In no está cargada correctamente.');
+      this.serverError = 'Error al cargar el autenticador de Google. Por favor, recarga la página.';
+      return;
+    }
+
+    try {
+      google.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (response: any) => this.ngZone.run(() => this.handleGoogleCredential(response)),
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      const container = document.getElementById('g-signin-register');
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          type: 'standard',
+          size: 'large',
+          theme: 'outline',
+          text: 'signin_with',
+          shape: 'rectangular',
+          logo_alignment: 'left',
+        });
+      }
+    } catch (error) {
+      console.error('Error inicializando Google Sign-In en registro:', error);
+    }
+  }
+
+  triggerGoogleSignIn(): void {
+    const btn = document.querySelector('#g-signin-register div[role="button"]') as HTMLElement;
+    if (btn) {
+      btn.click();
+    } else {
+      console.warn('Botón de Google no encontrado en el registro, intentando prompt...');
+      google.accounts.id.prompt();
+    }
+  }
+
+  handleGoogleCredential(response: any): void {
+    this.isSubmitting = true;
+    this.serverError = null;
+    this.registerService.registerWithGoogle(response.credential).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.serverError = 'No se pudo registrar con Google. Intenta de nuevo.';
+        this.isSubmitting = false;
+      },
     });
   }
 
@@ -164,6 +251,7 @@ export class RegisterOwner implements OnInit {
 
 
   getUserLocation() {
+    if (!isPlatformBrowser(this.platformId)) return;
     if (!navigator.geolocation) {
       this.locationStatus = 'Geolocalización no soportada.';
       return;

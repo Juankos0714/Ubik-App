@@ -19,7 +19,7 @@ export interface Motel {
   imageUrls: MotelImage[];
   latitude: number | null;
   longitude: number | null;
-  approvalStatus: 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+  approvalStatus?: 'APPROVED' | 'PENDING' | 'REJECTED' | string;
   approvalDate: string | null;
   approvedByUserId: number | null;
   rejectionReason: string | null;
