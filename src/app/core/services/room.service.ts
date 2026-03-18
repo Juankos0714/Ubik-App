@@ -67,6 +67,10 @@ export class RoomService {
     return this.inBrowser(this.http.get<Room[]>(`${this.baseUrl}/motels/${motelId}/rooms`));
   }
 
+  updateRoom(id: number, payload: any): Observable<Room> {
+    return this.inBrowser(this.http.put<Room>(`${this.roomsUrl}/${id}`, payload));
+  }
+
   // ─────────────────────── Services ────────────────────────
 
   getAllServices(): Observable<Service[]> {

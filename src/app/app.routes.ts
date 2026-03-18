@@ -46,6 +46,7 @@ import { RoomsMotel } from './views/rooms-motel/rooms-motel';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
 import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { ProductRoom } from './views/product-room/product-room'; // Información detallada de una habitación
+import { EditRoomComponent } from './views/Forms/edit-room/components/edit-room.component';
 
 
 // ----------------------------------------------------------------------------------------------------
@@ -105,6 +106,7 @@ export const routes: Routes = [
   { path: 'create-room', component: CreateRoomComponent },
   { path: 'listProperty', component: PropertyUserComponent }, // Lista de los moteles registrados por el usuario
   { path: 'roominfo', component: ProductRoom }, // Informacion de una habitacion
+  { path: 'edit-room/:id', component: EditRoomComponent },
 
   /*========== WILDCARD ROUTE ==========*/
   { path: '**', redirectTo: '' },
