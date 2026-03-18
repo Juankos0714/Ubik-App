@@ -15,24 +15,25 @@ export interface AvailabilityResult {
 
 export interface RoomReservation {
   id: number;
-  room_id: number;
-  start_date: string;
-  start_time: string;
-  end_time: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  roomId?: number;   // campo real del backend — usado para filtrar por habitación
+  room_id?: number;  // alias alternativo
+  start_date?: string;
+  end_date?: string;
+  startDate?: string;
+  endDate?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  start_time?: string;
+  end_time?: string;
+  startTime?: string;
+  endTime?: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'pending' | 'confirmed' | 'cancelled';
 }
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
   private readonly baseUrl = environment.apiUrl;
   private readonly roomsUrl = `${this.baseUrl}/rooms`;
-
-  /**
-   * Ajusta esta ruta si tu backend usa otra:
-   * - `${baseUrl}/services`
-   * - `${baseUrl}/rooms/services`
-   * - `${baseUrl}/room-services`
-   */
   private readonly servicesUrl = `${this.baseUrl}/services`;
 
   private readonly isBrowser: boolean;
@@ -63,7 +64,6 @@ export class RoomService {
   }
 
   getRoomsByMotel(motelId: number): Observable<Room[]> {
-    // Mantengo el patrón de tu backend: /motels/:motelId/rooms
     return this.inBrowser(this.http.get<Room[]>(`${this.baseUrl}/motels/${motelId}/rooms`));
   }
 
@@ -73,18 +73,24 @@ export class RoomService {
     return this.inBrowser(this.http.get<Service[]>(this.servicesUrl));
   }
 
-  // ─────────────────── Availability / Reservations ───────────────────
+  // ─────────────────── Availability / Reservations ─────────────────────────
 
+  /**
+   * Verifica disponibilidad mandando checkInDate/checkOutDate como ISO 8601
+   * con offset de zona horaria explícito.
+   * Ejemplo: "2026-03-18T17:00:00-05:00" / "2026-03-18T19:00:00-05:00"
+   *
+   * El backend (motelManagement) espera estos mismos campos que usa
+   * createReservation, no date+startTime+endTime por separado.
+   */
   checkAvailability(
     roomId: number,
-    date: string,
-    startTime: string,
-    endTime: string,
+    checkInDate: string,
+    checkOutDate: string,
   ): Observable<AvailabilityResult> {
     const params = new HttpParams()
-      .set('date', date)
-      .set('startTime', startTime)
-      .set('endTime', endTime);
+      .set('checkInDate', checkInDate)
+      .set('checkOutDate', checkOutDate);
 
     return this.inBrowser(
       this.http.get<AvailabilityResult>(`${this.roomsUrl}/${roomId}/availability`, { params }),
