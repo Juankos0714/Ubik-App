@@ -15,7 +15,7 @@ import type { Service, RoomType } from '../../create-room/types/create-room.type
 @Component({
   selector: 'app-edit-room',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-room.component.html',
 })
 export class EditRoomComponent implements OnInit, OnDestroy {
