@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, delay, tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import {
   LoginFormData,
-  AuthResult,
   ValidationError,
-  OAuthProvider,
 } from '../../views/Forms/login/types/login.types';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
@@ -97,13 +95,21 @@ export class LoginService {
 
   /* ======================= */
 
-  loginWithOAuth(provider: OAuthProvider): Observable<AuthResult> {
-    return of({
-      success: true,
-      message: 'Login exitoso (mock)',
-      token: `mock-oauth-token-${provider}-${Date.now()}`,
-      userId: '123',
-      redirectUrl: '/home',
-    }).pipe(delay(500));
+  loginWithGoogle(idToken: string): Observable<string> {
+    return this.http
+      .post(`${this.apiUrl}/auth/google`, { idToken }, { responseType: 'text' })
+      .pipe(
+        tap((rawToken: string) => {
+          let token = (rawToken ?? '').toString().trim();
+          try {
+            const parsed = JSON.parse(rawToken);
+            token = (parsed.token || parsed.access_token || parsed.jwt || rawToken) as string;
+          } catch {
+            token = rawToken.replace(/"/g, '').trim();
+          }
+          token = token.replace(/"/g, '').replace(/^Bearer\s+/i, '').trim();
+          this.auth.setToken(token);
+        }),
+      );
   }
 }

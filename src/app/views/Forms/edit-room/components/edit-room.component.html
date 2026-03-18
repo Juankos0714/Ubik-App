@@ -1,0 +1,265 @@
+<div class="min-h-screen text-white px-5 py-10 font-['DM_Sans',sans-serif]">
+  <div class="mx-auto w-full max-w-5xl">
+    
+    <!-- Header -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold font-['Cormorant_Garamond',serif]">EDITAR HABITACIÓN</h2>
+        @if (room) {
+          <p class="text-white/60 mt-1">
+            {{ room.motelName }} — <span class="text-[#c8a97e]">Habitación {{ room.number }}</span>
+          </p>
+        }
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10 active:scale-[0.99] transition disabled:opacity-50"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#6E2A35] to-[#A72027] px-6 py-3 text-sm font-semibold text-white hover:opacity-90 active:scale-[0.99] transition shadow-lg shadow-[#6E2A35]/30 disabled:opacity-50"
+          (click)="submit()"
+          [disabled]="loading || form.invalid"
+        >
+          @if (loading) {
+            <span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+            Guardando...
+          } @else {
+            Guardar cambios
+          }
+        </button>
+      </div>
+    </div>
+
+    @if (error) {
+      <div class="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-200 text-sm flex items-center gap-3">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        {{ error }}
+      </div>
+    }
+
+    @if (loadingData) {
+      <div class="flex flex-col items-center justify-center py-20 text-white/40">
+        <svg class="animate-spin w-8 h-8 mb-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        <span class="text-sm tracking-widest uppercase">Cargando datos...</span>
+      </div>
+    } @else if (room) {
+      
+      <form
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        class="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 md:p-8 shadow-2xl grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        <!-- Datos básicos -->
+        <div class="md:col-span-2 flex items-center gap-2 mb-2">
+            <div class="w-1 h-5 bg-[#c8a97e] rounded-full"></div>
+            <h4 class="text-lg font-semibold tracking-wide text-white/90 font-['Cormorant_Garamond',serif]">Datos Generales</h4>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-xs uppercase tracking-widest text-white/50">Número / Código</label>
+          <input
+            class="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white placeholder-white/20 outline-none transition focus:border-[#A72027]/50 focus:ring-1 focus:ring-[#A72027]/30"
+            formControlName="number"
+            placeholder="Ej: A-101"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-xs uppercase tracking-widest text-white/50">Tipo de habitación</label>
+          <select
+            class="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white outline-none transition focus:border-[#A72027]/50 focus:ring-1 focus:ring-[#A72027]/30 appearance-none"
+            formControlName="roomType"
+          >
+            @for (t of roomTypes; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-xs uppercase tracking-widest text-white/50">Precio por noche (COP)</label>
+          <input
+            type="number"
+            class="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white outline-none transition focus:border-[#A72027]/50 focus:ring-1 focus:ring-[#A72027]/30"
+            formControlName="price"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-xs uppercase tracking-widest text-white/50">Disponibilidad</label>
+          <div class="flex items-center gap-4 h-full">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="isAvailable" class="sr-only peer">
+              <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#A72027]"></div>
+              <span class="ms-3 text-sm font-medium text-white/70">
+                {{ form.get('isAvailable')?.value ? 'Disponible' : 'No disponible' }}
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 flex flex-col gap-2">
+          <label class="text-xs uppercase tracking-widest text-white/50">Descripción</label>
+          <textarea
+            rows="4"
+            class="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white placeholder-white/20 outline-none transition focus:border-[#A72027]/50 focus:ring-1 focus:ring-[#A72027]/30 resize-none"
+            formControlName="description"
+          ></textarea>
+        </div>
+
+        <hr class="md:col-span-2 border-white/5 my-4" />
+
+        <!-- Imágenes -->
+        <div class="md:col-span-2 flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-[#c8a97e] rounded-full"></div>
+                <h4 class="text-lg font-semibold tracking-wide text-white/90 font-['Cormorant_Garamond',serif]">Galería de Imágenes</h4>
+            </div>
+            <span class="text-xs text-white/40 italic">Máximo 5MB por imagen</span>
+        </div>
+
+        <!-- Imágenes actuales -->
+        <div class="md:col-span-2">
+          <label class="text-xs uppercase tracking-widest text-white/50 mb-3 block">Imágenes actuales</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            @for (url of existingImageUrls; track url; let i = $index) {
+              <div class="group relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/20">
+                <img [src]="url" class="h-full w-full object-cover transition duration-300 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button
+                    type="button"
+                    (click)="removeExistingImage(i)"
+                    class="p-2 bg-red-600 rounded-full text-white hover:bg-red-500 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Subir nuevas -->
+        <div class="md:col-span-2 mt-4">
+          <div class="relative group cursor-pointer">
+            <input
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              type="file"
+              accept="image/*"
+              multiple
+              (change)="onImagesSelected($event)"
+              [disabled]="loading"
+            />
+            <div class="w-full rounded-xl border-2 border-dashed border-white/10 bg-white/[0.02] p-8 text-center transition group-hover:bg-white/[0.05] group-hover:border-[#c8a97e]/30">
+              <svg class="w-8 h-8 mx-auto mb-3 text-white/30 group-hover:text-[#c8a97e]/60 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+              </svg>
+              <p class="text-sm text-white/60">Haz clic o arrastra para añadir más imágenes</p>
+            </div>
+          </div>
+        </div>
+
+        @if (newImagePreviews.length > 0) {
+          <div class="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            @for (url of newImagePreviews; track url; let i = $index) {
+              <div class="group relative aspect-square rounded-xl overflow-hidden border border-[#c8a97e]/20 bg-black/20">
+                <img [src]="url" class="h-full w-full object-cover" />
+                <div class="absolute top-1 right-1">
+                    <span class="bg-[#c8a97e] text-black text-[10px] font-bold px-1.5 py-0.5 rounded">NUEVA</span>
+                </div>
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button
+                    type="button"
+                    (click)="removeNewImage(i)"
+                    class="p-2 bg-red-600 rounded-full text-white hover:bg-red-500 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <hr class="md:col-span-2 border-white/5 my-4" />
+
+        <!-- Servicios -->
+        <div class="md:col-span-2 flex items-center gap-2 mb-2">
+            <div class="w-1 h-5 bg-[#c8a97e] rounded-full"></div>
+            <h4 class="text-lg font-semibold tracking-wide text-white/90 font-['Cormorant_Garamond',serif]">Servicios Incluidos</h4>
+        </div>
+
+        <div class="md:col-span-2">
+          @if (loadingServices) {
+            <div class="animate-pulse flex gap-2 overflow-hidden">
+                <div class="h-10 w-24 bg-white/5 rounded-full"></div>
+                <div class="h-10 w-32 bg-white/5 rounded-full"></div>
+                <div class="h-10 w-28 bg-white/5 rounded-full"></div>
+            </div>
+          } @else {
+            <div class="flex flex-wrap gap-3">
+              @for (s of availableServices; track s.id) {
+                <button
+                  type="button"
+                  (click)="toggleService(s.id)"
+                  [class]="isServiceSelected(s.id) 
+                    ? 'bg-[#A72027]/20 border-[#A72027]/40 text-white' 
+                    : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'"
+                  class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition-all duration-300"
+                >
+                  <span class="font-medium">{{ s.name }}</span>
+                  @if (isServiceSelected(s.id)) {
+                    <svg class="w-4 h-4 text-[#A72027]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="md:col-span-2 flex gap-4 mt-8">
+          <button
+            type="button"
+            class="flex-1 inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-4 text-sm font-medium text-white/90 hover:bg-white/10 active:scale-[0.99] transition disabled:opacity-50"
+            (click)="cancel()"
+            [disabled]="loading"
+          >
+            Descartar cambios
+          </button>
+
+          <button
+            class="flex-1 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#6E2A35] to-[#A72027] px-4 py-4 text-sm font-bold text-white hover:opacity-90 active:scale-[0.99] transition shadow-xl shadow-[#6E2A35]/20 disabled:opacity-50"
+            type="submit"
+            [disabled]="loading || form.invalid"
+          >
+            @if (loading) {
+              <span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+              Actualizando...
+            } @else {
+              Actualizar habitación
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
