@@ -1,5 +1,14 @@
+<!-- Scrollbar oscura global para este modal -->
+<style>
+  .modal-scroll { scrollbar-width: thin; scrollbar-color: #2a2a2f transparent; }
+  .modal-scroll::-webkit-scrollbar { width: 2px; }
+  .modal-scroll::-webkit-scrollbar-track { background: transparent; }
+  .modal-scroll::-webkit-scrollbar-thumb { background: #2a2a2f; border-radius: 99px; }
+  .modal-scroll::-webkit-scrollbar-thumb:hover { background: #3a3a42; }
+</style>
+
 <div
-  class="font-['DM_Sans',sans-serif] text-white bg-[#0c0c0e] w-full rounded-t-3xl max-h-[92vh] overflow-y-auto border-t border-white/8 md:rounded-3xl md:border md:border-white/8 md:max-h-[88vh] md:w-[960px] md:max-w-[95vw] md:overflow-hidden shadow-2xl shadow-black/80">
+  class="modal-scroll font-['DM_Sans',sans-serif] text-white bg-[#0c0c0e] w-full rounded-t-3xl max-h-[92vh] overflow-y-auto border-t border-white/8 md:rounded-3xl md:border md:border-white/8 md:max-h-[88vh] md:w-[960px] md:max-w-[95vw] md:overflow-hidden shadow-2xl shadow-black/80">
   <div class="flex justify-center pt-3 pb-1 md:hidden">
     <div class="w-10 h-1 rounded-full bg-white/20"></div>
   </div>
@@ -18,9 +27,7 @@
   @if (!loading && error) {
   <div class="px-6 py-12 text-center text-red-400 text-sm">
     Error al cargar la habitación.
-    <button (click)="close()" class="block mx-auto mt-3 text-white/40 underline text-xs">
-      Cerrar
-    </button>
+    <button (click)="close()" class="block mx-auto mt-3 text-white/40 underline text-xs">Cerrar</button>
   </div>
   }
 
@@ -28,9 +35,7 @@
   <!-- HEADER -->
   <div class="flex items-center justify-between px-5 md:px-6 pt-4 pb-3 md:pt-5 border-b border-white/6">
     <div>
-      <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase mb-0.5">
-        Confirmar reserva
-      </p>
+      <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase mb-0.5">Confirmar reserva</p>
       <h2 class="text-base md:text-lg font-['Cormorant_Garamond',serif] font-bold">
         {{ room.roomType }} — Hab. {{ room.number }}
         <span class="text-white/30 font-normal text-sm ml-1">${{ room.price | number }}/h</span>
@@ -44,442 +49,369 @@
     </button>
   </div>
 
-  <!-- ═══════════════ MOBILE ═══════════════ -->
+  <!-- ═══════════════════════ MOBILE ═══════════════════════ -->
   <div class="md:hidden">
+    <!-- Stepper -->
     <div class="px-5 pt-4">
       <div class="flex gap-1 mb-1.5">
         @for (s of [1, 2, 3]; track s) {
-        <div class="h-1 flex-1 rounded-full transition-all duration-500" [ngClass]="
-                mobileStep >= s ? 'bg-linear-to-r from-[#6E2A35] to-[#A72027]' : 'bg-white/10'
-              "></div>
+        <div class="h-0.5 flex-1 rounded-full transition-all duration-500"
+          [ngClass]="mobileStep >= s ? 'bg-linear-to-r from-[#6E2A35] to-[#A72027]' : 'bg-white/10'"></div>
         }
       </div>
       <p class="text-[10px] text-white/30 tracking-widest uppercase">
-        {{ mobileStep === 1 ? 'Selecciona fecha' : mobileStep === 2 ? 'Horario, precio y datos' : 'Pago Seguro' }}
+        {{ mobileStep === 1 ? 'Selecciona fecha' : mobileStep === 2 ? 'Horario y precio' : 'Pago Seguro' }}
       </p>
     </div>
 
-      <!-- PASO 1: FECHA -->
-      @if (mobileStep === 1) {
-      <div class="px-5 pt-4 pb-6">
-        <!-- Toggle mes/semana -->
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex bg-white/5 rounded-xl p-0.5">
-            <button type="button" (click)="calendarView = 'month'" class="px-3 py-1.5 rounded-lg text-xs transition-all"
-              [ngClass]="
-                    calendarView === 'month'
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/40 hover:text-white'
-                  ">
-              Mes
-            </button>
-            <button type="button" (click)="calendarView = 'week'" class="px-3 py-1.5 rounded-lg text-xs transition-all"
-              [ngClass]="
-                    calendarView === 'week'
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/40 hover:text-white'
-                  ">
-              Semana
-            </button>
-          </div>
-          @if (selectedDate) {
-          <span class="text-[10px] text-[#c8a97e] truncate ml-2">📅 {{ selectedDateLabel }}</span>
-          }
-        </div>
-
-        <!-- Vista mes mobile -->
-        @if (calendarView === 'month') {
-        <div class="flex items-center justify-between mb-3">
-          <button type="button" (click)="prevMonth()"
-            class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <p class="text-sm font-semibold text-white/80">{{ monthLabel }}</p>
-          <button type="button" (click)="nextMonth()"
-            class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-        <div class="grid grid-cols-7 mb-1">
-          @for (d of dayNames; track d) {
-          <div class="text-center text-[10px] text-white/25 py-1">{{ d }}</div>
-          }
-        </div>
-        <div class="grid grid-cols-7 gap-1">
-          @for (day of calendarDays; track $index) {
-          <button type="button" [disabled]="!day.day || day.isPast" (click)="selectDate(day)"
-            class="aspect-square flex items-center justify-center text-sm rounded-xl transition-all relative" [ngClass]="{
-                      invisible: !day.day,
-                      'text-white/15 cursor-not-allowed': day.day && day.isPast,
-                      'hover:bg-white/10 text-white/70':
-                        day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
-                      'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-lg':
-                        day.day && isSelectedDate(day),
-                      'bg-indigo-900/50 border border-indigo-500/50 text-indigo-200 font-semibold':
-                        day.day && isEndDate(day),
-                    }">
-            {{ day.day || '' }}
-            @if (day.day && isEndDate(day)) {
-            <span class="absolute -top-1 -right-0.5 text-[8px]">🌙</span>
-            }
-          </button>
-          }
-        </div>
-        }
-
-        <!-- Vista semana mobile -->
-        @if (calendarView === 'week') {
-        <div class="flex items-center justify-between mb-3">
-          <button type="button" (click)="prevWeek()"
-            class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <p class="text-xs text-white/60 font-medium">{{ weekRangeLabel }}</p>
-          <button type="button" (click)="nextWeek()"
-            class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-        <div class="grid grid-cols-7 gap-1.5">
-          @for (wd of weekDaysView; track wd.label) {
-          <button type="button" (click)="selectWeekDay(wd)" [disabled]="wd.isPast"
-            class="flex flex-col items-center py-3 rounded-2xl border transition-all gap-0.5" [ngClass]="{
-                      'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
-                      'border-[#A72027] bg-linear-to-b from-[#6E2A35]/60 to-[#A72027]/25 shadow-lg':
-                        weekDayMark(wd) === 'start',
-                      'border-indigo-500/60 bg-indigo-900/35': weekDayMark(wd) === 'end',
-                      'border-white/10 hover:border-white/30 hover:bg-white/5':
-                        !wd.isPast && !weekDayMark(wd),
-                    }">
-            <span class="text-[9px] uppercase tracking-wide"
-              [ngClass]="weekDayMark(wd) ? 'text-white/60' : 'text-white/30'">{{ wd.label }}</span>
-            <span class="text-lg font-bold leading-none" [ngClass]="{
-                        'text-white': weekDayMark(wd) === 'start',
-                        'text-indigo-300': weekDayMark(wd) === 'end',
-                        'text-white/65': !weekDayMark(wd),
-                      }">{{ wd.num }}</span>
-            @if (weekDayMark(wd) === 'start') {
-            <span class="text-[8px] text-[#c8a97e]">Entrada</span>
-            }
-            @if (weekDayMark(wd) === 'end') {
-            <span class="text-[8px] text-indigo-400">🌙 Salida</span>
-            }
-          </button>
-          }
-        </div>
-        }
-
-        <!-- Mostrar horarios ocupados -->
-        @if (reservations.length > 0) {
-        <div class="mt-4 p-3 bg-red-900/10 border border-red-600/20 rounded-xl">
-          <p class="text-[10px] text-red-400 uppercase tracking-widest mb-2">
-            Horarios ocupados
-          </p>
-          <div class="flex flex-wrap gap-2">
-            @for (range of getUnavailableRanges(); track range) {
-            <span class="text-xs text-red-300 bg-red-900/30 px-2 py-1 rounded-lg">{{
-              range
-              }}</span>
-            }
-          </div>
-        </div>
-        }
-
-        <button type="button" (click)="mobileStep = 2" [disabled]="!selectedDate"
-          class="mt-5 w-full py-4 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
-          {{ selectedDate ? 'Continuar — ' + selectedDateLabel : 'Selecciona un día' }}
-        </button>
-      </div>
-      }
-
-      <!-- PASO 2: HORARIO + PRECIO + DATOS -->
-      @if (mobileStep === 2) {
-      <div class="px-5 pt-4 pb-6 flex flex-col gap-5">
-        <!-- HORA ENTRADA -->
-        <div>
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">
-            Hora de entrada
-          </p>
-          <div class="grid grid-cols-4 gap-2">
-            @for (slot of entrySlots; track slot.time) {
-            <button type="button" (click)="selectStartTime(slot)" [disabled]="!slot.available"
-              class="py-3 rounded-xl text-sm border transition-all relative" [ngClass]="
-                      startTime === slot.time
-                        ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                        : slot.available
-                          ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
-                          : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'
-                    ">
-              {{ slot.time }}
-              @if (!slot.available) {
-              <span
-                class="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center">✕</span>
-              }
-            </button>
-            }
-          </div>
-        </div>
-
-        <!-- HORA SALIDA -->
-        @if (startTime) {
-        <div>
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">
-            Hora de salida
-          </p>
-
-          <!-- Mismo día -->
-          @if (exitSameDaySlots.length > 0) {
-          <p class="text-[10px] text-white/25 uppercase tracking-widest mb-2">Mismo día</p>
-          <div class="grid grid-cols-4 gap-2 mb-3">
-            @for (slot of exitSameDaySlots; track slot.time) {
-            <button type="button" (click)="selectEndTime(slot, false)" [disabled]="!slot.available"
-              class="py-3 rounded-xl text-sm border transition-all relative" [ngClass]="
-                          endTime === slot.time && !crossesMidnight
-                            ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                            : slot.available
-                              ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
-                              : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'
-                        ">
-              {{ slot.time }}
-              @if (!slot.available) {
-              <span
-                class="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center">✕</span>
-              }
-            </button>
-            }
-          </div>
-          }
-
-          <!-- Día siguiente -->
-          <div class="flex items-center gap-2 mb-2">
-            <div class="h-px flex-1 bg-white/10"></div>
-            <span class="text-[10px] text-[#c8a97e] uppercase tracking-widest px-2">🌙 Día siguiente</span>
-            <div class="h-px flex-1 bg-white/10"></div>
-          </div>
-          <div class="grid grid-cols-4 gap-2">
-            @for (slot of exitNextDaySlots; track slot.time) {
-            <button type="button" (click)="selectEndTime(slot, true)"
-              class="py-3 rounded-xl text-sm border transition-all" [ngClass]="
-                        endTime === slot.time && crossesMidnight
-                          ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                          : 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/70 hover:border-indigo-500/50 hover:text-indigo-200'
-                      ">
-              {{ slot.time }}
-            </button>
-            }
-          </div>
-        </div>
-        }
-
-        <!-- DISPONIBILIDAD -->
-        @if (checkingAvailability) {
-        <div class="flex items-center gap-2 text-white/40 text-xs">
-          <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          Verificando disponibilidad...
-        </div>
-        }
-        @if (!checkingAvailability && availabilityOk === false) {
-        <div
-          class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
-          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          No disponible{{ availabilityMsg ? '. ' + availabilityMsg : '' }}
-        </div>
-        }
-        @if (!checkingAvailability && availabilityOk === true) {
-        <div
-          class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2.5 text-xs text-green-400">
-          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          ¡Horario disponible!
-        </div>
-        }
-
-        <!-- PRECIO -->
-        @if (startTime && endTime && totalHours > 0) {
-        <div class="bg-[#6E2A35]/15 border border-[#A72027]/30 rounded-2xl px-4 py-4">
-          <div class="flex items-center justify-between mb-2">
-            <div class="text-sm font-bold text-white">{{ startTime }} → {{ endTime }}</div>
-            <span class="text-xs text-white/40 bg-white/5 px-2 py-0.5 rounded-full">{{ totalHours }}h</span>
-          </div>
-          @if (crossesMidnight) {
-          <div
-            class="flex items-center gap-2 mb-2 text-[10px] text-indigo-400/80 bg-indigo-950/30 border border-indigo-800/25 rounded-lg px-2.5 py-1.5">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {{ selectedDateLabel }} → {{ nextDayLabel }}
-          </div>
-          }
-          <div class="flex items-baseline justify-between">
-            <p class="text-[10px] text-white/35">
-              {{ totalHours }}h × ${{ room.price | number }}/h
-            </p>
-            <p class="text-2xl font-['Cormorant_Garamond',serif] font-bold text-[#c8a97e]">
-              ${{ totalPrice | number }}
-              <span class="text-sm font-sans font-normal text-white/30">COP</span>
-            </p>
-          </div>
-        </div>
-        }
-
-        <!-- PAYMENT ERROR MOBILE -->
-        @if (paymentError && mobileStep === 2) {
-        <div class="mb-3 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
-          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          {{ paymentError }}
-        </div>
-        }
-
-        <!-- ACCIONES -->
-        <div class="flex gap-3">
-          <button type="button" (click)="mobileStep = 1"
-            class="px-5 py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm hover:border-white/25 transition-all">
-            ← Fecha
-          </button>
-          <button type="button" (click)="reserve()" [disabled]="!canReserve || reserving"
-            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
-            @if (reserving) {
-            <span class="flex items-center justify-center gap-2">
-              <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Procesando...
-            </span>
-            } @else if (!startTime || !endTime) {
-            Elige el horario
-            } @else if (checkingAvailability) {
-            Verificando...
-            } @else if (availabilityOk === false) {
-            No disponible
-            } @else {
-            Pagar ${{ totalPrice | number }} COP
-            }
-          </button>
-        </div>
-      </div>
-      }
-
-      <!-- PASO 3: PAGO SEGURO STRIPE -->
-      @if (mobileStep === 3) {
-      <div class="px-5 pt-4 pb-6 flex flex-col gap-5">
-        <div>
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">
-            Resumen de Reserva
-          </p>
-          <div class="bg-[#6E2A35]/15 border border-[#A72027]/30 rounded-2xl px-4 py-4 mb-4">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-white/70">{{ selectedDateLabel }}</span>
-              <span class="font-bold text-[#c8a97e]">${{ totalPrice | number }}</span>
-            </div>
-            <div class="text-xs text-white/40 mt-1">{{ startTime }} → {{ endTime }} ({{ totalHours }}h)</div>
-          </div>
-
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3 mt-4">
-            Pago Seguro
-          </p>
-
-          <!-- Contenedor Stripe Elements -->
-          <div class="bg-white/2 border border-white/5 rounded-xl p-4 min-h-[150px]">
-            <div id="payment-element-mobile">
-              <!-- Stripe inyecta el UI aquí -->
-            </div>
-          </div>
-
-          @if (paymentError) {
-          <div
-            class="mt-3 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
-            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            {{ paymentError }}
-          </div>
-          }
-
-          @if (paymentSuccess) {
-          <div
-            class="mt-3 flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2.5 text-xs text-green-400">
-            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Pago exitoso. Confirmando reserva...
-          </div>
-          }
-        </div>
-
-        <!-- Botones Paso 3 -->
-        <div class="flex gap-3">
-          <button type="button" (click)="close()"
-            class="px-5 py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm hover:border-white/25 transition-all"
-            [disabled]="processingPayment || paymentSuccess">
-            Cancelar
-          </button>
-          <button type="button" (click)="confirmPayment()" [disabled]="processingPayment || paymentSuccess || !elements"
-            class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linar-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
-            @if (processingPayment) {
-            <span class="flex items-center justify-center gap-2">
-              <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Procesando...
-            </span>
-            } @else if (paymentSuccess) {
-            Pago Completo
-            } @else {
-            Confirmar Pago
-            }
-          </button>
-        </div>
-      </div>
-      }
-    </div>
-  <!-- FIN MOBILE -->
-
-  <!-- ═══════════════ DESKTOP ═══════════════ -->
-  <div class="hidden md:flex" style="height: calc(min(88vh, 620px) - 68px)">
-    <!-- COL 1: Calendario -->
-    <div class="w-[285px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
-      <div class="px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
-        <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Fecha</p>
-        <div class="flex bg-white/5 rounded-lg p-0.5">
-          <button type="button" (click)="calendarView = 'month'"
-            class="px-2.5 py-1 rounded-md text-[10px] transition-all" [ngClass]="
-                calendarView === 'month'
-                  ? 'bg-white/10 text-white'
-                  : 'text-white/35 hover:text-white'
-              ">
+    <!-- PASO 1: FECHA -->
+    @if (mobileStep === 1) {
+    <div class="px-5 pt-4 pb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex bg-white/5 rounded-xl p-0.5">
+          <button type="button" (click)="calendarView = 'month'" class="px-3 py-1.5 rounded-lg text-xs transition-all"
+            [ngClass]="calendarView === 'month' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'">
             Mes
           </button>
-          <button type="button" (click)="calendarView = 'week'"
-            class="px-2.5 py-1 rounded-md text-[10px] transition-all" [ngClass]="
-                calendarView === 'week'
-                  ? 'bg-white/10 text-white'
-                  : 'text-white/35 hover:text-white'
-              ">
+          <button type="button" (click)="calendarView = 'week'" class="px-3 py-1.5 rounded-lg text-xs transition-all"
+            [ngClass]="calendarView === 'week' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white'">
             Semana
           </button>
         </div>
+        @if (selectedDate) {
+        <span class="text-[10px] text-[#c8a97e] truncate ml-2">📅 {{ selectedDateLabel }}</span>
+        }
       </div>
 
-      <!-- Mes desktop -->
+      @if (calendarView === 'month') {
+      <div class="flex items-center justify-between mb-3">
+        <button type="button" (click)="prevMonth()"
+          class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <p class="text-sm font-semibold text-white/80">{{ monthLabel }}</p>
+        <button type="button" (click)="nextMonth()"
+          class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-7 mb-1">
+        @for (d of dayNames; track d) {
+        <div class="text-center text-[10px] text-white/25 py-1">{{ d }}</div>
+        }
+      </div>
+      <div class="grid grid-cols-7 gap-1">
+        @for (day of calendarDays; track $index) {
+        <button type="button" [disabled]="!day.day || day.isPast" (click)="selectDate(day)"
+          class="aspect-square flex items-center justify-center text-sm rounded-xl transition-all relative"
+          [ngClass]="{
+            invisible: !day.day,
+            'text-white/15 cursor-not-allowed': day.day && day.isPast,
+            'hover:bg-white/10 text-white/70': day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
+            'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-lg': day.day && isSelectedDate(day),
+            'bg-indigo-900/50 border border-indigo-500/50 text-indigo-200 font-semibold': day.day && isEndDate(day)
+          }">
+          {{ day.day || '' }}
+          @if (day.day && isEndDate(day)) {
+          <span class="absolute -top-1 -right-0.5 text-[8px]">🌙</span>
+          }
+        </button>
+        }
+      </div>
+      }
+
+      @if (calendarView === 'week') {
+      <div class="flex items-center justify-between mb-3">
+        <button type="button" (click)="prevWeek()"
+          class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <p class="text-xs text-white/60 font-medium">{{ weekRangeLabel }}</p>
+        <button type="button" (click)="nextWeek()"
+          class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/50 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-7 gap-1.5">
+        @for (wd of weekDaysView; track wd.label) {
+        <button type="button" (click)="selectWeekDay(wd)" [disabled]="wd.isPast"
+          class="flex flex-col items-center py-3 rounded-2xl border transition-all gap-0.5"
+          [ngClass]="{
+            'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
+            'border-[#A72027] bg-linear-to-b from-[#6E2A35]/60 to-[#A72027]/25 shadow-lg': weekDayMark(wd) === 'start',
+            'border-indigo-500/60 bg-indigo-900/35': weekDayMark(wd) === 'end',
+            'border-white/10 hover:border-white/30 hover:bg-white/5': !wd.isPast && !weekDayMark(wd)
+          }">
+          <span class="text-[9px] uppercase tracking-wide"
+            [ngClass]="weekDayMark(wd) ? 'text-white/60' : 'text-white/30'">{{ wd.label }}</span>
+          <span class="text-lg font-bold leading-none"
+            [ngClass]="{ 'text-white': weekDayMark(wd) === 'start', 'text-indigo-300': weekDayMark(wd) === 'end', 'text-white/65': !weekDayMark(wd) }">
+            {{ wd.num }}
+          </span>
+          @if (weekDayMark(wd) === 'start') { <span class="text-[8px] text-[#c8a97e]">Entrada</span> }
+          @if (weekDayMark(wd) === 'end') { <span class="text-[8px] text-indigo-400">🌙 Salida</span> }
+        </button>
+        }
+      </div>
+      }
+
+      @if (reservations.length > 0) {
+      <div class="mt-4 p-3 bg-red-900/10 border border-red-600/20 rounded-xl">
+        <p class="text-[10px] text-red-400 uppercase tracking-widest mb-2">Horarios ocupados</p>
+        <div class="flex flex-wrap gap-2">
+          @for (range of getUnavailableRanges(); track range) {
+          <span class="text-xs text-red-300 bg-red-900/30 px-2 py-1 rounded-lg">{{ range }}</span>
+          }
+        </div>
+      </div>
+      }
+
+      <button type="button" (click)="mobileStep = 2" [disabled]="!selectedDate"
+        class="mt-5 w-full py-4 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+        {{ selectedDate ? 'Continuar — ' + selectedDateLabel : 'Selecciona un día' }}
+      </button>
+    </div>
+    }
+
+    <!-- PASO 2: HORARIO -->
+    @if (mobileStep === 2) {
+    <div class="px-5 pt-4 pb-6 flex flex-col gap-5">
+      <div>
+        <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Hora de entrada</p>
+        <div class="grid grid-cols-4 gap-2">
+          @for (slot of entrySlots; track slot.time) {
+          <button type="button" (click)="selectStartTime(slot)" [disabled]="!slot.available"
+            class="py-3 rounded-xl text-sm border transition-all relative"
+            [ngClass]="startTime === slot.time
+              ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+              : slot.available
+                ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
+                : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'">
+            {{ slot.time }}
+            @if (!slot.available) {
+            <span class="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center">✕</span>
+            }
+          </button>
+          }
+        </div>
+      </div>
+
+      @if (startTime) {
+      <div>
+        <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Hora de salida</p>
+        @if (exitSameDaySlots.length > 0) {
+        <p class="text-[10px] text-white/25 uppercase tracking-widest mb-2">Mismo día</p>
+        <div class="grid grid-cols-4 gap-2 mb-3">
+          @for (slot of exitSameDaySlots; track slot.time) {
+          <button type="button" (click)="selectEndTime(slot, false)" [disabled]="!slot.available"
+            class="py-3 rounded-xl text-sm border transition-all relative"
+            [ngClass]="endTime === slot.time && !crossesMidnight
+              ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+              : slot.available
+                ? 'bg-white/4 border-white/10 text-white/60 hover:border-white/30 hover:text-white'
+                : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'">
+            {{ slot.time }}
+            @if (!slot.available) {
+            <span class="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center">✕</span>
+            }
+          </button>
+          }
+        </div>
+        }
+        <div class="flex items-center gap-2 mb-2">
+          <div class="h-px flex-1 bg-white/10"></div>
+          <span class="text-[10px] text-[#c8a97e] uppercase tracking-widest px-2">🌙 Día siguiente</span>
+          <div class="h-px flex-1 bg-white/10"></div>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+          @for (slot of exitNextDaySlots; track slot.time) {
+          <button type="button" (click)="selectEndTime(slot, true)" [disabled]="!slot.available"
+            class="py-3 rounded-xl text-sm border transition-all relative"
+            [ngClass]="endTime === slot.time && crossesMidnight
+              ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+              : slot.available
+                ? 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/70 hover:border-indigo-500/50 hover:text-indigo-200'
+                : 'bg-red-900/20 border-red-800/30 text-red-400/50 cursor-not-allowed opacity-50'">
+            {{ slot.time }}
+            @if (!slot.available) {
+            <span class="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white rounded-full w-3 h-3 flex items-center justify-center">✕</span>
+            }
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Feedback disponibilidad -->
+      @if (checkingAvailability) {
+      <div class="flex items-center gap-2 text-white/40 text-xs">
+        <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        Verificando disponibilidad...
+      </div>
+      }
+      @if (!checkingAvailability && availabilityOk === false) {
+      <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        No disponible{{ availabilityMsg ? '. ' + availabilityMsg : '' }}
+      </div>
+      }
+      @if (!checkingAvailability && availabilityOk === true) {
+      <div class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2.5 text-xs text-green-400">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        ¡Horario disponible!
+      </div>
+      }
+
+      @if (startTime && endTime && totalHours > 0) {
+      <div class="bg-[#6E2A35]/15 border border-[#A72027]/30 rounded-2xl px-4 py-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm font-bold text-white">{{ startTime }} → {{ endTime }}</div>
+          <span class="text-xs text-white/40 bg-white/5 px-2 py-0.5 rounded-full">{{ totalHours }}h</span>
+        </div>
+        @if (crossesMidnight) {
+        <div class="flex items-center gap-2 mb-2 text-[10px] text-indigo-400/80 bg-indigo-950/30 border border-indigo-800/25 rounded-lg px-2.5 py-1.5">
+          🌙 {{ selectedDateLabel }} → {{ nextDayLabel }}
+        </div>
+        }
+        <div class="flex items-baseline justify-between">
+          <p class="text-[10px] text-white/35">{{ totalHours }}h × ${{ room.price | number }}/h</p>
+          <p class="text-2xl font-['Cormorant_Garamond',serif] font-bold text-[#c8a97e]">
+            ${{ totalPrice | number }}<span class="text-sm font-sans font-normal text-white/30"> COP</span>
+          </p>
+        </div>
+      </div>
+      }
+
+      @if (paymentError && mobileStep === 2) {
+      <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        {{ paymentError }}
+      </div>
+      }
+
+      <div class="flex gap-3">
+        <button type="button" (click)="mobileStep = 1"
+          class="px-5 py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm hover:border-white/25 transition-all">
+          ← Fecha
+        </button>
+        <button type="button" (click)="reserve()" [disabled]="!canReserve || reserving"
+          class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+          @if (reserving) {
+          <span class="flex items-center justify-center gap-2">
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Procesando...
+          </span>
+          } @else if (!startTime || !endTime) {
+          Elige el horario
+          } @else if (checkingAvailability) {
+          Verificando...
+          } @else if (availabilityOk === false) {
+          No disponible
+          } @else {
+          Pagar ${{ totalPrice | number }} COP
+          }
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- PASO 3: STRIPE -->
+    @if (mobileStep === 3) {
+    <div class="px-5 pt-4 pb-6 flex flex-col gap-5">
+      <div class="bg-[#6E2A35]/15 border border-[#A72027]/30 rounded-2xl px-4 py-4">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-white/70">{{ selectedDateLabel }}</span>
+          <span class="font-bold text-[#c8a97e]">${{ totalPrice | number }}</span>
+        </div>
+        <div class="text-xs text-white/40 mt-1">{{ startTime }} → {{ endTime }} · {{ totalHours }}h</div>
+      </div>
+
+      <div>
+        <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Pago Seguro</p>
+        <div class="bg-white/2 border border-white/5 rounded-xl p-4 min-h-[150px]">
+          <div id="payment-element-mobile"></div>
+        </div>
+      </div>
+
+      @if (paymentError) {
+      <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2.5 text-xs text-red-400">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        {{ paymentError }}
+      </div>
+      }
+      @if (paymentSuccess) {
+      <div class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2.5 text-xs text-green-400">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Pago exitoso. Confirmando reserva...
+      </div>
+      }
+
+      <div class="flex gap-3">
+        <button type="button" (click)="close()" [disabled]="processingPayment || paymentSuccess"
+          class="px-5 py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm hover:border-white/25 transition-all disabled:opacity-30">
+          Cancelar
+        </button>
+        <button type="button" (click)="confirmPayment()" [disabled]="processingPayment || paymentSuccess || !elements"
+          class="flex-1 py-3.5 rounded-2xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/30 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
+          @if (processingPayment) {
+          <span class="flex items-center justify-center gap-2">
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Procesando...
+          </span>
+          } @else if (paymentSuccess) {
+          Pago Completo ✓
+          } @else {
+          Confirmar Pago
+          }
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  <!-- FIN MOBILE -->
+
+  <!-- ═══════════════════════ DESKTOP ═══════════════════════ -->
+  <div class="hidden md:flex" style="height: calc(min(88vh, 620px) - 68px)">
+
+    <!-- COL 1: Calendario -->
+    <div class="modal-scroll w-[285px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
+      <div class="px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
+        <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Fecha</p>
+        <div class="flex bg-white/5 rounded-lg p-0.5">
+          <button type="button" (click)="calendarView = 'month'" class="px-2.5 py-1 rounded-md text-[10px] transition-all"
+            [ngClass]="calendarView === 'month' ? 'bg-white/10 text-white' : 'text-white/35 hover:text-white'">Mes</button>
+          <button type="button" (click)="calendarView = 'week'" class="px-2.5 py-1 rounded-md text-[10px] transition-all"
+            [ngClass]="calendarView === 'week' ? 'bg-white/10 text-white' : 'text-white/35 hover:text-white'">Semana</button>
+        </div>
+      </div>
+
       @if (calendarView === 'month') {
       <div class="px-4 pb-3">
         <div class="flex items-center justify-between mb-2">
@@ -507,15 +439,12 @@
           <button type="button" [disabled]="!day.day || day.isPast" (click)="selectDate(day)"
             class="aspect-square flex items-center justify-center text-[11px] rounded-lg transition-all relative"
             [ngClass]="{
-                    invisible: !day.day,
-                    'text-white/15 cursor-not-allowed': day.day && day.isPast,
-                    'hover:bg-white/8 text-white/60 cursor-pointer':
-                      day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
-                    'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-md':
-                      day.day && isSelectedDate(day),
-                    'bg-indigo-900/50 border border-indigo-500/40 text-indigo-200 font-semibold':
-                      day.day && isEndDate(day),
-                  }">
+              invisible: !day.day,
+              'text-white/15 cursor-not-allowed': day.day && day.isPast,
+              'hover:bg-white/8 text-white/60 cursor-pointer': day.day && !day.isPast && !isSelectedDate(day) && !isEndDate(day),
+              'bg-linear-to-br from-[#6E2A35] to-[#A72027] text-white font-bold shadow-md': day.day && isSelectedDate(day),
+              'bg-indigo-900/50 border border-indigo-500/40 text-indigo-200 font-semibold': day.day && isEndDate(day)
+            }">
             {{ day.day || '' }}
             @if (day.day && isEndDate(day)) {
             <span class="absolute -top-0.5 -right-0.5 text-[7px]">🌙</span>
@@ -526,7 +455,6 @@
       </div>
       }
 
-      <!-- Semana desktop -->
       @if (calendarView === 'week') {
       <div class="px-4 pb-3">
         <div class="flex items-center justify-between mb-3">
@@ -547,27 +475,21 @@
         <div class="grid grid-cols-7 gap-1">
           @for (wd of weekDaysView; track wd.label) {
           <button type="button" (click)="selectWeekDay(wd)" [disabled]="wd.isPast"
-            class="flex flex-col items-center py-2.5 rounded-xl border transition-all gap-0.5" [ngClass]="{
-                    'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
-                    'border-[#A72027] bg-linar-to-b from-[#6E2A35]/50 to-[#A72027]/20':
-                      weekDayMark(wd) === 'start',
-                    'border-indigo-500/50 bg-indigo-900/25': weekDayMark(wd) === 'end',
-                    'border-white/8 hover:border-white/25 hover:bg-white/5':
-                      !wd.isPast && !weekDayMark(wd),
-                  }">
+            class="flex flex-col items-center py-2.5 rounded-xl border transition-all gap-0.5"
+            [ngClass]="{
+              'opacity-20 cursor-not-allowed border-transparent': wd.isPast,
+              'border-[#A72027] bg-linear-to-b from-[#6E2A35]/50 to-[#A72027]/20': weekDayMark(wd) === 'start',
+              'border-indigo-500/50 bg-indigo-900/25': weekDayMark(wd) === 'end',
+              'border-white/8 hover:border-white/25 hover:bg-white/5': !wd.isPast && !weekDayMark(wd)
+            }">
             <span class="text-[8px] uppercase tracking-wide"
               [ngClass]="weekDayMark(wd) ? 'text-white/50' : 'text-white/25'">{{ wd.label }}</span>
-            <span class="text-sm font-bold leading-none" [ngClass]="{
-                      'text-white': weekDayMark(wd) === 'start',
-                      'text-indigo-300': weekDayMark(wd) === 'end',
-                      'text-white/60': !weekDayMark(wd),
-                    }">{{ wd.num }}</span>
-            @if (weekDayMark(wd) === 'start') {
-            <span class="text-[7px] text-[#c8a97e]">In</span>
-            }
-            @if (weekDayMark(wd) === 'end') {
-            <span class="text-[7px] text-indigo-400">🌙</span>
-            }
+            <span class="text-sm font-bold leading-none"
+              [ngClass]="{ 'text-white': weekDayMark(wd) === 'start', 'text-indigo-300': weekDayMark(wd) === 'end', 'text-white/60': !weekDayMark(wd) }">
+              {{ wd.num }}
+            </span>
+            @if (weekDayMark(wd) === 'start') { <span class="text-[7px] text-[#c8a97e]">In</span> }
+            @if (weekDayMark(wd) === 'end') { <span class="text-[7px] text-indigo-400">🌙</span> }
           </button>
           }
         </div>
@@ -584,8 +506,8 @@
       }
     </div>
 
-    <!-- COL 2: Horario + Precio -->
-    <div class="w-[290px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
+    <!-- COL 2: Horario -->
+    <div class="modal-scroll w-[290px] shrink-0 border-r border-white/6 flex flex-col overflow-y-auto">
       <div class="px-5 pt-4 pb-2 shrink-0">
         <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Horario y precio</p>
       </div>
@@ -596,60 +518,50 @@
       </div>
       } @else {
       <div class="px-4 flex flex-col gap-4 pb-4">
-        <!-- Entrada desktop -->
+        <!-- Entrada -->
         <div>
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-2">
-            Hora de entrada
-          </p>
+          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-2">Hora de entrada</p>
           <div class="grid grid-cols-4 gap-1">
             @for (slot of entrySlots; track slot.time) {
             <button type="button" (click)="selectStartTime(slot)" [disabled]="!slot.available"
-              class="py-2 rounded-lg text-[11px] border transition-all relative" [ngClass]="
-                      startTime === slot.time
-                        ? 'bg-linar-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                        : slot.available
-                          ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
-                          : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'
-                    ">
+              class="py-2 rounded-lg text-[11px] border transition-all relative"
+              [ngClass]="startTime === slot.time
+                ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                : slot.available
+                  ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
+                  : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'">
               {{ slot.time }}
               @if (!slot.available) {
-              <span
-                class="absolute -top-0.5 -right-0.5 text-[6px] bg-red-600 text-white rounded-full w-2.5 h-2.5 flex items-center justify-center">✕</span>
+              <span class="absolute -top-0.5 -right-0.5 text-[6px] bg-red-600 text-white rounded-full w-2.5 h-2.5 flex items-center justify-center">✕</span>
               }
             </button>
             }
           </div>
         </div>
 
-        <!-- Salida desktop -->
+        <!-- Salida -->
         @if (startTime) {
         <div>
-          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-2">
-            Hora de salida
-          </p>
-
+          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-2">Hora de salida</p>
           @if (exitSameDaySlots.length > 0) {
           <p class="text-[9px] text-white/20 uppercase tracking-widest mb-1.5">Mismo día</p>
           <div class="grid grid-cols-4 gap-1 mb-3">
             @for (slot of exitSameDaySlots; track slot.time) {
             <button type="button" (click)="selectEndTime(slot, false)" [disabled]="!slot.available"
-              class="py-2 rounded-lg text-[11px] border transition-all relative" [ngClass]="
-                          endTime === slot.time && !crossesMidnight
-                            ? 'bg-linar-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                            : slot.available
-                              ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
-                              : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'
-                        ">
+              class="py-2 rounded-lg text-[11px] border transition-all relative"
+              [ngClass]="endTime === slot.time && !crossesMidnight
+                ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                : slot.available
+                  ? 'bg-white/3 border-white/10 text-white/50 hover:border-white/25 hover:text-white/80'
+                  : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'">
               {{ slot.time }}
               @if (!slot.available) {
-              <span
-                class="absolute -top-0.5 -right-0.5 text-[6px] bg-red-600 text-white rounded-full w-2.5 h-2.5 flex items-center justify-center">✕</span>
+              <span class="absolute -top-0.5 -right-0.5 text-[6px] bg-red-600 text-white rounded-full w-2.5 h-2.5 flex items-center justify-center">✕</span>
               }
             </button>
             }
           </div>
           }
-
           <div class="flex items-center gap-2 mb-2">
             <div class="h-px flex-1 bg-white/10"></div>
             <span class="text-[9px] text-[#c8a97e] uppercase tracking-widest px-1">🌙 Día siguiente</span>
@@ -657,17 +569,22 @@
           </div>
           <div class="grid grid-cols-4 gap-1">
             @for (slot of exitNextDaySlots; track slot.time) {
-            <button type="button" (click)="selectEndTime(slot, true)"
-              class="py-2 rounded-lg text-[11px] border transition-all" [ngClass]="
-                        endTime === slot.time && crossesMidnight
-                          ? 'bg-linaer-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
-                          : 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/60 hover:border-indigo-500/40 hover:text-indigo-200'
-                      ">
+            <button type="button" (click)="selectEndTime(slot, true)" [disabled]="!slot.available"
+              class="py-2 rounded-lg text-[11px] border transition-all relative"
+              [ngClass]="endTime === slot.time && crossesMidnight
+                ? 'bg-linear-to-br from-[#6E2A35] to-[#A72027] border-[#A72027] text-white font-bold'
+                : slot.available
+                  ? 'bg-indigo-950/40 border-indigo-800/30 text-indigo-300/60 hover:border-indigo-500/40 hover:text-indigo-200'
+                  : 'bg-red-900/15 border-red-800/25 text-red-400/40 cursor-not-allowed opacity-50'">
               {{ slot.time }}
+              @if (!slot.available) {
+              <span class="absolute -top-0.5 -right-0.5 text-[6px] bg-red-600 text-white rounded-full w-2.5 h-2.5 flex items-center justify-center">✕</span>
+              }
             </button>
             }
           </div>
         </div>
+        }
 
         <!-- Feedback -->
         @if (checkingAvailability) {
@@ -680,8 +597,7 @@
         </div>
         }
         @if (!checkingAvailability && availabilityOk === false) {
-        <div
-          class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
+        <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
           <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -689,8 +605,7 @@
         </div>
         }
         @if (!checkingAvailability && availabilityOk === true) {
-        <div
-          class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2 text-xs text-green-400">
+        <div class="flex items-center gap-2 bg-green-900/20 border border-green-600/30 rounded-xl px-3 py-2 text-xs text-green-400">
           <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
@@ -698,7 +613,6 @@
         </div>
         }
 
-        <!-- Precio desktop -->
         @if (endTime && totalHours > 0) {
         <div class="bg-[#6E2A35]/15 border border-[#A72027]/25 rounded-xl px-3 py-3">
           <div class="flex justify-between items-center mb-1">
@@ -706,24 +620,20 @@
             <span class="text-xs text-white/35 bg-white/5 px-2 py-0.5 rounded-full">{{ totalHours }}h</span>
           </div>
           @if (crossesMidnight) {
-          <p class="text-[10px] text-indigo-400/70 mb-1.5">
-            🌙 {{ selectedDateLabel }} → {{ nextDayLabel }}
-          </p>
+          <p class="text-[10px] text-indigo-400/70 mb-1.5">🌙 {{ selectedDateLabel }} → {{ nextDayLabel }}</p>
           }
           <div class="flex justify-between items-baseline">
             <span class="text-[10px] text-white/35">{{ totalHours }}h × ${{ room.price | number }}</span>
-            <span class="text-xl font-['Cormorant_Garamond',serif] font-bold text-[#c8a97e]">${{ totalPrice | number
-              }}</span>
+            <span class="text-xl font-['Cormorant_Garamond',serif] font-bold text-[#c8a97e]">${{ totalPrice | number }}</span>
           </div>
         </div>
-        }
         }
       </div>
       }
     </div>
 
     <!-- COL 3: Confirmar y Pagar -->
-    <div class="flex-1 flex flex-col overflow-y-auto min-w-0">
+    <div class="modal-scroll flex-1 flex flex-col overflow-y-auto min-w-0">
       <div class="px-5 pt-4 pb-2 shrink-0">
         <p class="text-[#c8a97e] text-[10px] tracking-[0.3em] uppercase">Confirmar y pagar</p>
       </div>
@@ -733,9 +643,7 @@
           <div class="bg-white/3 border border-white/6 rounded-xl px-4 py-3">
             <div class="flex justify-between text-xs text-white/35 mb-1">
               <span>{{ selectedDateLabel }}
-                @if (crossesMidnight) {
-                <span class="text-indigo-400/60"> → {{ nextDayLabel }}</span>
-                }
+                @if (crossesMidnight) { <span class="text-indigo-400/60"> → {{ nextDayLabel }}</span> }
               </span>
               <span>{{ startTime }} – {{ endTime }}</span>
             </div>
@@ -746,13 +654,11 @@
           </div>
           }
 
-          <!-- UI de Stripe para Desktop -->
           @if (mobileStep === 3) {
           <div class="bg-white/2 border border-white/5 rounded-xl p-4 mt-2 mb-2">
             <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3">Pago Seguro</p>
             <div id="payment-element-desktop"></div>
           </div>
-
           @if (paymentError) {
           <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -771,9 +677,8 @@
           }
           }
 
-          <!-- PAYMENT ERROR DESKTOP (antes de step 3) -->
           @if (paymentError && mobileStep !== 3) {
-          <div class="mb-2 flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
+          <div class="flex items-center gap-2 bg-red-900/20 border border-red-600/30 rounded-xl px-3 py-2 text-xs text-red-400">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -782,12 +687,10 @@
           }
 
           <div class="flex gap-2">
-            <button type="button" (click)="close()"
-              class="px-4 py-2.5 border border-[#8B0000] text-[#cc3a3a] rounded-xl text-sm hover:bg-[#6E2A35]/15 transition-all"
-              [disabled]="processingPayment || paymentSuccess">
+            <button type="button" (click)="close()" [disabled]="processingPayment || paymentSuccess"
+              class="px-4 py-2.5 border border-[#8B0000] text-[#cc3a3a] rounded-xl text-sm hover:bg-[#6E2A35]/15 transition-all disabled:opacity-30">
               Cancelar
             </button>
-
             @if (mobileStep !== 3) {
             <button type="button" (click)="reserve()" [disabled]="!canReserve || reserving"
               class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
@@ -812,8 +715,7 @@
               }
             </button>
             } @else {
-            <button type="button" (click)="confirmPayment()"
-              [disabled]="processingPayment || paymentSuccess || !elements"
+            <button type="button" (click)="confirmPayment()" [disabled]="processingPayment || paymentSuccess || !elements"
               class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white shadow-lg shadow-[#6E2A35]/25 disabled:opacity-25 disabled:cursor-not-allowed transition-all">
               @if (processingPayment) {
               <span class="flex items-center justify-center gap-2">
@@ -824,7 +726,7 @@
                 Procesando...
               </span>
               } @else if (paymentSuccess) {
-              Pago Completo
+              Pago Completo ✓
               } @else {
               Confirmar Pago
               }

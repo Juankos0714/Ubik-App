@@ -12,6 +12,13 @@ import { environment } from '../../../../environments/environment';
 
 declare const google: any;
 
+// Mismos roleId que usa PermissionService y Header
+const ROLE_IDS = {
+  ADMIN: 7392841056473829,
+  OWNER: 3847261094857362,
+  CLIENT: 9182736450192837,
+} as const;
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -40,7 +47,28 @@ export class LoginComponent implements AfterViewInit {
     private router: Router,
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  ) { }
+
+  /* =======================
+     REDIRECCIÓN POR ROL
+     ======================= */
+
+  private redirectByRole(): void {
+    const role = this.auth.role();
+
+    switch (role) {
+      case ROLE_IDS.ADMIN:
+        this.router.navigate(['/dashboard/admin']);
+        break;
+      case ROLE_IDS.OWNER:
+        this.router.navigate(['/dashboard/owner']);
+        break;
+      case ROLE_IDS.CLIENT:
+      default:
+        this.router.navigate(['/']);
+        break;
+    }
+  }
 
   /* =======================
      GOOGLE SIGN-IN
@@ -97,12 +125,10 @@ export class LoginComponent implements AfterViewInit {
   }
 
   triggerGoogleSignIn(): void {
-    // Intentar primero el trigger programático si el botón oculto falla
     const btn = document.querySelector('#g-signin-login div[role="button"]') as HTMLElement;
     if (btn) {
       btn.click();
     } else {
-      // Fallback: intentar abrir el prompt de One Tap o re-inicializar si es necesario
       console.warn('Botón de Google no encontrado en el DOM, intentando prompt...');
       google.accounts.id.prompt();
     }
@@ -112,12 +138,13 @@ export class LoginComponent implements AfterViewInit {
     const idToken: string = response.credential;
     this.isSubmitting.set(true);
     this.errors.set([]);
+
     this.loginService.loginWithGoogle(idToken).subscribe({
       next: () => {
         this.loginService.getProfile().subscribe({
           next: () => {
             this.isSubmitting.set(false);
-            this.router.navigate(['/']);
+            this.redirectByRole(); // ← redirige según rol
           },
           error: () => {
             this.isSubmitting.set(false);
@@ -162,7 +189,6 @@ export class LoginComponent implements AfterViewInit {
   onFormSubmit(): void {
     const data = this.formData();
 
-    // ✅ 1) Validación front: llena errores por campo
     const validationErrors = validateLoginForm(data);
     this.errors.set(validationErrors);
 
@@ -175,7 +201,7 @@ export class LoginComponent implements AfterViewInit {
     this.loginService
       .login(
         {
-          username: data.username!, // ya pasó validación
+          username: data.username!,
           password: data.password!,
         },
         this.rememberMe(),
@@ -185,8 +211,8 @@ export class LoginComponent implements AfterViewInit {
           this.loginService.getProfile().subscribe({
             next: () => {
               this.isSubmitting.set(false);
-              this.errors.set([]); // ✅ limpia errores al éxito
-              this.router.navigate(['/']);
+              this.errors.set([]);
+              this.redirectByRole(); // ← redirige según rol
             },
             error: (err: any) => {
               console.error('Error cargando perfil', err);
@@ -200,21 +226,11 @@ export class LoginComponent implements AfterViewInit {
         error: (err: any) => {
           console.error('Error login', err);
           this.isSubmitting.set(false);
-
-          // ✅ 2) Error backend (fallback seguro)
-          const status = err?.status;
-          const apiMsg = err?.error?.message || err?.message;
-
-          // Si tu API NO diferencia usuario/password (lo normal), muestra genérico:
-          const msg = 'Credenciales incorrectas';
-
-          this.errors.set([{ field: 'form', message: msg }]);
-
-          // Si quieres que salga debajo de contraseña en vez de arriba:
-          // this.errors.set([{ field: 'password', message: msg }]);
+          this.errors.set([{ field: 'form', message: 'Credenciales incorrectas' }]);
         },
       });
   }
+
   /* =======================
      ERRORS
      ======================= */
@@ -236,7 +252,6 @@ export class LoginComponent implements AfterViewInit {
   }
 
   navigateToPasswordReset(): void {
-    this.router.navigate(['/forgot-password']); // Recuperacion de contraseña
+    this.router.navigate(['/forgot-password']);
   }
-
 }
