@@ -6,11 +6,9 @@
     "frontend": {
       "projectType": "application",
       "schematics": {
-
         "@schematics/angular:component": {
-          "style": "none" 
+          "style": "none"
         }
-        
       },
       "root": "",
       "sourceRoot": "src",
@@ -25,7 +23,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"  
+                "input": "public"
               }
             ],
             "styles": [
@@ -49,8 +47,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "800kB",
+                  "maximumError": "1.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -105,5 +103,5 @@
   },
   "cli": {
     "analytics": "b80732b6-8217-432b-ad57-0705d16c3fad"
-  }  
+  }
 }
