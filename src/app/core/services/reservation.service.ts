@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, NgZone } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, EMPTY, Subject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
@@ -16,7 +16,6 @@ export class ReservationService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) platformId: Object,
-    private zone: NgZone,
     private authService: AuthService
   ) {
     this.apiUrl = environment.apiUrl;
@@ -62,14 +61,12 @@ export class ReservationService {
     this.eventSource = new EventSource(sseUrl);
 
     this.eventSource.onmessage = (event) => {
-      this.zone.run(() => {
-        try {
-          const reservation: Reservation = JSON.parse(event.data);
-          this.reservationSubject.next(reservation);
-        } catch (e) {
-          console.error('Error parsing SSE event', e);
-        }
-      });
+      try {
+        const reservation: Reservation = JSON.parse(event.data);
+        this.reservationSubject.next(reservation);
+      } catch (e) {
+        console.error('Error parsing SSE event', e);
+      }
     };
 
     this.eventSource.onerror = (error) => {
