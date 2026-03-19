@@ -7,9 +7,8 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    // edit-room has a dynamic :id param — must be Server rendered, not prerendered
     path: 'edit-room/:id',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Client,
   },
   {
     path: 'roominfo',

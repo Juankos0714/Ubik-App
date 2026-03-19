@@ -54,7 +54,8 @@ export class LoginComponent implements AfterViewInit {
      ======================= */
 
   private redirectByRole(): void {
-    const role = this.auth.role();
+    const role = Number(this.auth.role());
+    if (!role) return;
 
     switch (role) {
       case ROLE_IDS.ADMIN:

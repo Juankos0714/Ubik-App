@@ -20,9 +20,9 @@ export class AuthService {
   isLogged = computed(() => !!this._token());
   initialized = computed(() => this._initialized());
 
-  isAdmin = computed(() => this.role() === 7392841056473829);
-  isOwner = computed(() => this.role() === 3847261094857362);
-  isUser = computed(() => this.role() === 9182736450192837);
+  isAdmin = computed(() => Number(this.role()) === 7392841056473829);
+  isOwner = computed(() => Number(this.role()) === 3847261094857362);
+  isUser = computed(() => Number(this.role()) === 9182736450192837);
 
   // ===================== NUEVO: expiración + timer =====================
   private readonly TOKEN_KEY = 'auth_token';

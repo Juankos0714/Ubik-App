@@ -34,7 +34,7 @@ export class PermissionService {
 
   //  Permisos actuales del usuario
   private currentPermissions = computed<Permission[]>(() => {
-    const roleId = this.authService.role();
+    const roleId = Number(this.authService.role());
     if (!roleId) return [];
     return this.ROLE_PERMISSIONS[roleId] ?? [];
   });
