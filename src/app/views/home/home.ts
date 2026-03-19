@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { RoomService } from '../../core/services/room.service';
 import { MotelService } from '../../core/services/motel.service';
 import { Room } from '../../core/models/room.model';
@@ -33,26 +34,18 @@ export class Home implements OnInit {
   loadHomeData(): void {
     this.loading = true;
 
-    this.roomService.getRooms().subscribe({
-      next: (rooms) => {
+    forkJoin({
+      rooms: this.roomService.getRooms(),
+      motels: this.motelService.getMotels(),
+    }).subscribe({
+      next: ({ rooms, motels }) => {
         this.mejoresOfertas = rooms.slice(0, 5);
         this.destinosPopulares = rooms.slice(5, 10);
-      },
-      error: (err) => {
-        console.error('Error cargando rooms:', err);
-        this.loading = false;
-      },
-    });
-
-    this.motelService.getMotels().subscribe({
-      next: (motels) => {
         this.motelesCercanos = motels.slice(0, 5);
-      },
-      error: (err) => {
-        console.error('Error cargando moteles:', err);
         this.loading = false;
       },
-      complete: () => {
+      error: (err) => {
+        console.error('Error cargando datos del home:', err);
         this.loading = false;
       },
     });
