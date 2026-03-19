@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, ViewChild } from '@angular/core';
 import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -49,6 +49,7 @@ export class Explore implements OnInit {
   private dialog = inject(Dialog);
   private searchService = inject(SearchService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   /** Referencia al mapa mobile para forzar invalidateSize al abrir */
   @ViewChild('mobileMap') mobileMapRef?: MapComponent;
@@ -144,10 +145,12 @@ export class Explore implements OnInit {
         this.applyHeaderSearch();
 
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.error = true;
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }

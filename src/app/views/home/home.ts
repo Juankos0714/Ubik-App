@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { RoomService } from '../../core/services/room.service';
@@ -19,6 +19,7 @@ export class Home implements OnInit {
   private roomService = inject(RoomService);
   private motelService = inject(MotelService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   loading = true;
   skeletonItems = Array.from({ length: 5 });
@@ -43,10 +44,12 @@ export class Home implements OnInit {
         this.destinosPopulares = rooms.slice(5, 10);
         this.motelesCercanos = motels.slice(0, 5);
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error cargando datos del home:', err);
         this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }
