@@ -803,26 +803,26 @@ export class PaymentModal implements OnInit, OnDestroy {
   }
 
   /**
-   * Hora LOCAL del cliente como string ISO sin zona horaria.
-   * Formato: "yyyy-MM-ddTHH:mm:ss"
-   * Ejemplo (Colombia): Date(20 mar 23:00) → "2026-03-20T23:00:00"
+   * Convierte a UTC sin 'Z' para Spring LocalDateTime con @Future.
    *
-   * Por qué hora local y NO UTC:
-   * El backend guarda las reservas existentes como LocalDateTime (hora local
-   * del servidor, que es hora Colombia porque así fue ingresada). Si mandamos
-   * UTC, comparamos "2026-03-20T12:00:00 UTC" contra reservas guardadas como
-   * "2026-03-20T08:00:00 local" → el backend ve solapamiento falso.
-   * Mandando hora local, la comparación es consistente en ambos lados.
+   * El servidor corre en UTC (confirmado: 09:53 Colombia = 14:53 UTC,
+   * el backend rechaza "13:00:00" local porque 13:00 UTC ya pasó).
    *
-   * El @Future del backend: Spring valida @Future contra su propio clock.
-   * Si el servidor está en UTC y son las 00:47 UTC, "2026-03-20T23:00:00"
-   * es claramente futuro → pasa la validación correctamente.
+   * Reservas existentes en BD: guardadas en hora local Colombia porque
+   * fueron creadas antes de este fix. Las nuevas quedarán en UTC.
+   * Esto es inconsistencia de datos del backend — el fix correcto es
+   * configurar spring.jackson.time-zone=America/Bogota en el backend.
+   *
+   * Por ahora: mandamos UTC para pasar @Future. El checkAvailability
+   * también manda UTC → la comparación isRoomAvailable() es consistente
+   * para reservas nuevas. Las viejas (hora local) pueden dar falsos
+   * negativos en disponibilidad pero no bloquearán reservas válidas.
    */
   private toLocalIsoString(date: Date): string {
     const pad = (n: number) => String(n).padStart(2, '0');
     return (
-      `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
-      `T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
+      `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}` +
+      `T${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:00`
     );
   }
 
