@@ -8,7 +8,7 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'edit-room/:id',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Client,
   },
   {
     path: 'roominfo',
