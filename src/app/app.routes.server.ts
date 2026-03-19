@@ -24,12 +24,17 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
-    // Prerender only for static routes
+    // Loads dynamic API data — must be client-rendered to avoid empty prerender
+    path: 'explore',
+    renderMode: RenderMode.Client,
+  },
+  {
+    // Home loads dynamic data — Client to avoid blank prerender in Vercel
     path: '',
-    renderMode: RenderMode.Prerender,
+    renderMode: RenderMode.Client,
   },
   {
     path: '**',
-    renderMode: RenderMode.Prerender,
+    renderMode: RenderMode.Client,
   },
-];
+];
