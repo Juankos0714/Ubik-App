@@ -7,6 +7,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
   {
+    path: 'edit-room/:id',
+    renderMode: RenderMode.Server,
+  },
+  {
     path: 'roominfo',
     renderMode: RenderMode.Server,
   },
