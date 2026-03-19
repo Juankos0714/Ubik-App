@@ -11,11 +11,11 @@
   <div class="relative h-44 overflow-hidden shrink-0">
     <img
       [src]="card.imageUrls.length ? card.imageUrls[0] : './assets/images/ubikLogo.jpg'"
-      [alt]="card.roomType"
+      alt="card.roomType"
       class="w-full h-full object-cover
              group-hover:scale-105 transition-transform duration-700 ease-out"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent
+    <div class="absolute inset-0 bg-linear-to-t from-zinc-900 via-zinc-900/20 to-transparent
                 group-hover:via-zinc-900/10 transition-all duration-300"></div>
 
     <!-- Tipo de habitación ── arriba izquierda -->
@@ -68,7 +68,7 @@
     <div class="flex-1"></div>
 
     <!-- Divider -->
-    <div class="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+    <div class="h-px bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
 
     <!-- Footer: disponibilidad + botones -->
     <div class="flex items-center justify-between gap-1 flex-col">
@@ -91,4 +91,5 @@
     </div>
 
   </div>
+  
 </div>

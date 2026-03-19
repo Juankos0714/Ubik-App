@@ -11,6 +11,15 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    // Reset password uses query params (token) — must be client-rendered
+    path: 'reset-password',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'forgot-password',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'roominfo',
     renderMode: RenderMode.Server,
   },
