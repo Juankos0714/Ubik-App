@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ForgotService } from '../../../core/services/forgot.service';
+import { ActivatedRoute } from '@angular/router';
 import { toValidatorFn, validateEmail, validatePassword } from '../../../core/utils/validation.utils';
 import { finalize } from 'rxjs';
 
@@ -11,7 +12,7 @@ import { finalize } from 'rxjs';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './forgot-password.component.html',
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnInit {
   step = signal(1);
   loading = signal(false);
   error = signal<string | null>(null);
@@ -19,7 +20,24 @@ export class ForgotPasswordComponent {
 
   private fb = new FormBuilder();
 
-  constructor(private forgotService: ForgotService) {}
+  private platformId = inject(PLATFORM_ID);
+
+  constructor(
+    private forgotService: ForgotService,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.route.queryParamMap.subscribe(params => {
+        const token = params.get('token');
+        if (token) {
+          this.form.patchValue({ token });
+          this.step.set(2);
+        }
+      });
+    }
+  }
 
   form = this.fb.nonNullable.group({
     email: ['', [toValidatorFn(validateEmail, 'email')]],
