@@ -25,6 +25,7 @@ import { RegisterOwner } from './views/Forms/register/registes-user-owner/regist
 //lOGINS AND RECOVER PASSWORD
 import { LoginComponent } from './views/Forms/login/login.component';
 import { ForgotPasswordComponent } from './views/Forms/forgot-password/forgot-password.component';
+import { RecoverAccountComponent } from './views/Forms/recover-account/recover-account.component';
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -82,6 +83,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ForgotPasswordComponent },
+  { path: 'recover-account', component: RecoverAccountComponent },
 
    /**==== PERFILES DE USURIOS ====== */
 
