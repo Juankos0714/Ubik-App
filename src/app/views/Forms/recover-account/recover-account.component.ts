@@ -4,20 +4,19 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ForgotService } from '../../../core/services/forgot.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { toValidatorFn, validateEmail, validatePassword } from '../../../core/utils/validation.utils';
-import { finalize } from 'rxjs';
 import { Inputcomponent } from '../../../components/input/input';
 
 @Component({
-  selector: 'app-forgot-password',
+  selector: 'app-recover-account',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, Inputcomponent],
-  templateUrl: './forgot-password.component.html',
+  templateUrl: './recover-account.component.html',
 })
-export class ForgotPasswordComponent implements OnInit {
+export class RecoverAccountComponent implements OnInit {
   step = signal(1);
   loading = signal(false);
   error = signal<string | null>(null);
-  success = signal<string | null>(null); // ✅ NUEVO
+  success = signal<string | null>(null);
   showPassword = signal(false);
 
   togglePassword() {
@@ -59,7 +58,7 @@ export class ForgotPasswordComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set(null);
-    this.success.set(null); // ✅ limpiar éxito
+    this.success.set(null);
 
     this.forgotService.requestReset(emailCtrl.value).subscribe({
       next: (res) => {
@@ -70,7 +69,7 @@ export class ForgotPasswordComponent implements OnInit {
       error: (err) => {
         console.error('requestReset ERROR FULL:', err);
         this.loading.set(false);
-        this.error.set('No se pudo enviar el correo');
+        this.error.set('No se pudo enviar el correo de activación. Verifica si el correo es correcto.');
       }
     });
   }
@@ -88,7 +87,7 @@ export class ForgotPasswordComponent implements OnInit {
 
     if (tokenCtrl.invalid || passCtrl.invalid) {
       this.success.set(null);
-      this.error.set('Revisa el token y la contraseña (no cumplen validación).');
+      this.error.set('Revisa el código de recuperación y la contraseña.');
       return;
     }
 
@@ -96,22 +95,20 @@ export class ForgotPasswordComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set(null);
-    this.success.set(null); // ✅ limpiar éxito antes de enviar
+    this.success.set(null);
 
     this.forgotService.resetPassword(token, newPassword).subscribe({
       next: (res) => {
         console.log('resetPassword OK', res);
         this.loading.set(false);
         this.error.set(null);
-        this.success.set('¡Listo! Tu contraseña fue cambiada. Ya puedes iniciar sesión.'); // ✅ AVISO OK
-        // Opcional: limpiar campos
-        // this.form.patchValue({ token: '', newPassword: '' });
+        this.success.set('¡Tu cuenta ha sido reactivada exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.');
       },
       error: (err) => {
         console.error('resetPassword ERROR FULL:', err);
         this.loading.set(false);
         this.success.set(null);
-        this.error.set('No se pudo cambiar la contraseña. Token inválido/expirado o contraseña no válida.'); // ✅ AVISO FAIL
+        this.error.set('No se pudo reactivar la cuenta. Es posible que el código sea inválido o haya expirado.');
       }
     });
   }
