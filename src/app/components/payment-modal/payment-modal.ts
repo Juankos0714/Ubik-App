@@ -420,9 +420,12 @@ export class PaymentModal implements OnInit, OnDestroy {
     fallbackDate: Date,
   ): Date | null {
     if (rawDate) {
-      // ISO datetime: contiene 'T' o espacio (ej: "2026-03-17T10:00:00")
+      // El backend guarda en UTC pero manda sin 'Z' → "2026-03-19T21:00:00"
+      // El browser sin 'Z' lo interpreta como hora local → error de 5h.
+      // Agregamos 'Z' para forzar interpretación UTC → Date correcto en local.
       if (rawDate.includes('T') || rawDate.includes(' ')) {
-        const d = new Date(rawDate);
+        const normalized = rawDate.endsWith('Z') ? rawDate : rawDate.replace(' ', 'T') + 'Z';
+        const d = new Date(normalized);
         if (!isNaN(d.getTime())) return d;
       }
 
@@ -803,26 +806,16 @@ export class PaymentModal implements OnInit, OnDestroy {
   }
 
   /**
-   * Convierte a UTC sin 'Z' para Spring LocalDateTime con @Future.
-   *
-   * El servidor corre en UTC (confirmado: 09:53 Colombia = 14:53 UTC,
-   * el backend rechaza "13:00:00" local porque 13:00 UTC ya pasó).
-   *
-   * Reservas existentes en BD: guardadas en hora local Colombia porque
-   * fueron creadas antes de este fix. Las nuevas quedarán en UTC.
-   * Esto es inconsistencia de datos del backend — el fix correcto es
-   * configurar spring.jackson.time-zone=America/Bogota en el backend.
-   *
-   * Por ahora: mandamos UTC para pasar @Future. El checkAvailability
-   * también manda UTC → la comparación isRoomAvailable() es consistente
-   * para reservas nuevas. Las viejas (hora local) pueden dar falsos
-   * negativos en disponibilidad pero no bloquearán reservas válidas.
+   * Hora LOCAL del cliente "yyyy-MM-ddTHH:mm:ss" para Spring LocalDateTime.
+   * El backend está configurado con spring.jackson.time-zone=America/Bogota,
+   * por lo que interpreta y compara todos los LocalDateTime en hora Colombia.
+   * Mandamos hora local → consistente con lo que el backend guarda y valida.
    */
   private toLocalIsoString(date: Date): string {
     const pad = (n: number) => String(n).padStart(2, '0');
     return (
-      `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}` +
-      `T${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:00`
+      `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+      `T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
     );
   }
 
