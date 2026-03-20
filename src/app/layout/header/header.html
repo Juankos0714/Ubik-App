@@ -49,10 +49,10 @@
                 class="text-sm text-white/70 hover:text-white transition cursor-pointer">Panel Admin</a>
             }
             @case (3847261094857362) {
-              <a (click)="navigateTo(ROUTES.OWNER)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Propiedades</a>
               <a (click)="navigateTo(ROUTES.PROFILE)"
                 class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
+              <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
+                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Dashboard</a>
             }
             @default {
               <a (click)="navigateTo(ROUTES.PROFILE)"
@@ -126,8 +126,6 @@
                 class="text-white/70 hover:text-white transition cursor-pointer text-sm">Panel Admin</a>
             }
             @case (3847261094857362) {
-              <a (click)="navigateTo(ROUTES.OWNER)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Propiedades</a>
               <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
                 class="text-white/70 hover:text-white transition cursor-pointer text-sm">Dashboard</a>
               <a (click)="navigateTo(ROUTES.PROFILE)"

@@ -42,7 +42,13 @@
         <input
           class="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-white placeholder-white/35 outline-none transition focus:border-red-500/40 focus:ring-2 focus:ring-red-500/40"
           formControlName="phoneNumber"
+          placeholder="3001234567"
         />
+        @if (form.get('phoneNumber')?.touched && form.get('phoneNumber')?.invalid) {
+          <div class="text-xs text-red-300">
+            {{ form.get('phoneNumber')?.errors?.['colombianPhone'] ?? 'Teléfono inválido.' }}
+          </div>
+        }
       </div>
 
       <div class="md:col-span-2 flex flex-col gap-2">
