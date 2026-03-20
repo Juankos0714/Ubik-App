@@ -245,3 +245,27 @@ export function toValidatorFn(
       return error ? { [errorKey]: error } : null;
     };
 }
+
+/* =======================
+   Colombian phone validation
+======================= */
+
+const COLOMBIAN_PHONE_REGEX = /^3\d{9}$/;
+
+/**
+ * Validates a Colombian mobile phone number (10 digits, starts with 3)
+ * @returns error message if invalid, null if valid
+ */
+export function validateColombianPhone(phone: string): string | null {
+  if (!phone || phone.trim().length === 0) {
+    return 'El teléfono es requerido';
+  }
+
+  if (!COLOMBIAN_PHONE_REGEX.test(phone.trim())) {
+    return 'Ingresa un número celular colombiano válido (10 dígitos, empieza con 3)';
+  }
+
+  return null;
+}
+
+export const colombianPhoneValidator = toValidatorFn(validateColombianPhone, 'colombianPhone');

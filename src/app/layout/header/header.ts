@@ -26,7 +26,6 @@ const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/select-register',
   PROFILE: '/userProfile',
-  OWNER: '/listProperty',
   DASHBOARDOWNER: '/dashboard/owner',
   ADMIN: '/dashboard/admin',
 };
