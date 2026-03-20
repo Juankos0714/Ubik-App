@@ -2,7 +2,7 @@ import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ForgotService } from '../../../core/services/forgot.service';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { toValidatorFn, validateEmail, validatePassword } from '../../../core/utils/validation.utils';
 import { Inputcomponent } from '../../../components/input/input';
 
@@ -29,7 +29,8 @@ export class RecoverAccountComponent implements OnInit {
 
   constructor(
     private forgotService: ForgotService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -103,6 +104,12 @@ export class RecoverAccountComponent implements OnInit {
         this.loading.set(false);
         this.error.set(null);
         this.success.set('¡Tu cuenta ha sido reactivada exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.');
+        
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 3000);
+        }
       },
       error: (err) => {
         console.error('resetPassword ERROR FULL:', err);
