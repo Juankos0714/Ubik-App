@@ -84,6 +84,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ForgotPasswordComponent },
   { path: 'recover-account', component: RecoverAccountComponent },
+  { path: 'recover-account/reset', component: RecoverAccountComponent },
 
    /**==== PERFILES DE USURIOS ====== */
 
