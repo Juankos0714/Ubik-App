@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { filter, switchMap, take, tap, catchError, of, finalize } from 'rxjs';
@@ -21,10 +21,12 @@ export class EditProfileComponent {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private AuthService = inject(AuthService);
+  private platformId = inject(PLATFORM_ID);
 
   loading = true;
   saving = false;
   errorMsg: string | null = null;
+  successMsg: string | null = null;
   deleting = false;
 
   // Form (sin password ni roleId)
@@ -150,18 +152,23 @@ export class EditProfileComponent {
         catchError((err) => {
           console.error('Error delete profile', err);
           this.errorMsg = 'No se pudo eliminar el perfil.';
-          return of(null);
+          return of(false);
         }),
       )
       .subscribe((res) => {
-        if (res === null) return;
+        if (res === false) return;
 
-        // ✅ limpia cache del perfil en el front
-        this.usersService.clearProfile();
+        this.successMsg = 'Tu cuenta ha sido eliminada exitosamente. Serás redirigido en breve.';
+        this.cdr.markForCheck();
 
-        this.AuthService.logout();
-
-        this.router.navigate(['/login']);
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            // ✅ limpia cache del perfil en el front
+            this.usersService.clearProfile();
+            this.AuthService.logout();
+            this.router.navigate(['']);
+          }, 3000);
+        }
       });
   }
 
@@ -186,9 +193,9 @@ export class EditProfileComponent {
         this.locationStatus = null;
         this.error =
           err.code === err.PERMISSION_DENIED ? 'Permiso de ubicación denegado.' :
-          err.code === err.POSITION_UNAVAILABLE ? 'Ubicación no disponible.' :
-          err.code === err.TIMEOUT ? 'Timeout obteniendo ubicación.' :
-          'Error obteniendo ubicación.';
+            err.code === err.POSITION_UNAVAILABLE ? 'Ubicación no disponible.' :
+              err.code === err.TIMEOUT ? 'Timeout obteniendo ubicación.' :
+                'Error obteniendo ubicación.';
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );

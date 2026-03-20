@@ -2,7 +2,7 @@ import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ForgotService } from '../../../core/services/forgot.service';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { toValidatorFn, validateEmail, validatePassword } from '../../../core/utils/validation.utils';
 import { finalize } from 'rxjs';
 import { Inputcomponent } from '../../../components/input/input';
@@ -30,7 +30,8 @@ export class ForgotPasswordComponent implements OnInit {
 
   constructor(
     private forgotService: ForgotService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -104,8 +105,12 @@ export class ForgotPasswordComponent implements OnInit {
         this.loading.set(false);
         this.error.set(null);
         this.success.set('¡Listo! Tu contraseña fue cambiada. Ya puedes iniciar sesión.'); // ✅ AVISO OK
-        // Opcional: limpiar campos
-        // this.form.patchValue({ token: '', newPassword: '' });
+        
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 3000);
+        }
       },
       error: (err) => {
         console.error('resetPassword ERROR FULL:', err);
