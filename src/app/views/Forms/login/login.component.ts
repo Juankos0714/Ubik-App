@@ -255,4 +255,8 @@ export class LoginComponent implements AfterViewInit {
   navigateToPasswordReset(): void {
     this.router.navigate(['/forgot-password']);
   }
+
+  navigateToRecoverAccount(): void {
+    this.router.navigate(['/recover-account']);
+  }
 }
