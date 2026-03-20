@@ -27,7 +27,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   activeView = signal<'rooms' | 'properties'>('rooms');
 
   // Verificación de código
-  verifyCode = signal('');
+  verifyCode = '';  // plain string — compatible with [(ngModel)]
   verificationResult = signal<Reservation | null>(null);
   verifying = signal(false);
 
@@ -82,7 +82,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   }
 
   onVerifyCode() {
-    const code = this.verifyCode().trim();
+    const code = this.verifyCode.trim();
     if (!code) return;
 
     this.verifying.set(true);
@@ -103,7 +103,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   onCheckIn(id: number) {
     this.reservationService.checkIn(id).subscribe(() => {
       this.verificationResult.set(null);
-      this.verifyCode.set('');
+      this.verifyCode = '';
       const mid = this.motelId();
       if (mid) this.fetchDashboardData(mid);
     });

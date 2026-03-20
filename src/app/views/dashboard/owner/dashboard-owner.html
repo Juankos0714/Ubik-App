@@ -90,7 +90,7 @@
             
             <button 
               (click)="onVerifyCode()"
-              [disabled]="verifying() || !verifyCode()"
+              [disabled]="verifying() || !verifyCode"
               class="w-full py-5 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               {{ verifying() ? 'Verificando...' : 'VERIFICAR CÓDIGO' }}
