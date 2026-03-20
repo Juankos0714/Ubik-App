@@ -76,13 +76,22 @@
             <span class="text-gray-300">Recordarme</span>
           </label>
 
-          <button
-            type="button"
-            (click)="navigateToPasswordReset()"
-            class="text-red-400 hover:text-red-300 hover:underline transition-colors"
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
+          <div class="flex flex-col items-end gap-1.5">
+            <button
+              type="button"
+              (click)="navigateToPasswordReset()"
+              class="text-red-400 hover:text-red-300 hover:underline transition-colors"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+            <button
+              type="button"
+              (click)="navigateToRecoverAccount()"
+              class="text-gray-400 hover:text-gray-300 hover:underline transition-colors text-sm"
+            >
+              ¿Recuperar tu cuenta eliminada?
+            </button>
+          </div>
         </div>
       </div>
 
