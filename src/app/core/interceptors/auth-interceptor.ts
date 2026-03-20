@@ -40,7 +40,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // 5) Solo para nuestra API
   const isOurApi =
-    req.url.includes('ubik-back.duckdns.org') ||
+    req.url.includes('ubik.eastus2.cloudapp.azure.com') ||
     req.url.includes('localhost') ||
     !req.url.startsWith('http');
 
