@@ -31,7 +31,7 @@ export class RegisterSelect {
   onSelectEstablishment(): void {
     console.log('Seleccionó Propetario de Establecimiento');
 
-    this.router.navigate(['/register-propertyEst']);
+    this.router.navigate(['/register-owner']);
 
   }
 

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, finalize } from 'rxjs/operators';
 
+import { colombianPhoneValidator } from '../../../../core/utils/validation.utils';
 import { MotelService } from '../../../../core/services/motel.service';
 import { CloudinaryService } from '../../../../core/services/Cloudinary.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -51,7 +52,9 @@ export class CreateMotelComponent implements OnInit {
       address: this.fb.control('', { validators: [Validators.required] }),
       city: this.fb.control('', { validators: [Validators.required] }),
 
-      phoneNumber: this.fb.control<string | null>(null),
+      phoneNumber: this.fb.control('', {
+        validators: [colombianPhoneValidator],
+      }),
       description: this.fb.control<string | null>(null),
       latitude: this.fb.control<number | null>(null),
       longitude: this.fb.control<number | null>(null),
@@ -214,7 +217,7 @@ export class CreateMotelComponent implements OnInit {
         finalize(() => (this.loading = false)),
       )
       .subscribe({
-        next: () => this.router.navigate(['/listProperty']),
+        next: () => this.router.navigate(['/dashboard/owner']),
         error: (err) => {
           this.error = err?.error?.message ?? err?.message ?? 'Error creando el motel.';
         },

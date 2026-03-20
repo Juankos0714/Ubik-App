@@ -26,7 +26,8 @@ const ROUTES = {
   PROPERTY: '/listProperty',
   PROFILE: '/userProfile',
   OWNER: '/listProperty',
-  ADMIN: '/',
+  ADMIN: '/dashboard/admin',
+  DASHBOARDOWNER: '/dashboard/owner',
 };
 
 @Component({

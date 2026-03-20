@@ -5,11 +5,12 @@ import { ReservationService } from '../../../core/services/reservation.service';
 import { MotelService } from '../../../core/services/motel.service';
 import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../../../core/models/reservation.model';
 import { Subscription } from 'rxjs';
+import { PropertyUserComponent } from '../../../components/List-motels/property-user.component';
 
 @Component({
   selector: 'app-dashboard-owner',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PropertyUserComponent],
   templateUrl: './dashboard-owner.html',
 })
 export class DashboardOwner implements OnInit, OnDestroy {
@@ -22,6 +23,9 @@ export class DashboardOwner implements OnInit, OnDestroy {
   loading = signal(true);
   motelId = signal<number | null>(null);
   
+  // Vista activa del panel derecho
+  activeView = signal<'rooms' | 'properties'>('rooms');
+
   // Verificación de código
   verifyCode = signal('');
   verificationResult = signal<Reservation | null>(null);

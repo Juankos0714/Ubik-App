@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,9 +14,17 @@ import { isPlatformBrowser } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../../../components/input/input';
-import { RegisterServiceOwner } from '../../../../core/services/register-user-est.service';
+import { RegisterService } from '../../../../core/services/register-user.service';
 import { ValidationError } from '../register-user-client/types/register-user.types';
 import { environment } from '../../../../../environments/environment';
+
+import {
+  toValidatorFn,
+  validatePassword,
+  validatePasswordConfirmation,
+} from '../../../../core/utils/validation.utils';
+
+declare const google: any;
 
 function adultValidator(minAge = 18): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -35,19 +43,34 @@ function adultValidator(minAge = 18): ValidatorFn {
   };
 }
 
-declare const google: any;
-
-function matchFields(field1: string, field2: string): ValidatorFn {
+/**
+ * Validador a nivel de FormGroup para confirmar contraseña
+ * usando validatePasswordConfirmation() (de tus utils).
+ */
+function passwordConfirmationValidator(
+  passwordField: string,
+  confirmField: string
+): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
-    const a = group.get(field1)?.value;
-    const b = group.get(field2)?.value;
-    if (!a || !b) return null;
-    return a === b ? null : { fieldsMismatch: true };
+    const passwordCtrl = group.get(passwordField);
+    const confirmCtrl = group.get(confirmField);
+
+    if (!passwordCtrl || !confirmCtrl) return null;
+
+    const password = passwordCtrl.value ?? '';
+    const confirm = confirmCtrl.value ?? '';
+
+    // Si no han escrito password todavía, no mostramos mismatch.
+    // (El error de password ya lo da validatePassword)
+    if (!password) return null;
+
+    const errorMsg = validatePasswordConfirmation(password, confirm);
+    return errorMsg ? { passwordMismatch: errorMsg } : null;
   };
 }
 
 @Component({
-  selector: 'app-register-propertyEst',
+  selector: 'app-register-owner',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Inputcomponent],
   templateUrl: './register-owner.html',
@@ -64,22 +87,20 @@ export class RegisterOwner implements OnInit, AfterViewInit {
   isSubmitting = false;
   progress = 0;
 
-
   //location 
   loading = false;
   gettingLocation = false;
   locationStatus: string | null = null;
 
   error: string | null = null;
-  
 
 
   constructor(
     private fb: FormBuilder,
-    private registerService: RegisterServiceOwner,
+    private registerService: RegisterService,
     private router: Router,
     private ngZone: NgZone,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.registerForm = this.fb.group(
       {
@@ -89,33 +110,39 @@ export class RegisterOwner implements OnInit, AfterViewInit {
           '',
           [
             Validators.required,
-            // + opcional, 7 a 15 dígitos
             Validators.pattern(/^\+?\d{7,15}$/),
           ],
         ],
         birthDate: ['', [adultValidator(18)]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
+
+        // ✅ Password con tus validations (mensaje exacto desde validatePassword)
+        password: ['', [toValidatorFn(validatePassword, 'passwordInvalid')]],
+
+        // Confirm requerida (y match lo hace el validador de grupo)
         comfirmPassword: ['', [Validators.required]],
+
         anonymous: [false],
-        latitude: [null as number | null],
-        longitude: [null as number | null],
       },
-      { validators: matchFields('password', 'comfirmPassword') }
+      { validators: passwordConfirmationValidator('password', 'comfirmPassword') }
     );
   }
 
   ngOnInit(): void {
-  this.registerForm.get('username')?.valueChanges.subscribe(() => {
+    // Limpia el error usernameTaken al escribir
+    this.registerForm.get('username')?.valueChanges.subscribe(() => {
       const c = this.registerForm.get('username');
       if (!c) return;
 
-      // quita solo el error usernameTaken, no todos
       if (c.hasError('usernameTaken')) {
         const errors = { ...(c.errors || {}) };
         delete errors['usernameTaken'];
         c.setErrors(Object.keys(errors).length ? errors : null);
       }
     });
+
+    // ✅ Progreso
+    this.updateProgress();
+    this.registerForm.valueChanges.subscribe(() => this.updateProgress());
   }
 
   /* =======================
@@ -129,10 +156,7 @@ export class RegisterOwner implements OnInit, AfterViewInit {
 
   private loadGoogleScript(): Promise<void> {
     return new Promise((resolve) => {
-      if (document.getElementById('google-gsi-script')) {
-        resolve();
-        return;
-      }
+      if (document.getElementById('google-gsi-script')) { resolve(); return; }
       const script = document.createElement('script');
       script.id = 'google-gsi-script';
       script.src = 'https://accounts.google.com/gsi/client';
@@ -153,9 +177,10 @@ export class RegisterOwner implements OnInit, AfterViewInit {
     try {
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
-        callback: (response: any) => this.ngZone.run(() => this.handleGoogleCredential(response)),
+        callback: (response: any) =>
+          this.ngZone.run(() => this.handleGoogleCredential(response)),
         auto_select: false,
-        cancel_on_tap_outside: true,
+        cancel_on_tap_outside: true
       });
 
       const container = document.getElementById('g-signin-register');
@@ -166,7 +191,7 @@ export class RegisterOwner implements OnInit, AfterViewInit {
           theme: 'outline',
           text: 'signin_with',
           shape: 'rectangular',
-          logo_alignment: 'left',
+          logo_alignment: 'left'
         });
       }
     } catch (error) {
@@ -209,7 +234,7 @@ export class RegisterOwner implements OnInit, AfterViewInit {
     if (values.phoneNumber?.trim()) completed++;
     if (values.birthDate) completed++;
     if (values.password?.trim()) completed++;
-    if (values.comfirmPassword?.trim()) completed++; // ✅ FIX REAL
+    if (values.comfirmPassword?.trim()) completed++;
 
     this.progress = Math.round((completed / totalFields) * 100);
   }
@@ -228,30 +253,40 @@ export class RegisterOwner implements OnInit, AfterViewInit {
     const c = this.registerForm.get(fieldName);
     if (!c || !c.touched) return null;
 
-    if (c.hasError('required')) return 'Este campo es obligatorio';
+    // ✅ Password: mensaje viene de validatePassword()
+    if (fieldName === 'password' && c.hasError('passwordInvalid')) {
+      return c.getError('passwordInvalid');
+    }
+
+    // Angular standard
+    if (c.hasError('required')) {
+      // ✅ Confirm: muestra el mensaje de tu validation (no el genérico)
+      if (fieldName === 'comfirmPassword') return 'Debe confirmar la contraseña';
+      return 'Este campo es obligatorio';
+    }
+
     if (fieldName === 'email' && c.hasError('email')) return 'Correo inválido';
+
     if (c.hasError('minlength')) {
       const req = c.getError('minlength')?.requiredLength;
       return `Mínimo ${req} caracteres`;
     }
+
     if (c.hasError('pattern')) return 'Formato inválido';
     if (c.hasError('invalidDate')) return 'Fecha inválida';
     if (c.hasError('underAge')) return 'Debes ser mayor de 18 años';
 
-    // Error de contraseñas (validator a nivel grupo)
+    // ✅ Confirmación: mensaje viene de validatePasswordConfirmation()
     if (
       fieldName === 'comfirmPassword' &&
-      this.registerForm.hasError('fieldsMismatch')
+      this.registerForm.hasError('passwordMismatch')
     ) {
-      return 'Las contraseñas no coinciden';
+      return this.registerForm.getError('passwordMismatch');
     }
 
     return null;
   }
-
-
   getUserLocation() {
-    if (!isPlatformBrowser(this.platformId)) return;
     if (!navigator.geolocation) {
       this.locationStatus = 'Geolocalización no soportada.';
       return;
@@ -293,6 +328,7 @@ export class RegisterOwner implements OnInit, AfterViewInit {
     return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   }
 
+
   onSubmit(): void {
     if (this.isSubmitting) return;
 
@@ -321,46 +357,42 @@ export class RegisterOwner implements OnInit, AfterViewInit {
 
     this.isSubmitting = true;
 
+    // ✅ Método real de tu service (no .register)
     this.registerService
-    .submitClientRegistration(payload)
-    .pipe(finalize(() => (this.isSubmitting = false)))
-    .subscribe({
-      next: () => {
-        console.log('🟢 REGISTER OK');
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('🔴 REGISTER ERROR', err);
-        this.handleRegisterError(err);
-      }
-    });
+      .submitClientRegistration(payload)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => {
+          console.log('🟢 REGISTER OK');
+          this.router.navigate(['/login']);
+        },
+        error: (err: any) => { // ✅ TS7006 fix
+          console.error('🔴 REGISTER ERROR', err);
+          this.handleRegisterError(err);
+        },
+      });
   }
 
   private handleRegisterError(err: any) {
-      // Reset mensajes si usas banner
     this.serverError = null;
 
-    // 🔌 Sin conexión / CORS
     if (err?.status === 0) {
-      this.serverError = 'No se pudo conectar con el servidor. Revisa tu internet e intenta nuevamente.';
+      this.serverError =
+        'No se pudo conectar con el servidor. Revisa tu internet e intenta nuevamente.';
       return;
     }
 
-    const raw = err?.error; // 👈 en tu caso es un string
-    const msg = typeof raw === 'string' ? raw : (raw?.message ?? '');
+    const raw = err?.error;
+    const msg = typeof raw === 'string' ? raw : raw?.message ?? '';
 
-    // ✅ Caso exacto: username repetido
     if (msg.includes('Username already exists')) {
       const control = this.registerForm.get('username');
       control?.setErrors({ usernameTaken: true });
       control?.markAsTouched();
-
-      // opcional: también banner arriba
       this.serverError = 'El nombre de usuario ya está en uso.';
       return;
     }
 
-    // ✅ (Opcional) Caso email repetido si el backend lo manda similar
     if (msg.toLowerCase().includes('email') && msg.toLowerCase().includes('exists')) {
       const control = this.registerForm.get('email');
       control?.setErrors({ emailTaken: true });
@@ -369,7 +401,6 @@ export class RegisterOwner implements OnInit, AfterViewInit {
       return;
     }
 
-    // Fallback
     this.serverError = msg || 'Ocurrió un error al registrarse. Intenta de nuevo.';
   }
 
