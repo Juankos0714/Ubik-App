@@ -2,19 +2,19 @@
   
   <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-on-bg glow-text">Dashboard Operacional</h1>
-      <p class="text-muted mt-1">Gestión en tiempo real de tu establecimiento</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-white glow-text">Dashboard Operacional</h1>
+      <p class="text-gray-400 mt-1">Gestión en tiempo real de tu establecimiento</p>
     </div>
-    <div class="flex items-center gap-3 bg-surface backdrop-blur-xl border border-subtle px-4 py-2 rounded-2xl">
+    <div class="flex items-center gap-3 bg-white/5 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl">
       <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-      <span class="text-xs font-medium text-muted uppercase tracking-widest">En Vivo</span>
+      <span class="text-xs font-medium text-gray-300 uppercase tracking-widest">En Vivo</span>
     </div>
   </header>
 
   @if (loading()) {
     <div class="flex flex-col items-center justify-center py-20 gap-4">
       <div class="w-12 h-12 border-4 border-red-500/20 border-t-red-600 rounded-full animate-spin"></div>
-      <p class="text-muted animate-pulse">Sincronizando datos...</p>
+      <p class="text-gray-400 animate-pulse">Sincronizando datos...</p>
     </div>
   } @else {
     
@@ -22,31 +22,31 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       
       <!-- Reservas Hoy -->
-      <div class="group relative overflow-hidden bg-surface backdrop-blur-2xl border border-subtle rounded-3xl p-6 hover:border-red-500/50 transition-all duration-500 shadow-card-theme">
+      <div class="group relative overflow-hidden bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 hover:border-red-500/50 transition-all duration-500">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-red-600/10 rounded-full blur-3xl group-hover:bg-red-600/20 transition-all"></div>
-        <p class="text-muted text-sm font-medium uppercase tracking-wider">Reservas Hoy</p>
+        <p class="text-gray-400 text-sm font-medium uppercase tracking-wider">Reservas Hoy</p>
         <div class="flex items-end justify-between mt-4">
-          <p class="text-4xl font-black text-on-bg">{{ summary()?.activeReservations || 0 }}</p>
+          <p class="text-4xl font-black text-white">{{ summary()?.activeReservations || 0 }}</p>
           <span class="text-red-400 text-xs font-bold bg-red-500/10 px-2 py-1 rounded-lg">↑ 12%</span>
         </div>
       </div>
 
       <!-- Ingresos Estimados -->
-      <div class="group relative overflow-hidden bg-surface backdrop-blur-2xl border border-subtle rounded-3xl p-6 hover:border-green-500/50 transition-all duration-500 shadow-card-theme">
+      <div class="group relative overflow-hidden bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 hover:border-green-500/50 transition-all duration-500">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-600/10 rounded-full blur-3xl group-hover:bg-green-600/20 transition-all"></div>
-        <p class="text-muted text-sm font-medium uppercase tracking-wider">Ingresos Hoy</p>
+        <p class="text-gray-400 text-sm font-medium uppercase tracking-wider">Ingresos Hoy</p>
         <div class="flex items-end justify-between mt-4">
-          <p class="text-4xl font-black text-on-bg">${{ (summary()?.dailyRevenue || 0) | number:'1.0-0' }}</p>
+          <p class="text-4xl font-black text-white">${{ (summary()?.dailyRevenue || 0) | number:'1.0-0' }}</p>
           <span class="text-green-400 text-xs font-bold bg-green-500/10 px-2 py-1 rounded-lg">Est.</span>
         </div>
       </div>
 
       <!-- Ocupación -->
-      <div class="group relative overflow-hidden bg-surface backdrop-blur-2xl border border-subtle rounded-3xl p-6 hover:border-blue-500/50 transition-all duration-500 shadow-card-theme">
+      <div class="group relative overflow-hidden bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 hover:border-blue-500/50 transition-all duration-500">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-all"></div>
-        <p class="text-muted text-sm font-medium uppercase tracking-wider">Ocupación</p>
+        <p class="text-gray-400 text-sm font-medium uppercase tracking-wider">Ocupación</p>
         <div class="flex items-end justify-between mt-4">
-          <p class="text-4xl font-black text-on-bg">{{ (summary()?.occupancyRate || 0) * 100 | number:'1.0-0' }}%</p>
+          <p class="text-4xl font-black text-white">{{ (summary()?.occupancyRate || 0) * 100 | number:'1.0-0' }}%</p>
           <div class="w-16 h-2 bg-gray-800 rounded-full overflow-hidden">
             <div class="h-full bg-blue-500" [style.width.%]="(summary()?.occupancyRate || 0) * 100"></div>
           </div>
@@ -54,11 +54,11 @@
       </div>
 
       <!-- Habitaciones Totales -->
-      <div class="group relative overflow-hidden bg-surface backdrop-blur-2xl border border-subtle rounded-3xl p-6 hover:border-purple-500/50 transition-all duration-500 shadow-card-theme">
+      <div class="group relative overflow-hidden bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 hover:border-purple-500/50 transition-all duration-500">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-600/10 rounded-full blur-3xl group-hover:bg-purple-600/20 transition-all"></div>
-        <p class="text-muted text-sm font-medium uppercase tracking-wider">Total Cuartos</p>
+        <p class="text-gray-400 text-sm font-medium uppercase tracking-wider">Total Cuartos</p>
         <div class="flex items-end justify-between mt-4">
-          <p class="text-4xl font-black text-on-bg">{{ summary()?.totalRooms || 0 }}</p>
+          <p class="text-4xl font-black text-white">{{ summary()?.totalRooms || 0 }}</p>
           <span class="text-purple-400 text-xs font-bold">Capacidad</span>
         </div>
       </div>
@@ -69,10 +69,10 @@
       
       <!-- Widget Verificación (Principal) -->
       <section class="lg:col-span-1 space-y-6">
-        <div class="bg-card border border-subtle rounded-[2.5rem] p-8 overflow-hidden relative shadow-card-theme">
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden relative">
           <div class="absolute top-0 right-0 w-64 h-64 bg-red-600/5 rounded-full blur-[100px]"></div>
           
-          <h2 class="text-xl font-bold text-on-bg mb-6 flex items-center gap-2">
+          <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-xs">✓</span>
             Check-in Rápido
           </h2>
@@ -83,7 +83,7 @@
                 [(ngModel)]="verifyCode"
                 (keyup.enter)="onVerifyCode()"
                 placeholder="Código: YYMMDD-####-AAA"
-                class="w-full bg-input border border-normal rounded-2xl p-5 text-xl font-mono text-center text-on-bg tracking-widest focus:border-red-500 focus:ring-0 transition-all"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-xl font-mono text-center tracking-widest focus:border-red-500 focus:ring-0 transition-all"
                 maxlength="14"
               >
             </div>
@@ -91,18 +91,18 @@
             <button 
               (click)="onVerifyCode()"
               [disabled]="verifying() || !verifyCode"
-              class="w-full py-5 bg-black light:bg-white text-white light:text-black font-bold border border-subtle rounded-2xl hover:bg-surface active:scale-[0.98] transition-all disabled:opacity-50"
+              class="w-full py-5 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               {{ verifying() ? 'Verificando...' : 'VERIFICAR CÓDIGO' }}
             </button>
           </div>
 
           @if (verificationResult()) {
-            <div class="mt-8 p-6 bg-surface border border-subtle rounded-3xl animate-in slide-in-from-top duration-500 shadow-card-theme">
+            <div class="mt-8 p-6 bg-white/5 border border-white/10 rounded-3xl animate-in slide-in-from-top duration-500">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <p class="text-xs text-muted uppercase">Huésped</p>
-                  <p class="text-lg font-bold text-on-bg">Invitado de Ubik</p>
+                  <p class="text-xs text-gray-400 uppercase">Huésped</p>
+                  <p class="text-lg font-bold">Invitado de Ubik</p>
                 </div>
                 <div class="px-3 py-1 bg-green-500/20 text-green-400 text-[10px] font-bold rounded-full border border-green-500/30">
                   VÁLIDO
@@ -111,12 +111,12 @@
               
               <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <p class="text-[10px] text-muted">Total</p>
-                  <p class="font-bold text-on-bg">${{ verificationResult()?.totalPrice }}</p>
+                  <p class="text-[10px] text-gray-400">Total</p>
+                  <p class="font-bold">${{ verificationResult()?.totalPrice }}</p>
                 </div>
                 <div>
-                  <p class="text-[10px] text-muted">Habitación</p>
-                  <p class="font-bold text-on-bg">#{{ verificationResult()?.roomId }}</p>
+                  <p class="text-[10px] text-gray-400">Habitación</p>
+                  <p class="font-bold">#{{ verificationResult()?.roomId }}</p>
                 </div>
               </div>
 
@@ -131,10 +131,10 @@
         </div>
 
         <!-- Weekly Revenue Placeholder (Widget 6) -->
-        <div class="bg-surface border border-subtle rounded-[2.5rem] p-8 h-64 flex items-center justify-center relative overflow-hidden shadow-card-theme">
+        <div class="bg-black/40 border border-white/10 rounded-[2.5rem] p-8 h-64 flex items-center justify-center relative overflow-hidden">
            <div class="text-center">
-             <p class="text-muted text-sm font-medium">Gráfico de Ingresos</p>
-             <p class="text-muted text-xs mt-2">Próximamente: Histórico semanal</p>
+             <p class="text-gray-500 text-sm font-medium">Gráfico de Ingresos</p>
+             <p class="text-gray-600 text-xs mt-2">Próximamente: Histórico semanal</p>
            </div>
            <div class="absolute bottom-0 left-0 w-full h-1/2 flex items-end gap-1 px-8 opacity-20">
               <div class="flex-1 bg-red-600 h-12 rounded-t-sm"></div>
@@ -150,20 +150,20 @@
 
       <!-- Panel derecho con tabs: Habitaciones / Moteles -->
       <section class="lg:col-span-2 h-full ">
-        <div class="bg-card backdrop-blur-2xl border border-subtle shadow-card-theme rounded-[2.5rem] p-8 h-180 flex flex-col overflow-auto scrollbar-hide">
+        <div class="bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 h-180 flex flex-col overflow-auto scrollbar-hide">
 
           <!-- Tab Header -->
           <div class="flex items-center justify-between mb-8">
-            <div class="flex gap-2 bg-surface p-1 rounded-2xl">
+            <div class="flex gap-2 bg-white/5 p-1 rounded-2xl">
               <button
                 (click)="activeView.set('rooms')"
-                [class]="'px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 ' + (activeView() === 'rooms' ? 'bg-black light:bg-white text-white light:text-black shadow' : 'text-muted hover:text-on-bg')"
+                [class]="'px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 ' + (activeView() === 'rooms' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white')"
               >
                 Habitaciones
               </button>
               <button
                 (click)="activeView.set('properties')"
-                [class]="'px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 ' + (activeView() === 'properties' ? 'bg-black light:bg-white text-white light:text-black shadow' : 'text-muted hover:text-on-bg')"
+                [class]="'px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 ' + (activeView() === 'properties' ? 'bg-white text-black shadow' : 'text-gray-400 hover:text-white')"
               >
                 Moteles
               </button>
@@ -183,12 +183,12 @@
                   [class]="'group p-4 rounded-3xl border transition-all duration-300 ' + getStatusColor(room.status)"
                 >
                   <div class="flex justify-between items-start mb-2">
-                    <span class="text-lg font-black text-on-bg">{{ room.roomNumber }}</span>
+                    <span class="text-lg font-black">{{ room.roomNumber }}</span>
                     <div class="w-2 h-2 rounded-full bg-current opacity-70"></div>
                   </div>
                   <p class="text-[10px] uppercase font-medium opacity-60 truncate">{{ room.roomType }}</p>
 
-                  <div class="mt-4 pt-3 border-t border-subtle">
+                  <div class="mt-4 pt-3 border-t border-white/5">
                     <p class="text-[9px] font-bold uppercase tracking-widest text-current mb-1">
                       {{ room.status.replace('_', ' ') }}
                     </p>

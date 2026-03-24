@@ -4,99 +4,28 @@ html {
   scroll-behavior: smooth;
 }
 
+
 @import "tailwindcss";
 
-@variant light (&:where(html.light, html.light *));
-
-:root {
-  /* Marca */
-  --c-brand-start: #6E2A35;
-  --c-brand-end: #A72027;
-  --c-accent: #c8a97e;
-
-  /* Fondos */
-  --c-app-bg-start: #0B0608;
-  --c-app-bg-end: #501521;
-  --c-surface: rgba(255,255,255,0.04);
-  --c-card: #14090C;
-  --c-input-bg: rgba(0,0,0,0.30);
-
-  /* Texto */
-  --c-text-primary: #ffffff;
-  --c-text-secondary: rgba(255, 255, 255, 0.70);
-  --c-text-muted: rgba(255, 255, 255, 0.45);
-  --c-text-placeholder: rgba(255, 255, 255, 0.25);
-
-  /* Bordes */
-  --c-border-subtle: rgba(255, 255, 255, 0.06);
-  --c-border-normal: rgba(255, 255, 255, 0.10);
-  --c-border-strong: rgba(255, 255, 255, 0.20);
-
-  /* Sombras */
-  --shadow-card-theme: 0 10px 35px rgba(0,0,0,0.45);
-}
-
-html.light {
-  /* Fondos */
-  --c-app-bg-start: #faf7f8;
-  --c-app-bg-end: #f5edef;
-  --c-surface: rgba(0,0,0,0.025);
-  --c-card: #ffffff;
-  --c-input-bg: #f4f0f1;
-
-  /* Texto */
-  --c-text-primary: #1a0508;
-  --c-text-secondary: rgba(26,5,8,0.70);
-  --c-text-muted: rgba(26,5,8,0.45);
-  --c-text-placeholder: rgba(26,5,8,0.25);
-
-  /* Bordes */
-  --c-border-subtle: rgba(0,0,0,0.06);
-  --c-border-normal: rgba(0,0,0,0.10);
-  --c-border-strong: rgba(0,0,0,0.20);
-
-  /* Sombras */
-  --shadow-card-theme: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-html.light .keep-dark {
-  --c-text-primary: #ffffff;
-  --c-text-secondary: rgba(255, 255, 255, 0.70);
-  background: #0B0608 !important; /* override to dark if needed */
-  color: white;
-}
 
 body {
-  background: linear-gradient(to right, var(--c-app-bg-start), var(--c-app-bg-end));
-  color: var(--c-text-primary);
+  @apply bg-linear-to-r from-[#0B0608] to-[#501521];
 }
 
 main {
-  color: var(--c-text-primary);
+  color: #fff;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0;
+  padding: 0; /* el padding se maneja con Tailwind en los componentes */
 }
 
-h1,h2,h3,h4,h5,h6 {
+
+h1,h2,h3,h4,h5,h6{
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;
-}
-
-@layer utilities {
-  .bg-surface { background-color: var(--c-surface); }
-  .bg-card { background-color: var(--c-card); }
-  .bg-input { background-color: var(--c-input-bg); }
-  .text-on-bg { color: var(--c-text-primary); }
-  .text-on-bg-2 { color: var(--c-text-secondary); }
-  .text-muted { color: var(--c-text-muted); }
-  .text-accent { color: var(--c-accent); }
-  .border-subtle { border-color: var(--c-border-subtle); }
-  .border-normal { border-color: var(--c-border-normal); }
-  .shadow-card-theme { box-shadow: var(--shadow-card-theme); }
 }
 
 @import "leaflet/dist/leaflet.css";
@@ -106,9 +35,13 @@ h1,h2,h3,h4,h5,h6 {
   height: 100%;
 }
 
+/* Ocultar scrollbar en Chrome, Edge y Safari */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Ocultar scrollbar en Firefox */
 .scrollbar-hide {
   scrollbar-width: none;
 }
+ 
