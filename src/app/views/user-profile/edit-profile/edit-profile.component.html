@@ -30,6 +30,17 @@
       </div>
     }
 
+    <!-- Success alert -->
+    @if (successMsg) {
+      <div class="mb-4 flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 backdrop-blur-sm">
+        <div class="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-emerald-500/80"></div>
+        <div>
+          <p class="text-sm font-semibold text-white">¡Éxito!</p>
+          <p class="mt-0.5 text-sm text-white/60">{{ successMsg }}</p>
+        </div>
+      </div>
+    }
+
     @let c = form.controls;
 
     <!-- Card -->
