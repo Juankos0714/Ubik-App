@@ -1,4 +1,4 @@
-<div class="min-h-screen text-white font-['Cormorant_Garamond',serif]">
+<div class="min-h-screen text-on-bg font-['Cormorant_Garamond',serif]">
 
   <!-- ══════════════════════════════════════════
        HERO HEADER
@@ -10,7 +10,7 @@
       class="w-full h-full object-cover scale-100 transition-transform duration-700 "
     />
     <!-- Gradient overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-[#0d0d0f]"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-[var(--c-app-bg-start)]"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
 
     <!-- Breadcrumb -->
@@ -97,60 +97,60 @@
     <div class="lg:col-span-1 flex flex-col gap-6">
 
       <!-- Descripción -->
-      <div class="bg-white/3 border border-white/[0.07] rounded-2xl p-6">
+      <div class="bg-surface border border-subtle rounded-2xl p-6">
         <h3 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase font-['DM_Sans',sans-serif] mb-3">Sobre el motel</h3>
         @if (!editMode) {
-          <p class="text-white/70 text-sm leading-relaxed font-['DM_Sans',sans-serif]">
+          <p class="text-on-bg-2 text-sm leading-relaxed font-['DM_Sans',sans-serif]">
             {{ motel?.description || 'Sin descripción.' }}
           </p>
         } @else {
           <textarea
             [(ngModel)]="editForm.description"
             rows="5"
-            class="w-full bg-white/5 border border-white/20 rounded-xl p-3 text-white text-sm resize-none focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"
+            class="w-full bg-input border border-normal rounded-xl p-3 text-on-bg text-sm resize-none focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"
             placeholder="Descripción del motel..."
           ></textarea>
         }
       </div>
 
       <!-- Info rápida (solo owner en edit) -->
-      <div class="bg-white/3 border border-white/7 rounded-2xl p-6 flex flex-col gap-4">
+      <div class="bg-surface border border-subtle rounded-2xl p-6 flex flex-col gap-4">
         <h3 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase font-['DM_Sans',sans-serif]">Información</h3>
 
         @if (!editMode) {
           <div class="flex flex-col gap-3 font-['DM_Sans',sans-serif] text-sm">
-            <div class="flex justify-between text-white/60">
-              <span>Dirección</span><span class="text-white text-right max-w-[60%]">{{ motel?.address }}</span>
+            <div class="flex justify-between text-muted">
+              <span>Dirección</span><span class="text-on-bg text-right max-w-[60%]">{{ motel?.address }}</span>
             </div>
-            <div class="w-full h-px bg-white/5"></div>
-            <div class="flex justify-between text-white/60">
-              <span>Ciudad</span><span class="text-white">{{ motel?.city }}</span>
+            <div class="w-full h-px bg-surface border-t border-subtle"></div>
+            <div class="flex justify-between text-muted">
+              <span>Ciudad</span><span class="text-on-bg">{{ motel?.city }}</span>
             </div>
-            <div class="w-full h-px bg-white/5"></div>
-            <div class="flex justify-between text-white/60">
-              <span>Teléfono</span><span class="text-white">{{ motel?.phoneNumber }}</span>
+            <div class="w-full h-px bg-surface border-t border-subtle"></div>
+            <div class="flex justify-between text-muted">
+              <span>Teléfono</span><span class="text-on-bg">{{ motel?.phoneNumber }}</span>
             </div>
-            <div class="w-full h-px bg-white/5"></div>
-            <div class="flex justify-between text-white/60">
-              <span>Habitaciones</span><span class="text-white font-bold">{{ rooms.length }}</span>
+            <div class="w-full h-px bg-surface border-t border-subtle"></div>
+            <div class="flex justify-between text-muted">
+              <span>Habitaciones</span><span class="text-on-bg font-bold">{{ rooms.length }}</span>
             </div>
           </div>
         } @else {
           <div class="flex flex-col gap-3">
             <div>
-              <label class="text-white/40 text-xs font-['DM_Sans',sans-serif] mb-1 block">Dirección</label>
+              <label class="text-muted text-xs font-['DM_Sans',sans-serif] mb-1 block">Dirección</label>
               <input [(ngModel)]="editForm.address" type="text"
-                class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
+                class="w-full bg-input border border-normal rounded-lg px-3 py-2 text-on-bg text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
             </div>
             <div>
-              <label class="text-white/40 text-xs font-['DM_Sans',sans-serif] mb-1 block">Ciudad</label>
+              <label class="text-muted text-xs font-['DM_Sans',sans-serif] mb-1 block">Ciudad</label>
               <input [(ngModel)]="editForm.city" type="text"
-                class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
+                class="w-full bg-input border border-normal rounded-lg px-3 py-2 text-on-bg text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
             </div>
             <div>
-              <label class="text-white/40 text-xs font-['DM_Sans',sans-serif] mb-1 block">Teléfono</label>
+              <label class="text-muted text-xs font-['DM_Sans',sans-serif] mb-1 block">Teléfono</label>
               <input [(ngModel)]="editForm.phoneNumber" type="text"
-                class="w-full bg-white/5 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
+                class="w-full bg-input border border-normal rounded-lg px-3 py-2 text-on-bg text-sm focus:outline-none focus:border-[#A72027] transition-colors font-['DM_Sans',sans-serif]"/>
             </div>
             <button
               (click)="saveMotelInfo()"
@@ -161,7 +161,7 @@
             </button>
             <button
               (click)="cancelEdit()"
-              class="w-full border border-white/10 text-white/50 text-sm py-2 rounded-xl hover:border-white/25 hover:text-white/80 transition-all font-['DM_Sans',sans-serif]"
+              class="w-full border border-subtle text-muted text-sm py-2 rounded-xl hover:border-normal hover:text-on-bg transition-all font-['DM_Sans',sans-serif]"
             >
               Cancelar
             </button>
@@ -171,7 +171,7 @@
 
       <!-- Galería de imágenes -->
       @if (motel?.imageUrls?.length && motel!.imageUrls.length > 1) {
-        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6">
+        <div class="bg-surface border border-subtle rounded-2xl p-6">
           <h3 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase font-['DM_Sans',sans-serif] mb-3">Galería</h3>
           <div class="grid grid-cols-3 gap-2">
             @for (img of motel!.imageUrls.slice(0,6); track $index) {
@@ -198,23 +198,23 @@
           <button
             (click)="filterAvailable = null"
             class="px-3 py-1.5 rounded-lg border transition-all"
-            [ngClass]="filterAvailable === null ? 'bg-white/15 border-white/30 text-white' : 'border-white/10 text-white/40 hover:text-white/70'"
+            [ngClass]="filterAvailable === null ? 'bg-surface border-subtle text-on-bg' : 'border-subtle text-muted hover:text-on-bg'"
           >Todas</button>
           <button
             (click)="filterAvailable = true"
             class="px-3 py-1.5 rounded-lg border transition-all"
-            [ngClass]="filterAvailable === true ? 'bg-green-900/50 border-green-600/50 text-green-400' : 'border-white/10 text-white/40 hover:text-white/70'"
+            [ngClass]="filterAvailable === true ? 'bg-green-900/50 light:bg-green-100 border-green-600/50 light:border-green-400 text-green-400 light:text-green-700' : 'border-subtle text-muted hover:text-on-bg'"
           >Disponibles</button>
           <button
             (click)="filterAvailable = false"
             class="px-3 py-1.5 rounded-lg border transition-all"
-            [ngClass]="filterAvailable === false ? 'bg-white/5 border-white/20 text-white/50' : 'border-white/10 text-white/40 hover:text-white/70'"
+            [ngClass]="filterAvailable === false ? 'bg-surface border-normal text-muted' : 'border-subtle text-muted hover:text-on-bg'"
           >Ocupadas</button>
         </div>
       </div>
 
       @if (loading) {
-        <div class="flex items-center justify-center py-20 text-white/40 font-['DM_Sans',sans-serif]">
+        <div class="flex items-center justify-center py-20 text-muted font-['DM_Sans',sans-serif]">
           <svg class="animate-spin w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>

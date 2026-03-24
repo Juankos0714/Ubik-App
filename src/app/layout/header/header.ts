@@ -18,6 +18,7 @@ import { Button01 } from '../../components/button-01/button-01';
 import { AuthService } from '../../core/services/auth.service';
 import { SearchService } from '../../core/services/search.service';
 import { ColombiaService, Department } from '../../core/services/colombia.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { routes } from '../../app.routes';
 
 const ROUTES = {
@@ -58,8 +59,15 @@ export class Header implements OnInit, OnDestroy {
   private router = inject(Router);
   private auth = inject(AuthService);
   private searchService = inject(SearchService);
-  private colombiaService = inject(ColombiaService);
+  private colService = inject(ColombiaService);
+  private themeService = inject(ThemeService);
   private platformId = inject(PLATFORM_ID);
+  
+  theme = this.themeService.theme;
+
+  toggleTheme() {
+    this.themeService.toggle();
+  }
 
   // Subject para limpiar suscripciones
   private destroy$ = new Subject<void>();
@@ -141,7 +149,7 @@ export class Header implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.colombiaService
+    this.colService
       .getAll()
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: Department[]) => {
