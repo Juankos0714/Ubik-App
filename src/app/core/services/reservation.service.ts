@@ -12,6 +12,8 @@ export class ReservationService {
   private isBrowser: boolean;
   private eventSource: EventSource | null = null;
   private reservationSubject = new Subject<Reservation>();
+  private retryCount = 0;
+  private readonly MAX_RETRIES = 5;
 
   constructor(
     private http: HttpClient,
@@ -60,6 +62,11 @@ export class ReservationService {
     const sseUrl = `${this.apiUrl}/reservations/stream?access_token=${encodeURIComponent(token)}`;
     this.eventSource = new EventSource(sseUrl);
 
+    this.eventSource.onopen = () => {
+      console.log('SSE: conexión establecida');
+      // No se resetea retryCount aquí para evitar loops infinitos
+    };
+
     this.eventSource.onmessage = (event) => {
       try {
         const reservation: Reservation = JSON.parse(event.data);
@@ -71,7 +78,14 @@ export class ReservationService {
 
     this.eventSource.onerror = (error) => {
       console.error('SSE error', error);
-      // Podríamos implementar reconexión aquí
+      this.closeSSE();
+      if (this.retryCount < this.MAX_RETRIES) {
+        this.retryCount++;
+        console.log(`Reintentando conexión SSE (${this.retryCount}/${this.MAX_RETRIES})...`);
+        setTimeout(() => this.subscribeToReservations(), 3000);
+      } else {
+        console.error('SSE: Límite de reintentos alcanzado');
+      }
     };
 
     return this.reservationSubject.asObservable();
