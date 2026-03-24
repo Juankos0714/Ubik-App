@@ -279,10 +279,8 @@ export class PaymentModal implements OnInit, OnDestroy {
   private loadReservationsForDate(date: Date): void {
     if (!this.room) return;
 
-    const prev = new Date(date);
-    prev.setDate(prev.getDate() - 1);
-    const next = new Date(date);
-    next.setDate(next.getDate() + 1);
+    const prev = new Date(date); prev.setDate(prev.getDate() - 1);
+    const next = new Date(date); next.setDate(next.getDate() + 1);
 
     forkJoin([
       this.roomService.getReservationsForDate(this.room.id, this.formatDateLocal(prev)).pipe(catchError(() => of([]))),
@@ -290,17 +288,29 @@ export class PaymentModal implements OnInit, OnDestroy {
       this.roomService.getReservationsForDate(this.room.id, this.formatDateLocal(next)).pipe(catchError(() => of([]))),
     ]).subscribe({
       next: ([rPrev, rCurr, rNext]) => {
+        const all = [...rPrev, ...rCurr, ...rNext];
+        console.log('📅 Reservas cargadas raw:', all.length, JSON.stringify(all.map(r => ({
+          id: (r as any).id,
+          status: (r as any).status,
+          checkIn: (r as any).checkInDate,
+          checkOut: (r as any).checkOutDate,
+        }))));
+
         const uniqueById = new Map<number, RoomReservation>();
-        for (const r of [...rPrev, ...rCurr, ...rNext]) {
-          // CRÍTICO: filtrar solo reservas de esta habitación.
-          // El endpoint devuelve reservas de múltiples roomIds mezcladas.
-          if ((r as any).roomId !== this.room?.id) continue;
+        for (const r of all) {
           uniqueById.set(r.id, r);
         }
         this.reservations = Array.from(uniqueById.values()).filter((r) => this.isBlockingReservation(r));
+        console.log('🔒 Reservas bloqueantes:', this.reservations.length, this.reservations.map(r => ({
+          id: (r as any).id,
+          status: (r as any).status,
+          checkIn: (r as any).checkInDate,
+          checkOut: (r as any).checkOutDate,
+        })));
         this.updateTimeSlotAvailability();
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error cargando reservas:', err);
         this.reservations = [];
         this.updateTimeSlotAvailability();
       },
@@ -341,11 +351,9 @@ export class PaymentModal implements OnInit, OnDestroy {
   // ══════════════════════════════════════════════════════════════════════════
   private isBlockingReservation(reservation: RoomReservation): boolean {
     const status = ((reservation as any).status ?? '').toString().trim().toLowerCase();
-    // Solo CONFIRMED bloquea slots en la UI.
-    // PENDING: la reserva existe pero el pago no se confirmó — no bloquear
-    //   porque puede expirar, y el backend valida concurrencia al crear.
-    // Sin estado: asumir no bloqueante (dato incompleto del endpoint).
-    const blocking = ['confirmed'];
+    // CONFIRMED y CHECKED_IN bloquean slots en la UI.
+    // PENDING no bloquea — puede expirar, el backend valida concurrencia al crear.
+    const blocking = ['confirmed', 'checked_in'];
     return blocking.includes(status);
   }
 
@@ -420,11 +428,10 @@ export class PaymentModal implements OnInit, OnDestroy {
     fallbackDate: Date,
   ): Date | null {
     if (rawDate) {
-      // El backend guarda en UTC pero manda sin 'Z' → "2026-03-19T21:00:00"
-      // El browser sin 'Z' lo interpreta como hora local → error de 5h.
-      // Agregamos 'Z' para forzar interpretación UTC → Date correcto en local.
+      // Backend guarda en hora Colombia (America/Bogota) como LocalDateTime.
+      // Sin zona horaria → parsear como hora local del browser (Colombia) → correcto.
       if (rawDate.includes('T') || rawDate.includes(' ')) {
-        const normalized = rawDate.endsWith('Z') ? rawDate : rawDate.replace(' ', 'T') + 'Z';
+        const normalized = rawDate.replace(' ', 'T');
         const d = new Date(normalized);
         if (!isNaN(d.getTime())) return d;
       }
@@ -467,7 +474,7 @@ export class PaymentModal implements OnInit, OnDestroy {
 
     this.initializeTimeSlots();
 
-    // Entry slots
+    // ── Entry slots: bloquear si cualquier reserva solapa con esa hora
     this.entrySlots = this.entrySlots.map((slot) => {
       const slotStart = this.toDateTime(this.selectedDate!, slot.time);
       const slotEnd = this.addHours(slotStart, 1);
@@ -476,7 +483,7 @@ export class PaymentModal implements OnInit, OnDestroy {
       return { ...slot, available: !reservation && !past, reservation: reservation || undefined };
     });
 
-    // Si el startTime seleccionado quedó en el pasado, limpiarlo
+    // Limpiar startTime si quedó en el pasado
     if (this.startTime && this.isPastTime(this.startTime)) {
       this.startTime = '';
       this.endTime = '';
@@ -485,12 +492,12 @@ export class PaymentModal implements OnInit, OnDestroy {
     }
 
     if (this.startTime) {
+      // ── Exit slots CON startTime: verificar solapamiento desde la entrada elegida
       const startIndex = this.ALL_SLOTS.indexOf(this.startTime);
       const startDt = this.toDateTime(this.selectedDate, this.startTime);
 
       this.exitSameDaySlots = this.ALL_SLOTS.slice(startIndex + 1).map((time) => {
         const endDt = this.toDateTime(this.selectedDate!, time);
-        // Sin buffer: el usuario puede salir justo cuando empieza el mantenimiento
         const reservation = this.findOverlappingReservation(startDt, endDt, false);
         return { time, label: time, available: !reservation, reservation: reservation || undefined };
       });
@@ -498,22 +505,29 @@ export class PaymentModal implements OnInit, OnDestroy {
       this.exitNextDaySlots = this.exitNextDaySlots.map((slot) => {
         const endDt = this.toDateTime(this.selectedDate!, slot.time);
         endDt.setDate(endDt.getDate() + 1);
-        // Sin buffer: mismo criterio
         const reservation = this.findOverlappingReservation(startDt, endDt, false);
         return { ...slot, available: !reservation, reservation: reservation || undefined };
       });
 
-      return;
-    }
+    } else {
+      // ── Exit slots SIN startTime: precalcular bloqueos slot por slot
+      // para que el usuario vea desde el inicio qué horas están ocupadas,
+      // sin necesidad de seleccionar entrada primero.
+      this.exitSameDaySlots = this.ALL_SLOTS.map((time) => {
+        const slotStart = this.toDateTime(this.selectedDate!, time);
+        const slotEnd = this.addHours(slotStart, 1);
+        const reservation = this.findOverlappingReservation(slotStart, slotEnd);
+        return { time, label: time, available: !reservation, reservation: reservation || undefined };
+      });
 
-    // Sin startTime seleccionado: verificar cruces de medianoche en slots de madrugada
-    this.exitNextDaySlots = this.exitNextDaySlots.map((slot) => {
-      const slotStart = this.toDateTime(this.selectedDate!, slot.time);
-      slotStart.setDate(slotStart.getDate() + 1);
-      const slotEnd = this.addHours(slotStart, 1);
-      const reservation = this.findOverlappingReservation(slotStart, slotEnd);
-      return { ...slot, available: !reservation, reservation: reservation || undefined };
-    });
+      this.exitNextDaySlots = this.exitNextDaySlots.map((slot) => {
+        const slotStart = this.toDateTime(this.selectedDate!, slot.time);
+        slotStart.setDate(slotStart.getDate() + 1);
+        const slotEnd = this.addHours(slotStart, 1);
+        const reservation = this.findOverlappingReservation(slotStart, slotEnd);
+        return { ...slot, available: !reservation, reservation: reservation || undefined };
+      });
+    }
   }
 
   private findOverlappingReservation(
