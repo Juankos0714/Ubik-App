@@ -2,13 +2,13 @@
 <div class="mb-28 mt-28 flex items-center justify-center">
   <!-- Card -->
   <div
-    class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20"
+    class="w-full max-w-md bg-surface backdrop-blur-md rounded-2xl shadow-card-theme p-8 border border-subtle"
   >
     <form class="flex flex-col gap-6" (ngSubmit)="onFormSubmit()">
       <!-- Title -->
       <div class="text-center">
-        <h2 class="text-2xl font-semibold text-white">Iniciar Sesión</h2>
-        <p class="text-gray-400 text-sm mt-1">Ingresa tus credenciales para continuar</p>
+        <h2 class="text-2xl font-semibold text-on-bg">Iniciar Sesión</h2>
+        <p class="text-muted text-sm mt-1">Ingresa tus credenciales para continuar</p>
 
         
 
@@ -73,7 +73,7 @@
               class="w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-2 focus:ring-red-400 focus:ring-offset-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               [disabled]="isSubmitting()"
             />
-            <span class="text-gray-300">Recordarme</span>
+            <span class="text-on-bg-2">Recordarme</span>
           </label>
 
           <div class="flex flex-col items-end gap-1.5">
@@ -87,7 +87,7 @@
             <button
               type="button"
               (click)="navigateToRecoverAccount()"
-              class="text-gray-400 hover:text-gray-300 hover:underline transition-colors text-sm"
+              class="text-muted hover:text-on-bg transition-colors text-sm"
             >
               ¿Recuperar tu cuenta eliminada?
             </button>
@@ -97,9 +97,9 @@
 
       <!-- Separador -->
       <div class="flex items-center gap-3">
-        <div class="flex-1 h-px bg-white/10"></div>
-        <span class="text-xs text-white/30 select-none">o continúa con</span>
-        <div class="flex-1 h-px bg-white/10"></div>
+        <div class="flex-1 border-t border-subtle"></div>
+        <span class="text-xs text-muted select-none">o continúa con</span>
+        <div class="flex-1 border-t border-subtle"></div>
       </div>
 
       <!-- Contenedor oculto para el botón de Google (renderButton) -->
@@ -111,9 +111,9 @@
         (click)="triggerGoogleSignIn()"
         [disabled]="isSubmitting()"
         class="w-full flex items-center justify-center gap-3 py-2.5 px-4
-               bg-white/5 hover:bg-white/10 active:bg-white/15
-               border border-white/15 hover:border-white/30
-               rounded-xl text-sm font-medium text-white/90
+               bg-input hover:bg-surface active:bg-surface
+               border border-normal hover:border-subtle
+               rounded-xl text-sm font-medium text-on-bg
                transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <!-- Google SVG Icon -->

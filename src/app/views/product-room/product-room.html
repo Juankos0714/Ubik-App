@@ -1,4 +1,4 @@
-<div class="min-h-screen text-white font-['DM_Sans',sans-serif]">
+<div class="min-h-screen text-on-bg font-['DM_Sans',sans-serif]">
 
   <!-- ── LOADING ── -->
   @if (loading) {
@@ -181,7 +181,7 @@
             <h1 class="text-3xl md:text-4xl font-['Cormorant_Garamond',serif] font-bold leading-tight">
               Habitación {{ room.number }}
             </h1>
-            <p class="text-white/50 text-sm mt-2 flex items-center gap-1.5">
+            <p class="text-muted text-sm mt-2 flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5 text-[#c8a97e] shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
@@ -192,7 +192,7 @@
           @if (room.motelId) {
             <a
               [routerLink]="['/motelProfile', room.motelId]"
-              class="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:border-[#A72027]/60 hover:bg-[#6E2A35]/10 transition-all duration-300 text-sm text-white/70 hover:text-white shrink-0 group"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl border border-subtle bg-surface hover:border-[#A72027]/60 hover:bg-[#6E2A35]/10 transition-all duration-300 text-sm text-on-bg-2 hover:text-on-bg shrink-0 group"
             >
               <svg class="w-4 h-4 text-[#c8a97e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -206,18 +206,18 @@
         </div>
 
         <!-- Descripción -->
-        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6">
+        <div class="bg-surface border border-subtle rounded-2xl p-6">
           <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase mb-3">Descripción</h2>
-          <p class="text-white/70 leading-relaxed text-sm">{{ room.description }}</p>
+          <p class="text-on-bg-2 leading-relaxed text-sm">{{ room.description }}</p>
         </div>
 
         <!-- Servicios -->
-        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6">
+        <div class="bg-surface border border-subtle rounded-2xl p-6">
           <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase mb-4">Servicios incluidos</h2>
           @if (room.serviceIds && room.serviceIds.length) {
             <div class="flex flex-wrap gap-2">
               @for (svcId of room.serviceIds; track $index) {
-                <span class="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white/70">
+                <span class="flex items-center gap-1.5 px-3 py-1.5 bg-input border border-subtle rounded-xl text-sm text-on-bg-2">
                   @if (getServiceIcon(svcId)) {
                     <i [class]="getServiceIcon(svcId) + ' text-[#c8a97e] text-xs'"></i>
                   } @else {
@@ -230,12 +230,12 @@
               }
             </div>
           } @else {
-            <p class="text-white/30 text-sm">Sin servicios registrados.</p>
+            <p class="text-muted text-sm">Sin servicios registrados.</p>
           }
         </div>
 
         <!-- Mapa (mobile — se muestra aquí en móvil) -->
-        <div class="lg:hidden bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
+        <div class="lg:hidden bg-surface border border-subtle rounded-2xl overflow-hidden">
           <div class="px-6 pt-5 pb-3">
             <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
           </div>
@@ -250,25 +250,25 @@
       <aside class="flex flex-col gap-5 lg:sticky lg:top-8 lg:self-start">
 
         <!-- Card precio + reserva -->
-        <div class="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 flex flex-col gap-5">
+        <div class="bg-surface border border-subtle rounded-2xl p-6 flex flex-col gap-5">
 
           <!-- Precio -->
           <div>
-            <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Precio por noche</p>
+            <p class="text-muted text-xs uppercase tracking-widest mb-1">Precio por noche</p>
             <div class="flex items-baseline gap-1">
-              <span class="text-4xl font-['Cormorant_Garamond',serif] font-bold text-white">${{ room.price | number }}</span>
-              <span class="text-white/40 text-sm">COP</span>
+              <span class="text-4xl font-['Cormorant_Garamond',serif] font-bold text-on-bg">${{ room.price | number }}</span>
+              <span class="text-muted text-sm">COP</span>
             </div>
           </div>
 
-          <div class="w-full h-px bg-white/[0.07]"></div>
+          <div class="w-full h-px border-t border-subtle bg-surface"></div>
 
           <!-- Estado de reserva -->
           @if (room.isAvailable) {
 
             <!-- DISPONIBLE: mostrar botón de reserva -->
             <div class="flex flex-col gap-3">
-              <p class="text-xs text-white/50 leading-relaxed">
+              <p class="text-xs text-muted leading-relaxed">
                 Esta habitación está disponible. Realiza tu reserva ahora y confirma tu estadía.
               </p>
               <button
@@ -295,12 +295,12 @@
 
               <!-- Input email notificación -->
               <div class="flex flex-col gap-2">
-                <label class="text-white/40 text-xs uppercase tracking-widest">Tu email</label>
+                <label class="text-muted text-xs uppercase tracking-widest">Tu email</label>
                 <input
                   [(ngModel)]="notifyEmail"
                   type="email"
                   placeholder="correo@ejemplo.com"
-                  class="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#A72027] transition-colors"
+                  class="w-full bg-input border border-normal rounded-xl px-4 py-3 text-sm text-on-bg placeholder-gray-500 focus:outline-none focus:border-[#A72027] transition-colors"
                 />
               </div>
 
@@ -332,29 +332,28 @@
             </div>
           }
 
-          <div class="w-full h-px bg-white/[0.07]"></div>
+          <div class="w-full h-px bg-surface border-t border-subtle"></div>
 
           <!-- Info del motel -->
-          <div class="flex flex-col gap-2 text-sm text-white/50">
+          <div class="flex flex-col gap-2 text-sm text-muted">
             <div class="flex justify-between">
               <span>Dirección</span>
-              <span class="text-white/80 text-right max-w-[55%]">{{ room.motelAddress }}</span>
+              <span class="text-on-bg text-right max-w-[55%]">{{ room.motelAddress }}</span>
             </div>
             <div class="flex justify-between">
               <span>Ciudad</span>
-              <span class="text-white/80">{{ room.motelCity }}</span>
+              <span class="text-on-bg">{{ room.motelCity }}</span>
             </div>
             <div class="flex justify-between">
               <span>Teléfono</span>
-              <span class="text-white/80">{{ room.motelPhoneNumber }}</span>
+              <span class="text-on-bg">{{ room.motelPhoneNumber }}</span>
             </div>
           </div>
 
-          <!-- Link al motel (sidebar) -->
           @if (room.motelId) {
             <a
               [routerLink]="['/motelProfile', room.motelId]"
-              class="flex items-center justify-center gap-2 w-full border border-white/10 text-white/60 py-2.5 rounded-xl text-sm hover:border-white/30 hover:text-white transition-all duration-300"
+              class="flex items-center justify-center gap-2 w-full border border-subtle text-muted py-2.5 rounded-xl text-sm hover:border-normal hover:text-on-bg transition-all duration-300"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -366,7 +365,7 @@
         </div>
 
         <!-- Mapa (desktop) -->
-        <div class="hidden lg:block bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
+        <div class="hidden lg:block bg-surface border border-subtle rounded-2xl overflow-hidden">
           <div class="px-5 pt-4 pb-2">
             <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
           </div>
