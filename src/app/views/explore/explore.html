@@ -2,7 +2,7 @@
 
   <!-- RESULTADOS -->
   <div
-    class="results-section flex-1 flex flex-col gap-6 max-h-[800px] max-w-full lg:max-w-[60%] rounded-xl overflow-hidden border border-subtle"
+    class="results-section flex-1 flex flex-col gap-6 max-h-[800px] max-w-full lg:max-w-[60%] rounded-xl overflow-hidden border border-white/10"
   >
     <div
       class="title flex flex-col sm:flex-row sm:items-center px-4 sm:px-6 py-4 justify-between gap-3"
@@ -12,7 +12,7 @@
         <input
           type="text"
           placeholder="Buscar moteles o ciudades..."
-          class="w-full sm:w-80 px-3 py-2 rounded bg-input text-on-bg border border-normal"
+          class="w-full sm:w-80 px-3 py-2 rounded bg-[#1e2128] text-white border border-white/10"
           (input)="onSearchInput($any($event.target).value)"
         />
         <app-button-02 text="Filtro" (click)="openModal()"></app-button-02>
@@ -61,15 +61,17 @@
 ====================================================================== -->
 @if (mobileMapOpen) {
   <div
-    class="fixed inset-0 z-50 flex flex-col lg:hidden bg-card"
+    class="fixed inset-0 z-50 flex flex-col lg:hidden"
+    style="background: #0d0608;"
   >
 
-    <div class="flex items-center justify-between px-4 py-3 border-b border-subtle bg-card shrink-0">
+    <!-- Header del modal -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#14090C] shrink-0">
 
       <div class="flex items-center gap-3">
         <button
           (click)="closeMobileMap()"
-          class="flex items-center justify-center w-9 h-9 rounded-full bg-surface hover:bg-black/10 light:hover:bg-black/5 text-on-bg border border-subtle transition"
+          class="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition text-white"
           aria-label="Cerrar mapa"
         >
           <!-- X icon -->
@@ -77,7 +79,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
-        <span class="text-on-bg font-semibold text-base">
+        <span class="text-white font-semibold text-base">
           {{ mobileMapCard?.roomType ?? mobileMapCard?.motelName ?? 'Ubicación' }}
         </span>
       </div>
@@ -103,15 +105,15 @@
 
     <!-- Info rápida de la card seleccionada -->
     @if (mobileMapCard) {
-      <div class="flex items-center gap-3 px-4 py-2.5 bg-surface border-b border-subtle shrink-0">
+      <div class="flex items-center gap-3 px-4 py-2.5 bg-[#1a0e11] border-b border-white/5 shrink-0">
         <img
           [src]="mobileMapCard.image"
           [alt]="mobileMapCard.motelName"
           class="w-10 h-10 rounded-lg object-cover"
         />
         <div class="flex-1 min-w-0">
-          <p class="text-on-bg text-sm font-medium truncate">{{ mobileMapCard.motelName }}</p>
-          <p class="text-muted text-xs truncate">{{ mobileMapCard.adress }}</p>
+          <p class="text-white text-sm font-medium truncate">{{ mobileMapCard.motelName }}</p>
+          <p class="text-gray-400 text-xs truncate">{{ mobileMapCard.adress }}</p>
         </div>
         @if (mobileMapCard.type === 'room' && mobileMapCard.price) {
           <span class="text-amber-400 font-bold text-sm shrink-0">
@@ -133,7 +135,7 @@
 
     <!-- Footer con botones de acción -->
     @if (mobileMapCard) {
-      <div class="shrink-0 px-4 py-3 bg-card border-t border-subtle flex gap-3">
+      <div class="shrink-0 px-4 py-3 bg-[#14090C] border-t border-white/10 flex gap-3">
 
         @if (mobileMapCard.type === 'room') {
           <app-button-01
@@ -145,7 +147,7 @@
 
         <button
           (click)="closeMobileMap()"
-          class="flex-1 border border-normal text-on-bg-2 rounded-lg px-4 py-2 hover:bg-surface transition text-sm font-medium"
+          class="flex-1 border border-white/20 text-white/80 rounded-lg px-4 py-2 hover:bg-white/5 transition text-sm font-medium"
         >
           Volver a resultados
         </button>

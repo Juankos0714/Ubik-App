@@ -2,9 +2,9 @@
 <div class="mb-28 mt-28 flex items-center justify-center ">
 
   <!-- Card -->
-  <div class="w-full max-w-md bg-surface backdrop-blur-md rounded-2xl shadow-card-theme p-8 border border-subtle">
+  <div class="w-full max-w-md bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
     
-    <div class="flex items-center justify-center px-5 text-on-bg">
+    <div class="flex items-center justify-center px-5 text-white">
       <div class="w-full max-w-md">
         <h1 class="text-4xl font-bold mb-6 tracking-wider text-center">CUENTA PROPIETARIO</h1>
 
@@ -68,11 +68,11 @@
           }
 
           <!-- Birthdate -->
-          <label class="mb-1 text-on-bg text-sm">Fecha de nacimiento</label>
+          <label class="mb-1 text-white text-sm">Fecha de nacimiento</label>
           <input
             type="date"
             formControlName="birthDate"
-            class="rounded-full p-3 bg-input text-on-bg border border-normal focus:outline-none focus:ring-2 focus:ring-red-600 w-full text-center"
+            class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white text-center"
           />
           @if (getUiError('birthDate')) {
             <p class="text-red-300 text-xs -mt-1">{{ getUiError('birthDate') }}</p>
@@ -101,11 +101,11 @@
           }
 
            <!-- Ubication  -->
-          <label class="mb-1 text-on-bg text-base">Ubicación</label>
+          <label class="mb-1 text-white text-base">Ubicación</label>
 
           <button
             type="button"
-            class="inline-flex items-center justify-center rounded-xl bg-input border border-normal px-4 py-3 text-sm font-medium text-on-bg hover:bg-surface active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed"
             [disabled]="loading || gettingLocation"
             (click)="getUserLocation()"
           >
@@ -125,7 +125,7 @@
           </button>
 
           @if (!gettingLocation && hasLocation) {
-            <p class="mt-1 text-xs text-muted">Coords: {{ locationText }}</p>
+            <p class="mt-1 text-xs text-white/70">Coords: {{ locationText }}</p>
           }
 
           @if (error) {
@@ -135,9 +135,9 @@
 
         <!-- Separador -->
         <div class="flex items-center gap-3 my-2">
-          <div class="flex-1 border-t border-subtle"></div>
-          <span class="text-xs text-muted select-none">o regístrate con</span>
-          <div class="flex-1 border-t border-subtle"></div>
+          <div class="flex-1 h-px bg-white/10"></div>
+          <span class="text-xs text-white/30 select-none">o regístrate con</span>
+          <div class="flex-1 h-px bg-white/10"></div>
         </div>
 
         <!-- Contenedor oculto para el botón de Google (renderButton) -->
@@ -149,9 +149,9 @@
           (click)="triggerGoogleSignIn()"
           [disabled]="isSubmitting"
           class="w-full flex items-center justify-center gap-3 py-2.5 px-4
-                 bg-input hover:bg-surface active:bg-surface
-                 border border-normal hover:border-subtle
-                 rounded-xl text-sm font-medium text-on-bg
+                 bg-white/5 hover:bg-white/10 active:bg-white/15
+                 border border-white/15 hover:border-white/30
+                 rounded-xl text-sm font-medium text-white/90
                  transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
