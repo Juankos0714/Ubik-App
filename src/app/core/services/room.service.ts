@@ -1,7 +1,7 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, EMPTY } from 'rxjs';
+import { Observable, EMPTY, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { Room } from '../models/room.model';
@@ -15,8 +15,8 @@ export interface AvailabilityResult {
 
 export interface RoomReservation {
   id: number;
-  roomId?: number;   // campo real del backend — usado para filtrar por habitación
-  room_id?: number;  // alias alternativo
+  roomId?: number;
+  room_id?: number;
   start_date?: string;
   end_date?: string;
   startDate?: string;
@@ -27,7 +27,7 @@ export interface RoomReservation {
   end_time?: string;
   startTime?: string;
   endTime?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'pending' | 'confirmed' | 'cancelled';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'CHECKED_IN' | 'CHECKED_OUT' | 'pending' | 'confirmed' | 'cancelled';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -80,12 +80,10 @@ export class RoomService {
   // ─────────────────── Availability / Reservations ─────────────────────────
 
   /**
-   * Verifica disponibilidad mandando checkInDate/checkOutDate como ISO 8601
-   * con offset de zona horaria explícito.
-   * Ejemplo: "2026-03-18T17:00:00-05:00" / "2026-03-18T19:00:00-05:00"
-   *
-   * El backend (motelManagement) espera estos mismos campos que usa
-   * createReservation, no date+startTime+endTime por separado.
+   * Verifica disponibilidad.
+   * Endpoint: GET /api/reservations/room/{roomId}/available?checkIn=...&checkOut=...
+   * Fechas en hora local Colombia: "2026-03-19T13:00:00"
+   * El backend retorna boolean directamente.
    */
   checkAvailability(
     roomId: number,
@@ -93,19 +91,43 @@ export class RoomService {
     checkOutDate: string,
   ): Observable<AvailabilityResult> {
     const params = new HttpParams()
-      .set('checkInDate', checkInDate)
-      .set('checkOutDate', checkOutDate);
+      .set('checkIn', checkInDate)
+      .set('checkOut', checkOutDate);
 
     return this.inBrowser(
-      this.http.get<AvailabilityResult>(`${this.roomsUrl}/${roomId}/availability`, { params }),
+      this.http.get<boolean>(
+        `${this.baseUrl}/reservations/room/${roomId}/available`,
+        { params }
+      ).pipe(
+        map((available: boolean) => ({ available }))
+      )
     );
   }
 
+  /**
+   * Obtiene reservas activas de una habitación y filtra por fecha.
+   * Endpoint: GET /api/reservations/room/{roomId}/active
+   * Solo retorna PENDING, CONFIRMED, CHECKED_IN (no CANCELLED ni CHECKED_OUT).
+   */
   getReservationsForDate(roomId: number, date: string): Observable<RoomReservation[]> {
-    const params = new HttpParams().set('date', date);
-
     return this.inBrowser(
-      this.http.get<RoomReservation[]>(`${this.roomsUrl}/${roomId}/reservations`, { params }),
+      this.http.get<RoomReservation[]>(
+        `${this.baseUrl}/reservations/room/${roomId}/active`
+      ).pipe(
+        map(reservations => reservations.filter(r => {
+          const res = r as any;
+          const rawStart: string = res.checkInDate ?? res.startDate ?? res.start_date ?? '';
+          const rawEnd: string   = res.checkOutDate ?? res.endDate ?? res.end_date ?? '';
+          if (!rawStart) return false;
+          // Parsear como hora local (backend guarda en America/Bogota)
+          const start    = new Date(rawStart);
+          const end      = rawEnd ? new Date(rawEnd) : start;
+          const dayStart = new Date(date + 'T00:00:00');
+          const dayEnd   = new Date(date + 'T23:59:59');
+          // Incluir si la reserva toca este día
+          return start <= dayEnd && end >= dayStart;
+        }))
+      )
     );
   }
 
