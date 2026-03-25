@@ -72,14 +72,18 @@ export class DashboardOwner implements OnInit, OnDestroy {
   }
 
   setupSSE() {
-    this.sseSubscription = this.reservationService.subscribeToReservations().subscribe(() => {
-      // Cuando llega un evento SSE, refrescamos los datos
-      const id = this.motelId();
-      if (id) {
-        this.fetchDashboardData(id);
+  this.sseSubscription = this.reservationService
+    .subscribeToReservations()
+    .subscribe({
+      next: () => {
+        const id = this.motelId();
+        if (id) this.fetchDashboardData(id);
+      },
+      error: (err) => {
+        console.warn('SSE desconectado definitivamente. Datos estáticos activos.', err);
       }
     });
-  }
+}
 
   onVerifyCode() {
     const code = this.verifyCode.trim();

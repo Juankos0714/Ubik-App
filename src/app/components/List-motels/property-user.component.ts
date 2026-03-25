@@ -5,7 +5,6 @@ import { finalize } from 'rxjs/operators';
 
 import { PropertyUserService } from '../../core/services/list-motel.service';
 import { Motel, MotelImage } from '../../core/models/motel.model';
-import { Button01 } from "../button-01/button-01";
 
 export type MotelListItem = Motel & {
   // url lista para pintar en la card/lista
@@ -15,7 +14,7 @@ export type MotelListItem = Motel & {
 @Component({
   selector: 'app-property-user',
   standalone: true,
-  imports: [CommonModule, RouterModule, Button01],
+  imports: [CommonModule, RouterModule],
   templateUrl: './property-user.component.html',
 })
 export class PropertyUserComponent implements OnInit {
@@ -77,24 +76,6 @@ export class PropertyUserComponent implements OnInit {
   // ✅ reemplaza la imagen si falla la carga
   onImgError(ev: Event) {
     (ev.target as HTMLImageElement).src = this.defaultImg;
-  }
-
-  deleteProperty(id: number) {
-    if (!confirm('¿Eliminar esta propiedad?')) return;
-
-    this.propertyUserService.deleteProperty(id).subscribe({
-      next: () => {
-        this.properties = this.properties.filter(p => p.id !== id);
-      },
-      error: (err) => {
-        console.error('Error eliminando motel:', err);
-        alert('No se pudo eliminar. Revisa permisos o el endpoint.');
-      },
-    });
-  }
-
-  createRoom(motelId: number) {
-    this.router.navigate(['/create-room'], { queryParams: { motelId } });
   }
 
   trackById(_index: number, item: MotelListItem) {

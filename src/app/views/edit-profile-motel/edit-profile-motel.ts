@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 
 import { Inputcomponent } from '../../components/input/input';
@@ -11,7 +12,7 @@ import { CreateMotelRequest } from '../Forms/create-motel/types/create-motel.typ
 @Component({
   selector: 'app-edit-profile-motel',
   standalone: true,
-  imports: [CommonModule, Inputcomponent, Button01],
+  imports: [CommonModule, FormsModule, Inputcomponent, Button01],
   templateUrl: './edit-profile-motel.html',
 })
 export class EditProfileMotel implements OnInit {
@@ -60,15 +61,21 @@ export class EditProfileMotel implements OnInit {
       name: this.profile.name,
       address: this.profile.address,
       city: this.profile.city,
-      phoneNumber: (this.profile as any).phoneNumber ?? null,
-      description: (this.profile as any).description ?? null,
-      latitude: (this.profile as any).latitude ?? null,
-      longitude: (this.profile as any).longitude ?? null,
-
-      ownerDocumentType: (this.profile as any).ownerDocumentType,
-      ownerDocumentNumber: (this.profile as any).ownerDocumentNumber,
-      ownerFullName: (this.profile as any).ownerFullName,
-      legalRepresentativeName: (this.profile as any).legalRepresentativeName ?? null,
+      phoneNumber: this.profile.phoneNumber ?? null,
+      description: this.profile.description ?? null,
+      latitude: this.profile.latitude ?? null,
+      longitude: this.profile.longitude ?? null,
+      propertyId: this.profile.propertyId,
+      rues: (this.profile as any).rues ?? '',
+      rnt: (this.profile as any).rnt ?? '',
+      ownerDocumentType: this.profile.ownerDocumentType as any,
+      ownerDocumentNumber: this.profile.ownerDocumentNumber,
+      ownerFullName: this.profile.ownerFullName,
+      legalRepresentativeName: this.profile.legalRepresentativeName ?? null,
+      legalDocumentUrl: (this.profile as any).legalDocumentUrl ?? null,
+      imageUrls: (this.profile.imageUrls ?? []).map((img: any) =>
+        typeof img === 'string' ? img : img.url
+      ),
     };
 
     this.motelService.updateMotel(id, payload)
