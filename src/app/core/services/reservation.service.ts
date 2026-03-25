@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, EMPTY, Subject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
@@ -7,18 +7,13 @@ import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class ReservationService implements OnDestroy {
+export class ReservationService {
   private apiUrl: string;
   private isBrowser: boolean;
   private eventSource: EventSource | null = null;
   private reservationSubject = new Subject<Reservation>();
-
-  // 🔧 Control de reconexión
-  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private retryCount = 0;
   private readonly MAX_RETRIES = 5;
-  private readonly RETRY_DELAY_MS = 5000;
-  private isIntentionallyClosed = false;
 
   constructor(
     private http: HttpClient,
@@ -48,25 +43,20 @@ export class ReservationService implements OnDestroy {
     return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/checkin`, {});
   }
 
-  // ✅ SSE con reconexión controlada
+  // SSE connection
   subscribeToReservations(): Observable<Reservation> {
     if (!this.isBrowser) return EMPTY as Observable<Reservation>;
 
-    this.isIntentionallyClosed = false;
-    this.retryCount = 0;
-    this.connectSSE();
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
 
-    return this.reservationSubject.asObservable();
-  }
-
-  private connectSSE(): void {
-    // Cierra la conexión anterior si existe
-    this.closeSSE(false);
-
+    // SSE nativo no permite enviar headers (Authorization).
+    // El gateway ya soporta token por query param (access_token o token).
     const token = this.authService.token();
     if (!token) {
-      console.warn('SSE: no hay token disponible');
-      return;
+      console.warn('SSE: no hay token disponible, la conexión será rechazada por el gateway');
+      return EMPTY as Observable<Reservation>;
     }
 
     const sseUrl = `${this.apiUrl}/reservations/stream?access_token=${encodeURIComponent(token)}`;
@@ -74,7 +64,7 @@ export class ReservationService implements OnDestroy {
 
     this.eventSource.onopen = () => {
       console.log('SSE: conexión establecida');
-      this.retryCount = 0; // 🔧 Resetea reintentos al conectar exitosamente
+      // No se resetea retryCount aquí para evitar loops infinitos
     };
 
     this.eventSource.onmessage = (event) => {
@@ -82,48 +72,29 @@ export class ReservationService implements OnDestroy {
         const reservation: Reservation = JSON.parse(event.data);
         this.reservationSubject.next(reservation);
       } catch (e) {
-        console.error('SSE: error parseando evento', e);
+        console.error('Error parsing SSE event', e);
       }
     };
 
     this.eventSource.onerror = (error) => {
       console.error('SSE error', error);
-
-      // 🔧 CLAVE: cierra inmediatamente para evitar que el browser reconecte solo
-      this.closeSSE(false);
-
-      if (this.isIntentionallyClosed) return;
-
+      this.closeSSE();
       if (this.retryCount < this.MAX_RETRIES) {
         this.retryCount++;
-        console.warn(`SSE: reintentando (${this.retryCount}/${this.MAX_RETRIES}) en ${this.RETRY_DELAY_MS / 1000}s...`);
-        this.reconnectTimer = setTimeout(() => this.connectSSE(), this.RETRY_DELAY_MS);
+        console.log(`Reintentando conexión SSE (${this.retryCount}/${this.MAX_RETRIES})...`);
+        setTimeout(() => this.subscribeToReservations(), 3000);
       } else {
-        console.error('SSE: máximo de reintentos alcanzado. Verifica el backend o el token.');
-        this.reservationSubject.error(new Error('SSE connection failed after max retries'));
-        // Recrea el subject para que el observable pueda volver a usarse si el componente lo solicita
-        this.reservationSubject = new Subject<Reservation>();
+        console.error('SSE: Límite de reintentos alcanzado');
       }
     };
+
+    return this.reservationSubject.asObservable();
   }
 
-  closeSSE(intentional = true): void {
-    if (intentional) {
-      this.isIntentionallyClosed = true;
-    }
-
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-
+  closeSSE(): void {
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = null;
     }
-  }
-
-  ngOnDestroy(): void {
-    this.closeSSE();
   }
 }

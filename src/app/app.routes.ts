@@ -57,7 +57,13 @@ import { EditRoomComponent } from './views/Forms/edit-room/components/edit-room.
 import { PaymentSuccessComponent } from './views/payment/payment-success';
 import { PaymentFailureComponent } from './views/payment/payment-failure';
 
+// ----------------------------------------------------------------------------------------------------
+// ERRORS
 
+import { E404 } from './views/errors/e404/e404';
+import { E403 } from './views/errors/e403/e403';
+import { E500 } from './views/errors/e500/e500';
+import { EOffline } from './views/errors/e-offline/e-offline';
 // =====================================================================================================
 
 
@@ -112,6 +118,17 @@ export const routes: Routes = [
   { path: 'roominfo', component: ProductRoom }, // Informacion de una habitacion
   { path: 'edit-room/:id', component: EditRoomComponent },
 
+  // RUTAS DE ERRORES
+
+  { path: 'error/403',     component: E403 },
+  { path: 'error/500',     component: E500 },
+  { path: 'error/offline', component: EOffline },
+  { path: '404',           component: E404 },
+
   /*========== WILDCARD ROUTE ==========*/
-  { path: '**', redirectTo: '' },
+  {
+    path: '**', component: E404
+  }
+
+  
 ];
