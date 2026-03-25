@@ -15,7 +15,7 @@ import { routes } from './app.routes';
 
 
 import { authInterceptor } from './core/interceptors/auth-interceptor';
-import { debugInterceptor } from './core/interceptors/debug-interceptor';
+//import { debugInterceptor } from './core/interceptors/debug-interceptor'; // Desarrollo
 import { AuthService } from './core/services/auth.service';
 
 registerLocaleData(localeEsCO, 'es-CO');
@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor, debugInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])), // debugInterceptor --- IGNORE ---
     provideAppInitializer(() => inject(AuthService).restoreSession()),
   ],
 };
