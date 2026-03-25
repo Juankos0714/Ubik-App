@@ -462,7 +462,7 @@ export class PaymentModal implements OnInit, OnDestroy {
   private initializeTimeSlots(): void {
     this.entrySlots = this.ALL_SLOTS.map((time) => ({ time, label: time, available: true }));
     this.exitSameDaySlots = this.ALL_SLOTS.map((time) => ({ time, label: time, available: true }));
-    this.exitNextDaySlots = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00']
+    this.exitNextDaySlots = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00']
       .map((time) => ({ time, label: time, available: true }));
   }
 

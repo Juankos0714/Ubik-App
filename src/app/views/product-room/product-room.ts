@@ -6,7 +6,6 @@ import { RoomService } from '../../core/services/room.service';
 import { Room } from '../../core/models/room.model';
 import { validateEmail } from '../../core/utils/validation.utils';
 import { Map as AppMap } from '../../components/map/map';
-import { Button01 } from "../../components/button-01/button-01";
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 import { Dialog } from '@angular/cdk/dialog';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,7 +23,6 @@ export class ProductRoom implements OnInit {
 
   room: Room | null = null;
   loading = false;
-  error = false;
 
   points: { lat: number; lng: number; name: string }[] = [];
 
@@ -63,8 +61,8 @@ export class ProductRoom implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.error = true;
         this.loading = false;
+        this.router.navigate(['/404']);
       },
     });
   }
