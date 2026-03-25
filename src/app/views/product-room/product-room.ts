@@ -10,6 +10,10 @@ import { Button01 } from "../../components/button-01/button-01";
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 import { Dialog } from '@angular/cdk/dialog';
 import { AuthService } from '../../core/services/auth.service';
+import { StreakService } from '../../core/services/streak.service';
+import { StreakResponse } from '../../core/models/streak.model';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-room',
@@ -19,10 +23,12 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class ProductRoom implements OnInit {
   private roomService = inject(RoomService);
+  private streakService = inject(StreakService);
   private route = inject(ActivatedRoute);
   public authService = inject(AuthService);
 
   room: Room | null = null;
+  streak: StreakResponse | null = null;
   loading = false;
   error = false;
 
@@ -46,6 +52,10 @@ export class ProductRoom implements OnInit {
     const id = idFromQuery || idFromParam;
 
     if (id) this.loadRoom(id);
+
+    this.streakService.getMyStreak().pipe(
+      catchError(() => of(null))
+    ).subscribe(s => this.streak = s);
   }
 
   loadRoom(id: number) {

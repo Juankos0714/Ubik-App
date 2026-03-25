@@ -271,6 +271,19 @@
               <p class="text-xs text-white/50 leading-relaxed">
                 Esta habitación está disponible. Realiza tu reserva ahora y confirma tu estadía.
               </p>
+
+              @if (streak && streak.level !== 'NINGUNO') {
+                <div class="flex items-center gap-3 p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/20 text-orange-400">
+                    <i class="fas fa-fire animate-bounce"></i>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-bold text-orange-400 uppercase tracking-widest leading-none mb-1">¡Racha {{ streak.level }}!</p>
+                    <p class="text-[11px] text-white/60 leading-tight">Tienes un {{ streak.discountRate * 100 }}% de descuento exclusivo por tu nivel actual.</p>
+                  </div>
+                </div>
+              }
+
               <button
                 (click)="openPayment()"
                 class="w-full bg-gradient-to-r from-[#6E2A35] to-[#A72027] text-white font-semibold py-3.5 rounded-xl hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 shadow-lg shadow-[#6E2A35]/30 text-sm tracking-wide"
