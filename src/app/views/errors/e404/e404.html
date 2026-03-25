@@ -1,0 +1,83 @@
+<div class="relative flex flex-col items-center justify-center min-h-screen bg-black px-6 overflow-hidden">
+
+  <!-- Grid de fondo -->
+  <div class="absolute inset-0 pointer-events-none"
+       style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+              background-size: 40px 40px;">
+  </div>
+
+  <!-- Glow rojo superior -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] pointer-events-none"
+       style="background: radial-gradient(ellipse, rgba(248,113,113,0.12) 0%, transparent 70%);">
+  </div>
+
+  <!-- Badge estado -->
+  <div class="relative z-10 flex items-center gap-2 mb-4
+              bg-red-400/10 border border-red-400/25
+              rounded-full px-4 py-1.5">
+    <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
+    <span class="text-red-400 text-xs font-medium tracking-widest uppercase">
+      Página no encontrada
+    </span>
+  </div>
+
+  <!-- Número 404 -->
+  <h1 class="relative z-10 font-black select-none leading-none tracking-tighter
+             text-transparent"
+      style="font-size: clamp(120px, 20vw, 200px);
+             -webkit-text-stroke: 2px rgba(248,113,113,0.45);
+             animation: flicker 6s ease-in-out infinite;">
+    404
+  </h1>
+
+  <!-- Título -->
+  <!-- <h2 class="relative z-10 text-white text-xl sm:text-2xl font-bold mb-3 text-center">
+    Esta habitación no existe
+  </h2> -->
+
+  <!-- Subtítulo -->
+  <p class="relative z-10 text-white/45 text-sm text-center max-width leading-relaxed mb-8"
+     style="max-width: 360px;">
+    La página que buscas no está disponible o fue removida.
+    Vuelve al inicio para encontrar lo que necesitas.
+  </p>
+
+  <!-- Acciones -->
+  <div class="relative z-10 flex flex-wrap gap-3 justify-center">
+    <button
+      (click)="goHome()"
+      class="px-6 py-2.5 bg-red-400 hover:bg-red-500 text-white
+             text-sm font-semibold rounded-xl transition-all duration-200
+             hover:-translate-y-0.5 active:scale-95 cursor-pointer">
+      ← Volver al inicio
+    </button>
+    <button
+      (click)="goToExplore()"
+      class="px-6 py-2.5 bg-transparent hover:bg-white/5 text-white/70
+             hover:text-white border border-white/15 hover:border-white/30
+             text-sm font-medium rounded-xl transition-all duration-200
+             hover:-translate-y-0.5 active:scale-95 cursor-pointer">
+      Explorar moteles
+    </button>
+  </div>
+
+  <!-- Divider + hint -->
+  <div class="relative z-10 mt-8 w-14 h-px bg-red-400/30 mx-auto"></div>
+  <p class="relative z-10 mt-4 text-xs text-white/20">
+    Error <span class="text-red-400/50">404</span> · Ubik App
+  </p>
+
+</div>
+
+<!-- Animación flicker del 404 -->
+<style>
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    92%       { opacity: 1; }
+    93%       { opacity: 0.4; }
+    94%       { opacity: 1; }
+    97%       { opacity: 0.6; }
+    98%       { opacity: 1; }
+  }
+</style>

@@ -79,6 +79,7 @@ application-*.properties
 ############################
 node_modules/
 dist/
+out-tsc/app
 tmp/
 .angular/
 coverage/

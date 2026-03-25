@@ -76,7 +76,7 @@ export class CreateRoomComponent implements OnInit, OnDestroy {
 
   // ─── Navegación ─────────────────────────────────────────────────────────────
   cancel(): void {
-    this.router.navigate(['/listProperty']);
+    this.router.navigate(['/motelProfile', this.motelId]);
   }
 
   // ─── Cargar servicios ───────────────────────────────────────────────────────
