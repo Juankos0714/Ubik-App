@@ -1,47 +1,483 @@
-*{box-sizing: border-box;}
+/* ============================================================
+   UBIK — Sistema de temas: oscuro (default) + claro
+   Archivo: src/styles.css
+   ============================================================ */
 
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
 
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
+/* ============================================================
+   CSS VARIABLES — TEMA OSCURO (defecto)
+   ============================================================ */
+:root,
+html.dark,
+[data-theme="dark"] {
+  /* Fondos */
+  --bg-base:          #0B0608;
+  --bg-gradient-from: #0B0608;
+  --bg-gradient-to:   #501521;
+  --bg-surface:       rgba(255,255,255,0.03);
+  --bg-surface-hover: rgba(255,255,255,0.06);
+  --bg-card:          #14090C;
+  --bg-input:         rgba(0,0,0,0.30);
+  --bg-input-focus:   rgba(0,0,0,0.40);
+  --bg-overlay:       rgba(0,0,0,0.80);
+  --bg-zinc:          #18181b;          /* zinc-900 equiv */
+  --bg-navbar:        #2d2f35;
 
+  /* Textos */
+  --text-primary:     #ffffff;
+  --text-secondary:   rgba(255,255,255,0.70);
+  --text-tertiary:    rgba(255,255,255,0.40);
+  --text-muted:       rgba(255,255,255,0.25);
+  --text-on-accent:   #ffffff;
+
+  /* Bordes */
+  --border-base:      rgba(255,255,255,0.07);
+  --border-subtle:    rgba(255,255,255,0.05);
+  --border-medium:    rgba(255,255,255,0.12);
+  --border-strong:    rgba(255,255,255,0.20);
+
+  /* Marca / Acento */
+  --accent:           #A72027;
+  --accent-from:      #6E2A35;
+  --accent-to:        #A72027;
+  --accent-hover-from:#7E3A45;
+  --accent-hover-to:  #B73037;
+  --accent-gold:      #c8a97e;
+  --accent-outline:   #8B0000;
+  --accent-text-soft: #cc3a3a;
+
+  /* Gradiente del body */
+  --body-bg: linear-gradient(to right, #0B0608, #501521);
+
+  /* Sombras */
+  --shadow-card:      0 10px 35px rgba(0,0,0,0.45);
+  --shadow-lg:        0 20px 60px rgba(0,0,0,0.60);
+
+  /* Header / Nav */
+  --header-backdrop:  rgba(0,0,0,0.70);
+  --header-border:    rgba(255,255,255,0.10);
+
+  /* Input focus ring */
+  --ring-accent:      rgba(167,32,39,0.40);
+
+  /* Mapa (Leaflet) */
+  --leaflet-bg:       #1a1a1f;
+
+  /* Footer */
+  --footer-bg:        transparent;
+}
+
+/* ============================================================
+   CSS VARIABLES — TEMA CLARO
+   ============================================================ */
+html.light,
+[data-theme="light"] {
+  /* Fondos */
+  --bg-base:          #f8f4f5;
+  --bg-gradient-from: #f8f4f5;
+  --bg-gradient-to:   #f0e0e3;
+  --bg-surface:       rgba(0,0,0,0.03);
+  --bg-surface-hover: rgba(0,0,0,0.05);
+  --bg-card:          #fef8f7;
+  --bg-input:         rgba(254,248,247,0.90);
+  --bg-input-focus:   rgba(254,248,247,1);
+  --bg-overlay:       rgba(254,248,247,0.85);
+  --bg-zinc:          #f1eced;
+  --bg-navbar:        #fdf4f4;
+
+  /* Textos */
+  --text-primary:     #1a0508;
+  --text-secondary:   rgba(26,5,8,0.70);
+  --text-tertiary:    rgba(26,5,8,0.45);
+  --text-muted:       rgba(26,5,8,0.28);
+  --text-on-accent:   #ffffff;
+
+  /* Bordes */
+  --border-base:      rgba(0,0,0,0.08);
+  --border-subtle:    rgba(0,0,0,0.05);
+  --border-medium:    rgba(0,0,0,0.12);
+  --border-strong:    rgba(0,0,0,0.20);
+
+  /* Marca / Acento (igual en ambos temas — identidad de marca) */
+  --accent:           #A72027;
+  --accent-from:      #6E2A35;
+  --accent-to:        #A72027;
+  --accent-hover-from:#7E3A45;
+  --accent-hover-to:  #B73037;
+  --accent-gold:      #9a6e40;
+  --accent-outline:   #A72027;
+  --accent-text-soft: #A72027;
+
+  /* Gradiente del body */
+  --body-bg: linear-gradient(to right, #f8f4f5, #f0dde1);
+
+  /* Sombras */
+  --shadow-card:      0 4px 20px rgba(26,5,8,0.10);
+  --shadow-lg:        0 12px 40px rgba(26,5,8,0.15);
+
+  /* Header / Nav */
+  --header-backdrop:  rgba(248,244,245,0.90);
+  --header-border:    rgba(0,0,0,0.08);
+
+  /* Input focus ring */
+  --ring-accent:      rgba(167,32,39,0.25);
+
+  /* Mapa */
+  --leaflet-bg:       #f0ece8;
+
+  /* Footer */
+  --footer-bg:        #f5eced;
+  --footer-divider:   rgba(167,32,39,0.18);
+}
+
+/* ============================================================
+   BODY — usa variables
+   ============================================================ */
 body {
-  @apply bg-linear-to-r from-[#0B0608] to-[#501521];
+  background: var(--body-bg);
+  color: var(--text-primary);
+  transition: background 0.35s ease, color 0.25s ease;
 }
 
 main {
-  color: #fff;
+  color: var(--text-primary);
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0; /* el padding se maneja con Tailwind en los componentes */
+  padding: 0;
 }
 
-
-h1,h2,h3,h4,h5,h6{
+h1, h2, h3, h4, h5, h6 {
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;
+  color: var(--text-primary);
 }
 
-@import "leaflet/dist/leaflet.css";
+/* ============================================================
+   TRANSICIÓN SUAVE AL CAMBIAR TEMA
+   ============================================================ */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+}
 
+/* Excepciones: no animar transformaciones con la transición global */
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
+/* ============================================================
+   UTILIDADES SEMÁNTICAS (aplican variables en lugar de colores hardcoded)
+   ============================================================ */
+
+/* Superficies */
+.surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-base);
+}
+
+.surface-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-base);
+  box-shadow: var(--shadow-card);
+}
+
+/* Textos */
+.text-primary   { color: var(--text-primary)   !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted-ub  { color: var(--text-muted)     !important; }
+
+/* Inputs */
+.input-ubik {
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+}
+.input-ubik:focus {
+  background: var(--bg-input-focus);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring-accent);
+  outline: none;
+}
+.input-ubik::placeholder {
+  color: var(--text-muted);
+}
+
+/* Botón primario */
+.btn-primary {
+  background: linear-gradient(to right, var(--accent-from), var(--accent-to));
+  color: var(--text-on-accent);
+}
+.btn-primary:hover {
+  background: linear-gradient(to right, var(--accent-hover-from), var(--accent-hover-to));
+}
+
+/* Botón outline (secundario) */
+.btn-outline {
+  border: 1px solid var(--accent-outline);
+  color: var(--accent-text-soft);
+  background: transparent;
+}
+.btn-outline:hover {
+  background: rgba(167,32,39,0.08);
+}
+
+/* Dropdowns de búsqueda en modo claro */
+html.light .bg-\[\#13151a\] {
+  background: var(--bg-card) !important;
+  border-color: var(--border-medium) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+html.light .hover\:bg-white\/5:hover {
+  background: var(--bg-surface-hover) !important;
+}
+
+/* Cards de habitaciones / moteles — modo claro */
+html.light .bg-zinc-900,
+html.light [data-theme="light"] .bg-zinc-900 {
+  background-color: #fef8f7 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+html.light .bg-\[#14090C\] {
+  background-color: #fef8f7 !important;
+}
+
+html.light .bg-\[#0c0c0e\] {
+  background-color: #f9f6f7 !important;
+}
+
+html.light .bg-black\/40,
+html.light .bg-black\/60,
+html.light .bg-black\/20 {
+  background-color: rgba(255,255,255,0.85) !important;
+}
+
+html.light .text-white {
+  color: var(--text-primary) !important;
+}
+
+html.light .text-white\/70,
+html.light .text-white\/80 {
+  color: var(--text-secondary) !important;
+}
+
+html.light .text-white\/40,
+html.light .text-white\/50,
+html.light .text-white\/60 {
+  color: var(--text-tertiary) !important;
+}
+
+html.light .text-white\/30,
+html.light .text-white\/25,
+html.light .text-white\/20 {
+  color: var(--text-muted) !important;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/\[0\.07\] {
+  border-color: var(--border-base) !important;
+}
+
+html.light .border-white\/20 {
+  border-color: var(--border-medium) !important;
+}
+
+/* Header en modo claro */
+html.light header {
+  background: var(--header-backdrop) !important;
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--header-border);
+}
+
+/* Nav bottom en modo claro */
+html.light nav.bg-\[\#2d2f35\],
+html.light nav.bg-navbar {
+  background: var(--bg-navbar) !important;
+  color: var(--text-primary) !important;
+  border-top: 1px solid var(--border-base);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+}
+
+html.light nav.bg-navbar p {
+  color: var(--text-secondary) !important;
+}
+
+/* Menú pop-up del nav bottom en modo claro */
+html.light .bg-\[\#3a3d45\] {
+  background: var(--bg-card) !important;
+  border-color: var(--border-medium) !important;
+  box-shadow: var(--shadow-lg) !important;
+  color: var(--text-primary) !important;
+}
+
+html.light .hover\:bg-\[\#4a4d55\]:hover {
+  background: var(--bg-surface-hover) !important;
+}
+
+html.light .border-gray-600 {
+  border-color: var(--border-subtle) !important;
+}
+
+/* Footer en modo claro */
+html.light footer {
+  background: var(--footer-bg);
+  border-top: 1px solid var(--border-base);
+}
+
+/* Scrollbar */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; }
+
+/* ============================================================
+   LEAFLET — adaptación de tema
+   ============================================================ */
 .leaflet-container {
   width: 100%;
   height: 100%;
 }
 
-/* Ocultar scrollbar en Chrome, Edge y Safari */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+html.light .leaflet-container {
+  background: var(--leaflet-bg);
 }
 
-/* Ocultar scrollbar en Firefox */
-.scrollbar-hide {
-  scrollbar-width: none;
+/* ============================================================
+   OVERLAY DE MODALES — modo claro
+   ============================================================ */
+html.light .cdk-overlay-backdrop {
+  background: rgba(26,5,8,0.55) !important;
 }
- 
+
+/* ============================================================
+   COMPONENTE: Card (app-card / app-card-3)
+   ============================================================ */
+html.light app-card .group {
+  background: #fef8f7;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   COMPONENTE: Header sticky
+   ============================================================ */
+html.light .backdrop-blur-xl {
+  background: var(--header-backdrop) !important;
+}
+
+/* ============================================================
+   FORMULARIOS — modo claro
+   ============================================================ */
+html.light input,
+html.light textarea,
+html.light select {
+  background: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-medium) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html.light input:focus,
+html.light textarea:focus,
+html.light select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--ring-accent) !important;
+}
+
+/* ============================================================
+   MODAL DE PAGO — modo claro
+   ============================================================ */
+html.light .bg-\[#0c0c0e\] {
+  background: #ffffff !important;
+}
+
+html.light .border-white\/6,
+html.light .border-white\/8 {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* ============================================================
+   DASHBOARD — modo claro
+   ============================================================ */
+html.light .bg-black\/40.backdrop-blur-2xl {
+  background: rgba(255,255,255,0.85) !important;
+  backdrop-filter: blur(20px);
+  border-color: var(--border-base) !important;
+}
+
+/* ============================================================
+   BOTONES DE CARRUSEL — modo claro
+   ============================================================ */
+html.light .bg-black\/70 {
+  background: rgba(255,255,255,0.85) !important;
+  border-color: var(--border-medium) !important;
+  color: var(--text-primary) !important;
+}
+
+html.light .hover\:bg-black\/90:hover {
+  background: rgba(255,255,255,0.97) !important;
+}
+
+/* ============================================================
+   FOOTER — modo claro
+   ============================================================ */
+html.light footer {
+  background: var(--footer-bg) !important;
+  border-top: 1px solid var(--border-base);
+}
+
+html.light footer .text-gray-300 {
+  color: var(--text-tertiary) !important;
+}
+
+html.light footer .text-white {
+  color: var(--text-primary) !important;
+}
+
+/* Divisor neón del footer: reemplaza la versión blanca por la versión de marca */
+html.light footer .from-white\/10 {
+  --tw-gradient-from: var(--footer-divider) !important;
+}
+
+html.light footer .via-white\/60 {
+  --tw-gradient-via: rgba(167,32,39,0.35) !important;
+}
+
+html.light footer .to-white\/10 {
+  --tw-gradient-to: var(--footer-divider) !important;
+}
+
+html.light footer .shadow-\[0_0_8px_\#ffffff\] {
+  box-shadow: 0 0 8px rgba(167,32,39,0.30) !important;
+}
+
+html.light footer .opacity-80 {
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================================
+   BOTÓN PRIMARIO — coherencia en modo claro
+   ============================================================ */
+
+/* ============================================================
+   BADGE DE DISPONIBILIDAD — modo claro
+   ============================================================ */
+html.light .bg-green-600\/80 {
+  background: rgba(22,163,74,0.90) !important;
+}

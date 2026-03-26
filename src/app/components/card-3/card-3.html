@@ -1,4 +1,4 @@
-<div class="bg-[#14090C] rounded-2xl overflow-hidden border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
+<div class="bg-[var(--bg-card)] rounded-2xl overflow-hidden border border-[var(--border-base)] shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
 
   <div class="relative h-52 overflow-hidden">
 
@@ -55,7 +55,7 @@
 
   <div class="p-5 flex flex-col flex-1">
 
-    <p class="text-sm text-gray-400 line-clamp-2 mb-4">
+    <p class="text-sm text-[var(--text-secondary)] line-clamp-2 mb-4">
       {{ card.descripcion }}
     </p>
 
@@ -64,14 +64,14 @@
       <div class="flex items-center justify-between mb-4">
         <!-- ✅ Precio solo si es room -->
         @if (card.type === 'room') {
-          <span class="text-amber-400 font-bold text-xl">
+          <span class="text-amber-500 font-bold text-xl">
             $ {{ card.price | number }}
           </span>
         } @else {
-          <span class="text-amber-400/60 text-sm italic">Ver habitaciones</span>
+          <span class="text-[var(--accent-text-soft)] text-sm italic">Ver habitaciones</span>
         }
 
-        <span class="text-xs text-gray-500">
+        <span class="text-xs text-[var(--text-muted)]">
           {{ card.adress }}
         </span>
       </div>
@@ -103,7 +103,7 @@
 
         <button
           (click)="onViewLocation()"
-          class="border border-[#8B0000] text-[#cc3a3a] rounded-lg px-4 py-2 hover:bg-[#6E2A35]/20 transition w-full cursor-pointer">
+          class="border border-[var(--accent-outline)] text-[var(--accent-text-soft)] rounded-lg px-4 py-2 hover:bg-[var(--accent-from)]/20 transition w-full cursor-pointer">
           Ver ubicación
         </button>
 

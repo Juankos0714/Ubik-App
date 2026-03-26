@@ -19,6 +19,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { SearchService } from '../../core/services/search.service';
 import { ColombiaService, Department } from '../../core/services/colombia.service';
 import { routes } from '../../app.routes';
+import { ThemeToggle } from '../../components/theme-toggle/theme-toggle.component';
 
 const ROUTES = {
   HOME: '/',
@@ -48,7 +49,7 @@ const QUERY_OPTIONS = [
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [Logo01, Button01, FormsModule],
+  imports: [Logo01, Button01, FormsModule, ThemeToggle],
   templateUrl: './header.html',
 })
 export class Header implements OnInit, OnDestroy {

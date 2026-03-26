@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ThemeToggle } from '../../components/theme-toggle/theme-toggle.component';
 // 1. IMPORTAR NUEVOS ÍCONOS
 import {
   faHouse,
@@ -34,7 +35,7 @@ const ROUTES = {
   selector: 'app-nav-bar-bottom',
   templateUrl: './nav-bar-bottom.html',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, ThemeToggle],
 })
 export class NavBarBottomComponent implements OnInit, OnDestroy {
   auth = inject(AuthService);

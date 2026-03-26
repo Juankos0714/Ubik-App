@@ -2,7 +2,7 @@
 
   <!-- RESULTADOS -->
   <div
-    class="results-section flex-1 flex flex-col gap-6 max-h-[800px] max-w-full lg:max-w-[60%] rounded-xl overflow-hidden border border-white/10"
+    class="results-section flex-1 flex flex-col gap-6 max-h-[800px] max-w-full lg:max-w-[60%] rounded-xl overflow-hidden border border-[var(--border-base)]"
   >
     <div
       class="title flex flex-col sm:flex-row sm:items-center px-4 sm:px-6 py-4 justify-between gap-3"
@@ -12,7 +12,7 @@
         <input
           type="text"
           placeholder="Buscar moteles o ciudades..."
-          class="w-full sm:w-80 px-3 py-2 rounded bg-[#1e2128] text-white border border-white/10"
+          class="w-full sm:w-80 px-3 py-2 rounded bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-medium)] placeholder:text-[var(--text-muted)] outline-none"
           (input)="onSearchInput($any($event.target).value)"
         />
         <app-button-02 text="Filtro" (click)="openModal()"></app-button-02>
@@ -62,11 +62,11 @@
 @if (mobileMapOpen) {
   <div
     class="fixed inset-0 z-50 flex flex-col lg:hidden"
-    style="background: #0d0608;"
+    style="background: var(--bg-overlay);"
   >
 
     <!-- Header del modal -->
-    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#14090C] shrink-0">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--border-base)] bg-[var(--bg-card)] shrink-0">
 
       <div class="flex items-center gap-3">
         <button
@@ -79,7 +79,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
-        <span class="text-white font-semibold text-base">
+        <span class="text-[var(--text-primary)] font-semibold text-base">
           {{ mobileMapCard?.roomType ?? mobileMapCard?.motelName ?? 'Ubicación' }}
         </span>
       </div>
@@ -105,15 +105,15 @@
 
     <!-- Info rápida de la card seleccionada -->
     @if (mobileMapCard) {
-      <div class="flex items-center gap-3 px-4 py-2.5 bg-[#1a0e11] border-b border-white/5 shrink-0">
+      <div class="flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] shrink-0">
         <img
           [src]="mobileMapCard.image"
           [alt]="mobileMapCard.motelName"
           class="w-10 h-10 rounded-lg object-cover"
         />
         <div class="flex-1 min-w-0">
-          <p class="text-white text-sm font-medium truncate">{{ mobileMapCard.motelName }}</p>
-          <p class="text-gray-400 text-xs truncate">{{ mobileMapCard.adress }}</p>
+          <p class="text-[var(--text-primary)] text-sm font-medium truncate">{{ mobileMapCard.motelName }}</p>
+          <p class="text-[var(--text-tertiary)] text-xs truncate">{{ mobileMapCard.adress }}</p>
         </div>
         @if (mobileMapCard.type === 'room' && mobileMapCard.price) {
           <span class="text-amber-400 font-bold text-sm shrink-0">
@@ -135,7 +135,7 @@
 
     <!-- Footer con botones de acción -->
     @if (mobileMapCard) {
-      <div class="shrink-0 px-4 py-3 bg-[#14090C] border-t border-white/10 flex gap-3">
+      <div class="shrink-0 px-4 py-3 bg-[var(--bg-card)] border-t border-[var(--border-base)] flex gap-3">
 
         @if (mobileMapCard.type === 'room') {
           <app-button-01
@@ -147,7 +147,7 @@
 
         <button
           (click)="closeMobileMap()"
-          class="flex-1 border border-white/20 text-white/80 rounded-lg px-4 py-2 hover:bg-white/5 transition text-sm font-medium"
+          class="flex-1 border border-[var(--border-strong)] text-[var(--text-secondary)] rounded-lg px-4 py-2 hover:bg-[var(--bg-surface-hover)] transition text-sm font-medium"
         >
           Volver a resultados
         </button>

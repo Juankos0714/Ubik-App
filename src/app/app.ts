@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
+import { ThemeService } from './core/services/theme.service';
 import { RouterOutlet } from '@angular/router';
 import { Header } from "./layout/header/header";
 import { Footer } from "./layout/footer/footer";
@@ -11,5 +12,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   templateUrl: './app.html',
 })
 export class App {
+  private _theme = inject(ThemeService);
   protected readonly title = signal('frontend');
 }

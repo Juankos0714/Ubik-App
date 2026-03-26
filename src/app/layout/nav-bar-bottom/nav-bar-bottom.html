@@ -6,8 +6,8 @@
 }
 
 <nav
-  class="w-dvw bg-[#2d2f35] text-white min-h-60px fixed bottom-0 left-0
-         flex justify-center items-center shadow-white z-50 font-bold lg:hidden"
+  class="w-dvw bg-navbar text-[var(--text-primary)] min-h-60px fixed bottom-0 left-0
+         flex justify-center items-center shadow-md z-50 font-bold lg:hidden"
 >
   <ul class="flex w-full justify-around items-end">
 
@@ -23,6 +23,13 @@
         <fa-icon [icon]="icons.compass" class="text-[20px]" />
         <p class="text-[0.7rem]">Explora</p>
       </a>
+    </li>
+
+    <li class="theme-icon">
+      <div class="flex flex-col items-center justify-center gap-1 py-2 px-4">
+        <app-theme-toggle></app-theme-toggle>
+        <p class="text-[0.7rem]">Tema</p>
+      </div>
     </li>
 
     <li class="menu-icon relative flex justify-center">

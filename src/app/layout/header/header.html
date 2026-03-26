@@ -1,7 +1,14 @@
+<!-- INSTRUCCIONES:
+  Agrega ThemeToggle a los imports del header.ts:
+    import { ThemeToggle } from '../../components/theme-toggle/theme-toggle.component';
+  Y añade ThemeToggle al array imports del @Component.
+  
+  Luego reemplaza el contenido de header.html con este archivo.
+-->
+
 <!-- ═══════════════════════════════════════════════════════════
      NAV STICKY — aparece al hacer scroll hacia arriba (solo desktop)
-     Solo visible cuando: isHome && scrolled && scrollingUp
-════════════════════════════════════════════════════════════ -->
+ ════════════════════════════════════════════════════════════ -->
 @if (isHome()) {
   <div
     class="fixed top-0 left-0 right-0 z-50 hidden lg:flex
@@ -9,35 +16,43 @@
     [class.-translate-y-full]="!showStickyNav()"
     [class.translate-y-0]="showStickyNav()">
     <div class="w-full px-8 py-3 flex items-center justify-between
-                bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg">
+                bg-[var(--header-backdrop)] backdrop-blur-xl
+                border-b border-[var(--header-border)] shadow-lg">
 
       <app-logo-01></app-logo-01>
 
       <div class="flex items-center gap-6">
         <a (click)="navigateTo(ROUTES.HOME)"
           class="text-sm transition cursor-pointer"
-          [class]="isActive(ROUTES.HOME) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
+          [class]="isActive(ROUTES.HOME)
+            ? 'text-red-500 font-semibold'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
           Inicio
         </a>
         <a (click)="navigateTo(ROUTES.EXPLORE)"
           class="text-sm transition cursor-pointer"
-          [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
+          [class]="isActive(ROUTES.EXPLORE)
+            ? 'text-red-500 font-semibold'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
           Explorar
         </a>
         <a href="#offerts"
-          class="text-sm transition cursor-pointer text-white/70 hover:text-white">
+          class="text-sm transition cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
           Ofertas
         </a>
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Toggle de tema -->
+        <app-theme-toggle></app-theme-toggle>
+
         @if (!isLogged()) {
           <a (click)="navigateTo(ROUTES.LOGIN)"
-            class="text-sm text-white/60 hover:text-white transition cursor-pointer">
+            class="text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition cursor-pointer">
             Inicia sesión
           </a>
           <a (click)="navigateTo(ROUTES.REGISTER)"
-            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
+            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-500
                    hover:bg-red-600/10 transition cursor-pointer text-sm">
             Registrarse
           </a>
@@ -46,21 +61,21 @@
           @switch (role()) {
             @case (7392841056473829) {
               <a (click)="navigateTo(ROUTES.ADMIN)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Panel Admin</a>
+                class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer">Panel Admin</a>
             }
             @case (3847261094857362) {
               <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
+                class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer">Mi Perfil</a>
               <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Dashboard</a>
+                class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer">Dashboard</a>
             }
             @default {
               <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
+                class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition cursor-pointer">Mi Perfil</a>
             }
           }
           <a (click)="logout()"
-            class="text-sm text-white/40 hover:text-red-400 transition cursor-pointer">
+            class="text-sm text-[var(--text-tertiary)] hover:text-red-400 transition cursor-pointer">
             Cerrar sesión
           </a>
         }
@@ -72,13 +87,15 @@
 
 <!-- ═══════════════════════════════════════════════════════════
      HEADER PRINCIPAL
-════════════════════════════════════════════════════════════ -->
+ ════════════════════════════════════════════════════════════ -->
 <header
-  class="w-full relative"
+  class="w-full relative transition-colors duration-300"
   [class.min-h-[600px]]="isHome()"
-  [style]="isHome() ? 'background-image: url(/assets/images/banner-bg-image-02.png); background-size: cover; background-position: center;' : ''">
+  [style]="isHome()
+    ? 'background-image: url(/assets/images/banner-bg-image-02.png); background-size: cover; background-position: center;'
+    : 'background: var(--header-backdrop); border-bottom: 1px solid var(--header-border); backdrop-filter: blur(16px);'">
 
-  <!-- Degradado oscuro solo en home — de arriba hacia abajo -->
+  <!-- Degradado oscuro solo en home -->
   @if (isHome()) {
     <div class="absolute inset-0 bg-linear-to-b from-black/80 via-black/50 to-black/20 pointer-events-none"></div>
   }
@@ -93,28 +110,45 @@
       <div class="navlinks hidden lg:flex items-center gap-6">
         <a (click)="navigateTo(ROUTES.HOME)"
           class="text-sm transition cursor-pointer font-medium"
-          [class]="isActive(ROUTES.HOME) ? 'text-red-400' : 'text-white/70 hover:text-white'">
+          [class]="isActive(ROUTES.HOME)
+            ? 'text-red-500'
+            : isHome()
+              ? 'text-white/70 hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
           Inicio
         </a>
         <a (click)="navigateTo(ROUTES.EXPLORE)"
           class="text-sm transition cursor-pointer font-medium"
-          [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400' : 'text-white/70 hover:text-white'">
+          [class]="isActive(ROUTES.EXPLORE)
+            ? 'text-red-500'
+            : isHome()
+              ? 'text-white/70 hover:text-white'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
           Explorar
         </a>
         <a href="#offerts"
-          class="text-sm transition cursor-pointer font-medium text-white/70 hover:text-white">
+          class="text-sm transition cursor-pointer font-medium"
+          [class]="isHome()
+            ? 'text-white/70 hover:text-white'
+            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
           Ofertas
         </a>
       </div>
 
-      <div class="logandreg hidden lg:flex gap-4 items-center">
+      <div class="logandreg hidden lg:flex gap-3 items-center">
+        <!-- Toggle de tema -->
+        <app-theme-toggle></app-theme-toggle>
+
         @if (!isLogged()) {
           <a (click)="navigateTo(ROUTES.LOGIN)"
-            class="text-white/60 hover:text-white transition cursor-pointer text-sm">
+            class="transition cursor-pointer text-sm"
+            [class]="isHome()
+              ? 'text-white/60 hover:text-white'
+              : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'">
             Inicia sesión
           </a>
           <a (click)="navigateTo(ROUTES.REGISTER)"
-            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
+            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-500
                    hover:bg-red-600/10 hover:border-red-500 transition cursor-pointer text-sm">
             Registrarse
           </a>
@@ -123,21 +157,26 @@
           @switch (role()) {
             @case (7392841056473829) {
               <a (click)="navigateTo(ROUTES.ADMIN)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Panel Admin</a>
+                class="transition cursor-pointer text-sm"
+                [class]="isHome() ? 'text-white/70 hover:text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">Panel Admin</a>
             }
             @case (3847261094857362) {
               <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Dashboard</a>
+                class="transition cursor-pointer text-sm"
+                [class]="isHome() ? 'text-white/70 hover:text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">Dashboard</a>
               <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
+                class="transition cursor-pointer text-sm"
+                [class]="isHome() ? 'text-white/70 hover:text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">Mi Perfil</a>
             }
             @default {
               <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
+                class="transition cursor-pointer text-sm"
+                [class]="isHome() ? 'text-white/70 hover:text-white' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">Mi Perfil</a>
             }
           }
           <a (click)="logout()"
-            class="text-white/40 hover:text-red-400 transition cursor-pointer text-sm">
+            class="transition cursor-pointer text-sm"
+            [class]="isHome() ? 'text-white/40 hover:text-red-400' : 'text-[var(--text-tertiary)] hover:text-red-500'">
             Cerrar sesión
           </a>
         }
@@ -161,17 +200,17 @@
         <!-- Search bar desktop -->
         <div class="hidden lg:flex w-full max-w-5xl flex-col gap-3">
           <div class="flex w-full items-stretch rounded-2xl overflow-visible
-                      border border-white/10 bg-white/6 backdrop-blur-md shadow-2xl">
+                      border border-[var(--border-strong)] bg-[var(--bg-input)] backdrop-blur-md shadow-2xl">
 
             <!-- Departamento -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
+            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-[var(--border-medium)] min-w-0 relative">
+              <label class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-1.5">
                 Departamento
               </label>
               <input
                 type="text" placeholder="Quindío, Antioquia..."
                 autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
+                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
                 [(ngModel)]="form.department"
                 (ngModelChange)="onDepartmentInput($event)"
                 (focus)="onDepartmentInput(form.department)"
@@ -194,14 +233,14 @@
             </div>
 
             <!-- Municipio -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
+            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-[var(--border-medium)] min-w-0 relative">
+              <label class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-1.5">
                 Municipio
               </label>
               <input
                 type="text" placeholder="Armenia, Calarcá..."
                 autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
+                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
                 [(ngModel)]="form.city"
                 (ngModelChange)="onCityInput($event)"
                 (focus)="onCityInput(form.city)"
@@ -224,14 +263,14 @@
             </div>
 
             <!-- Búsqueda libre -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
+            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-[var(--border-medium)] min-w-0 relative">
+              <label class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-1.5">
                 ¿Qué buscas?
               </label>
               <input
                 type="text" placeholder="Jacuzzi, suite, parqueadero..."
                 autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
+                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
                 [(ngModel)]="form.query"
                 (ngModelChange)="onQueryInput($event)"
                 (focus)="onQueryInput(form.query)"
@@ -277,8 +316,8 @@
         <!-- Search bar mobile -->
         <div class="flex lg:hidden w-full max-w-md gap-2">
           <input type="text" placeholder="Ciudad, motel, jacuzzi..."
-            class="flex-1 bg-white/10 border border-white/15 rounded-xl px-4 py-2.5
-                   text-white text-sm outline-none placeholder-white/30 focus:border-white/30 transition"
+            class="flex-1 bg-[var(--bg-input)] border border-[var(--border-base)] rounded-xl px-4 py-2.5
+                   text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] focus:border-[var(--accent)] transition"
             [(ngModel)]="form.query"
             (keydown.enter)="search()" />
           <app-button-01 text="Buscar" (clicked)="search()"></app-button-01>
