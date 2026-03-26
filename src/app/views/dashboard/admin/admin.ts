@@ -7,7 +7,11 @@ import {
   MotelApprovalStats,
   TodayReservationStats,
 } from '../../../core/models/admin.model';
-import { MotelImageItem } from '../../../core/models/admin.model';
+import { StreakService } from '../../../core/services/streak.service';
+import {
+  AdminUserStreakResponse,
+  AdminStreakStatsResponse,
+} from '../../../core/models/streak.model';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -16,10 +20,25 @@ import { MotelImageItem } from '../../../core/models/admin.model';
 })
 export class DashboardAdmin implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly streakService = inject(StreakService);
 
+  activeTab = signal<'motels' | 'streaks'>('motels');
+
+  // ... existentes ...
   pendingMotels = signal<PendingMotel[]>([]);
   approvalStats = signal<MotelApprovalStats | null>(null);
   todayStats = signal<TodayReservationStats | null>(null);
+
+  // Rachas
+  streakStats = signal<AdminStreakStatsResponse | null>(null);
+  adminStreaks = signal<AdminUserStreakResponse[]>([]);
+  loadingStreaks = signal(false);
+  streakFilter = signal<string>('');
+
+  // Modales Streaks
+  selectedStreak = signal<AdminUserStreakResponse | null>(null);
+  overrideLevel = signal<string>('GOLD');
+  overrideReason = signal<string>('');
 
   loadingMotels = signal(false);
   loadingStats = signal(false);
@@ -50,6 +69,60 @@ export class DashboardAdmin implements OnInit {
     this.loadPendingMotels();
     this.loadStats();
     this.loadTodayReservationStats();
+    this.loadStreakData();
+  }
+
+  setTab(tab: 'motels' | 'streaks'): void {
+    this.activeTab.set(tab);
+  }
+
+  loadStreakData(): void {
+    this.loadingStreaks.set(true);
+    // Cargar stats
+    this.streakService.getAdminStreakStats().subscribe({
+      next: (stats) => this.streakStats.set(stats),
+      error: () => console.error('Error stats streaks')
+    });
+    // Cargar lista
+    this.loadAdminStreaks();
+  }
+
+  loadAdminStreaks(): void {
+    this.streakService.getAllAdminStreaks(this.streakFilter() || undefined).subscribe({
+      next: (data) => {
+        this.adminStreaks.set(data);
+        this.loadingStreaks.set(false);
+      },
+      error: () => this.loadingStreaks.set(false)
+    });
+  }
+
+  selectStreak(streak: AdminUserStreakResponse): void {
+    this.selectedStreak.set(streak);
+    this.overrideLevel.set(streak.level);
+    this.overrideReason.set('');
+  }
+
+  confirmOverride(): void {
+    const streak = this.selectedStreak();
+    if (!streak) return;
+
+    this.actionInProgress.set(true);
+    this.streakService.overrideUserStreak(streak.userId, {
+      level: this.overrideLevel(),
+      overrideReason: this.overrideReason()
+    }).subscribe({
+      next: () => {
+        this.actionResult.set(`Nivel del usuario ${streak.username} actualizado correctamente.`);
+        this.actionInProgress.set(false);
+        this.selectedStreak.set(null);
+        this.loadStreakData(); // Recargar todo
+      },
+      error: () => {
+        this.actionResult.set('Error al actualizar el nivel de racha.');
+        this.actionInProgress.set(false);
+      }
+    });
   }
 
   loadPendingMotels(): void {

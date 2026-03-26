@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { Dialog } from '@angular/cdk/dialog';
 
 // ── Servicios ────────────────────────────────────────────────────────────────
@@ -20,6 +21,7 @@ import { Service } from '../../core/models/services.model';
 // ── Modal de pago ─────────────────────────────────────────────────────────────
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 import { Card } from '../../components/card/card';
+import { ConfirmModal } from '../../components/confirm-modal/confirm-modal';
 
 // ── Tipos auxiliares ──────────────────────────────────────────────────────────
 interface CalendarDay {
@@ -186,17 +188,32 @@ export class MotelProfile implements OnInit {
     this.savingMotel = true;
 
     this.motelService.updateMotel(this.motel.id, {
+      name: this.motel.name,
       description: this.editForm.description,
       address: this.editForm.address,
       city: this.editForm.city,
       phoneNumber: this.editForm.phoneNumber,
-    } as any).subscribe({
+      latitude: this.motel.latitude ?? null,
+      longitude: this.motel.longitude ?? null,
+      propertyId: this.motel.propertyId,
+      rues: (this.motel as any).rues ?? '',
+      rnt: (this.motel as any).rnt ?? '',
+      ownerDocumentType: this.motel.ownerDocumentType as any,
+      ownerDocumentNumber: this.motel.ownerDocumentNumber,
+      ownerFullName: this.motel.ownerFullName,
+      legalRepresentativeName: this.motel.legalRepresentativeName ?? null,
+      legalDocumentUrl: (this.motel as any).legalDocumentUrl ?? null,
+      imageUrls: (this.motel.imageUrls ?? []).map((img: any) =>
+        typeof img === 'string' ? img : img.url
+      ),
+    } as any)
+    .pipe(finalize(() => (this.savingMotel = false)))
+    .subscribe({
       next: (updated: any) => {
         this.motel = { ...this.motel!, ...updated } as Motel;
         this.editMode = false;
-        this.savingMotel = false;
       },
-      error: (err) => { console.error('Error actualizando motel', err); this.savingMotel = false; },
+      error: (err) => { console.error('Error actualizando motel', err); },
     });
   }
 
@@ -314,4 +331,36 @@ export class MotelProfile implements OnInit {
       }
     });
   }
+  // ══════════════════════════════════════════════════════════════════════════
+  // Agregar habitación
+  // ══════════════════════════════════════════════════════════════════════════
+  createRoom(motelId: number) {
+    this.router.navigate(['/create-room'], { queryParams: { motelId } });
+  }
+  deleteMotel(): void {
+    if (!this.motel) return;
+    const motelName = this.motel.name;
+    const motelId = this.motel.id;
+
+    const dialogRef = this.dialog.open(ConfirmModal, {
+      data: {
+        title: 'Eliminar motel',
+        message: `¿Estás seguro de que deseas eliminar "${motelName}"? Esta acción no se puede deshacer.`,
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar',
+      },
+      panelClass: ['!rounded-2xl'],
+    });
+
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.motelService.deleteMotel(motelId).subscribe({
+        next: () => this.router.navigate(['/dashboard']),
+        error: (err) => {
+          console.error('Error eliminando motel:', err);
+        },
+      });
+    });
+  }
+  
 }
