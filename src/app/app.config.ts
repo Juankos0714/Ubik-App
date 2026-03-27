@@ -4,8 +4,9 @@ import {
   LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection
+  provideZoneChangeDetection, isDevMode
 } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
@@ -28,5 +29,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])), // debugInterceptor --- IGNORE ---
     provideAppInitializer(() => inject(AuthService).restoreSession()),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
 };

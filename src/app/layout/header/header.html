@@ -210,7 +210,7 @@
               <input
                 type="text" placeholder="Quindío, Antioquia..."
                 autocomplete="off"
-                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
+                class="desktop-search-input bg-[var(--bg-card)] text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full focus:bg-[var(--bg-input-focus)]"
                 [(ngModel)]="form.department"
                 (ngModelChange)="onDepartmentInput($event)"
                 (focus)="onDepartmentInput(form.department)"
@@ -240,7 +240,7 @@
               <input
                 type="text" placeholder="Armenia, Calarcá..."
                 autocomplete="off"
-                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
+                class="desktop-search-input bg-[var(--bg-card)] text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full focus:bg-[var(--bg-input-focus)]"
                 [(ngModel)]="form.city"
                 (ngModelChange)="onCityInput($event)"
                 (focus)="onCityInput(form.city)"
@@ -270,7 +270,7 @@
               <input
                 type="text" placeholder="Jacuzzi, suite, parqueadero..."
                 autocomplete="off"
-                class="bg-transparent text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full"
+                class="desktop-search-input bg-[var(--bg-card)] text-[var(--text-primary)] text-sm outline-none placeholder-[var(--text-muted)] w-full focus:bg-[var(--bg-input-focus)]"
                 [(ngModel)]="form.query"
                 (ngModelChange)="onQueryInput($event)"
                 (focus)="onQueryInput(form.query)"

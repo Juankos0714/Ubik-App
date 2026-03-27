@@ -1,5 +1,5 @@
 ##################################################
-# 👷 PROYECTO UBIK-APP (.gitignore principal)
+# PROYECTO UBIK-APP (.gitignore principal)
 # Estructura: 
 #   /backend        → microservicios Spring Boot
 #  .       → aplicación Angular

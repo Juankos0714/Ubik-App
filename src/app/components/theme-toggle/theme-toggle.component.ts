@@ -8,7 +8,7 @@ import { ThemeService } from '../../core/services/theme.service';
   imports: [CommonModule],
   template: `
     <button
-      (click)="theme.toggle()"
+      (click)="onToggle($event)"
       [title]="theme.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
       class="theme-toggle-btn relative flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       [class.dark-mode]="theme.isDark"
@@ -74,4 +74,8 @@ import { ThemeService } from '../../core/services/theme.service';
 })
 export class ThemeToggle {
   readonly theme = inject(ThemeService);
+
+  onToggle(event: MouseEvent): void {
+    this.theme.toggleWithAnimation(event);
+  }
 }

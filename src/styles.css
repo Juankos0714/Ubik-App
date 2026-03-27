@@ -115,7 +115,7 @@ html.light,
   --accent-text-soft: #A72027;
 
   /* Gradiente del body */
-  --body-bg: linear-gradient(to right, #f8f4f5, #f0dde1);
+  --body-bg: linear-gradient(to right, #f8f4f5, #fff);
 
   /* Sombras */
   --shadow-card:      0 4px 20px rgba(26,5,8,0.10);
@@ -388,6 +388,14 @@ html.light select {
   border-color: var(--border-medium) !important;
 }
 
+.desktop-search-input {
+  background: var(--bg-card) !important;
+}
+
+html.light .desktop-search-input {
+  background: var(--bg-card) !important;
+}
+
 html.light input::placeholder,
 html.light textarea::placeholder {
   color: var(--text-muted) !important;
@@ -398,6 +406,17 @@ html.light textarea:focus,
 html.light select:focus {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 3px var(--ring-accent) !important;
+}
+
+/* ============================================================
+   SEARCH BAR DESKTOP — modo claro
+   ============================================================ */
+.desktop-search-input {
+  background: var(--bg-input) !important;
+}
+
+html.light .desktop-search-input {
+  background: var(--bg-card) !important;
 }
 
 /* ============================================================
