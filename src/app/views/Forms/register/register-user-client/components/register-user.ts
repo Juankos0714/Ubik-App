@@ -47,10 +47,7 @@ function adultValidator(minAge = 18): ValidatorFn {
  * Validador a nivel de FormGroup para confirmar contraseña
  * usando validatePasswordConfirmation() (de tus utils).
  */
-function passwordConfirmationValidator(
-  passwordField: string,
-  confirmField: string
-): ValidatorFn {
+function passwordConfirmationValidator(passwordField: string, confirmField: string): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
     const passwordCtrl = group.get(passwordField);
     const confirmCtrl = group.get(confirmField);
@@ -86,14 +83,14 @@ export class RegisterUser implements OnInit, AfterViewInit {
 
   isSubmitting = false;
   progress = 0;
+  currentStep = 1;
 
-  //location 
+  //location
   loading = false;
   gettingLocation = false;
   locationStatus: string | null = null;
 
   error: string | null = null;
-
 
   constructor(
     private fb: FormBuilder,
@@ -105,25 +102,19 @@ export class RegisterUser implements OnInit, AfterViewInit {
     this.registerForm = this.fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
-        email: ['', [Validators.required, Validators.email]],
-        phoneNumber: [
-          '',
-          [
-            Validators.required,
-            Validators.pattern(/^\+?\d{7,15}$/),
-          ],
-        ],
         birthDate: ['', [adultValidator(18)]],
 
-        // ✅ Password con tus validations (mensaje exacto desde validatePassword)
-        password: ['', [toValidatorFn(validatePassword, 'passwordInvalid')]],
 
-        // Confirm requerida (y match lo hace el validador de grupo)
+        email: ['', [Validators.required, Validators.email]],
+        phoneNumber: ['', [Validators.required, Validators.pattern(/^\+?\d{7,15}$/)]],
+
+        
+        password: ['', [toValidatorFn(validatePassword, 'passwordInvalid')]],
         comfirmPassword: ['', [Validators.required]],
 
         anonymous: [false],
       },
-      { validators: passwordConfirmationValidator('password', 'comfirmPassword') }
+      { validators: passwordConfirmationValidator('password', 'comfirmPassword') },
     );
   }
 
@@ -156,7 +147,10 @@ export class RegisterUser implements OnInit, AfterViewInit {
 
   private loadGoogleScript(): Promise<void> {
     return new Promise((resolve) => {
-      if (document.getElementById('google-gsi-script')) { resolve(); return; }
+      if (document.getElementById('google-gsi-script')) {
+        resolve();
+        return;
+      }
       const script = document.createElement('script');
       script.id = 'google-gsi-script';
       script.src = 'https://accounts.google.com/gsi/client';
@@ -177,10 +171,9 @@ export class RegisterUser implements OnInit, AfterViewInit {
     try {
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
-        callback: (response: any) =>
-          this.ngZone.run(() => this.handleGoogleCredential(response)),
+        callback: (response: any) => this.ngZone.run(() => this.handleGoogleCredential(response)),
         auto_select: false,
-        cancel_on_tap_outside: true
+        cancel_on_tap_outside: true,
       });
 
       const container = document.getElementById('g-signin-register');
@@ -191,7 +184,7 @@ export class RegisterUser implements OnInit, AfterViewInit {
           theme: 'outline',
           text: 'signin_with',
           shape: 'rectangular',
-          logo_alignment: 'left'
+          logo_alignment: 'left',
         });
       }
     } catch (error) {
@@ -226,17 +219,21 @@ export class RegisterUser implements OnInit, AfterViewInit {
 
   updateProgress(): void {
     const values = this.registerForm.value;
-    let completed = 0;
+    let fieldCompleted = 0;
     const totalFields = 6;
 
-    if (values.username?.trim()) completed++;
-    if (values.email?.trim()) completed++;
-    if (values.phoneNumber?.trim()) completed++;
-    if (values.birthDate) completed++;
-    if (values.password?.trim()) completed++;
-    if (values.comfirmPassword?.trim()) completed++;
+    if (values.username?.trim()) fieldCompleted++;
+    if (values.phoneNumber?.trim()) fieldCompleted++;
 
-    this.progress = Math.round((completed / totalFields) * 100);
+    if (values.email?.trim()) fieldCompleted++;
+    if (values.birthDate) fieldCompleted++;
+
+    if (values.password?.trim()) fieldCompleted++;
+    if (values.comfirmPassword?.trim()) fieldCompleted++;
+
+    const fieldProgress = (fieldCompleted / totalFields) * 40; // 40% fields
+    const stepProgress = ((this.currentStep - 1) / 3) * 60; // 60% steps
+    this.progress = Math.round(stepProgress + fieldProgress);
   }
 
   /** Error backend por campo */
@@ -277,15 +274,52 @@ export class RegisterUser implements OnInit, AfterViewInit {
     if (c.hasError('underAge')) return 'Debes ser mayor de 18 años';
 
     // ✅ Confirmación: mensaje viene de validatePasswordConfirmation()
-    if (
-      fieldName === 'comfirmPassword' &&
-      this.registerForm.hasError('passwordMismatch')
-    ) {
+    if (fieldName === 'comfirmPassword' && this.registerForm.hasError('passwordMismatch')) {
       return this.registerForm.getError('passwordMismatch');
     }
 
     return null;
   }
+  validateStep(step: number): boolean {
+    const stepFields: { [key: number]: string[] } = {
+      1: ['username', 'birthDate'],
+      2: ['email', 'phoneNumber',],
+      3: ['password', 'comfirmPassword'],
+      4: [],
+    };
+
+    const fields = stepFields[step];
+    let isValid = true;
+
+    fields.forEach((field) => {
+      const control = this.registerForm.get(field);
+      if (control) {
+        control.markAsTouched();
+        if (control.invalid) isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
+  validateCurrentStep(): boolean {
+    return this.validateStep(this.currentStep);
+  }
+
+  nextStep(): void {
+    if (this.validateCurrentStep()) {
+      this.currentStep++;
+      this.updateProgress();
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      this.updateProgress();
+    }
+  }
+
   getUserLocation() {
     if (!navigator.geolocation) {
       this.locationStatus = 'Geolocalización no soportada.';
@@ -306,12 +340,15 @@ export class RegisterUser implements OnInit, AfterViewInit {
         this.gettingLocation = false;
         this.locationStatus = null;
         this.error =
-          err.code === err.PERMISSION_DENIED ? 'Permiso de ubicación denegado.' :
-          err.code === err.POSITION_UNAVAILABLE ? 'Ubicación no disponible.' :
-          err.code === err.TIMEOUT ? 'Timeout obteniendo ubicación.' :
-          'Error obteniendo ubicación.';
+          err.code === err.PERMISSION_DENIED
+            ? 'Permiso de ubicación denegado.'
+            : err.code === err.POSITION_UNAVAILABLE
+              ? 'Ubicación no disponible.'
+              : err.code === err.TIMEOUT
+                ? 'Timeout obteniendo ubicación.'
+                : 'Error obteniendo ubicación.';
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   }
 
@@ -328,9 +365,8 @@ export class RegisterUser implements OnInit, AfterViewInit {
     return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   }
 
-
   onSubmit(): void {
-    if (this.isSubmitting) return;
+    if (this.currentStep !== 3 || this.isSubmitting) return;
 
     this.serverError = null;
     this.validationErrors = [];
@@ -349,7 +385,7 @@ export class RegisterUser implements OnInit, AfterViewInit {
       comfirmPassword: form.comfirmPassword,
       phoneNumber: form.phoneNumber?.trim(),
       anonymous: false,
-      roleId: "9182736450192837",
+      roleId: '9182736450192837',
       birthDate: form.birthDate,
       latitude: form.latitude,
       longitude: form.longitude,
@@ -366,7 +402,8 @@ export class RegisterUser implements OnInit, AfterViewInit {
           console.log('🟢 REGISTER OK');
           this.router.navigate(['/login']);
         },
-        error: (err: any) => { // ✅ TS7006 fix
+        error: (err: any) => {
+          // ✅ TS7006 fix
           console.error('🔴 REGISTER ERROR', err);
           this.handleRegisterError(err);
         },
@@ -383,7 +420,7 @@ export class RegisterUser implements OnInit, AfterViewInit {
     }
 
     const raw = err?.error;
-    const msg = typeof raw === 'string' ? raw : raw?.message ?? '';
+    const msg = typeof raw === 'string' ? raw : (raw?.message ?? '');
 
     if (msg.includes('Username already exists')) {
       const control = this.registerForm.get('username');
