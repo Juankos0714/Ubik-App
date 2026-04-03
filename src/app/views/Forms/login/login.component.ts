@@ -12,7 +12,6 @@ import { environment } from '../../../../environments/environment';
 
 declare const google: any;
 
-// Mismos roleId que usa PermissionService y Header
 const ROLE_IDS = {
   ADMIN: 7392841056473829,
   OWNER: 3847261094857362,
@@ -26,17 +25,7 @@ const ROLE_IDS = {
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements AfterViewInit {
-  formData = signal<Partial<LoginFormData>>({
-    username: '',
-    password: '',
-  });
-
-  showPassword = signal(false);
-
-  togglePassword() {
-    this.showPassword.update((v) => !v);
-  }
-
+  formData = signal<Partial<LoginFormData>>({ username: '', password: '' });
   errors = signal<ValidationError[]>([]);
   isSubmitting = signal(false);
   rememberMe = signal(false);
@@ -47,33 +36,17 @@ export class LoginComponent implements AfterViewInit {
     private router: Router,
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) { }
-
-  /* =======================
-     REDIRECCIÓN POR ROL
-     ======================= */
+  ) {}
 
   private redirectByRole(): void {
     const role = Number(this.auth.role());
     if (!role) return;
-
     switch (role) {
-      case ROLE_IDS.ADMIN:
-        this.router.navigate(['/dashboard/admin']);
-        break;
-      case ROLE_IDS.OWNER:
-        this.router.navigate(['/dashboard/owner']);
-        break;
-      case ROLE_IDS.CLIENT:
-      default:
-        this.router.navigate(['/']);
-        break;
+      case ROLE_IDS.ADMIN: this.router.navigate(['/dashboard/admin']); break;
+      case ROLE_IDS.OWNER: this.router.navigate(['/dashboard/owner']); break;
+      default: this.router.navigate(['/']); break;
     }
   }
-
-  /* =======================
-     GOOGLE SIGN-IN
-     ======================= */
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -95,29 +68,21 @@ export class LoginComponent implements AfterViewInit {
 
   private initGoogleSignIn(): void {
     if (typeof google === 'undefined' || !google.accounts) {
-      console.error('La librería de Google Sign-In no está cargada correctamente.');
       this.errors.set([{ field: 'form', message: 'Error al cargar el autenticador de Google. Por favor, recarga la página.' }]);
       return;
     }
-
     try {
       google.accounts.id.initialize({
         client_id: environment.googleClientId,
-        callback: (response: any) =>
-          this.ngZone.run(() => this.handleGoogleCredential(response)),
+        callback: (response: any) => this.ngZone.run(() => this.handleGoogleCredential(response)),
         auto_select: false,
-        cancel_on_tap_outside: true
+        cancel_on_tap_outside: true,
       });
-
       const container = document.getElementById('g-signin-login');
       if (container) {
         google.accounts.id.renderButton(container, {
-          type: 'standard',
-          size: 'large',
-          theme: 'outline',
-          text: 'signin_with',
-          shape: 'rectangular',
-          logo_alignment: 'left'
+          type: 'standard', size: 'large', theme: 'outline',
+          text: 'signin_with', shape: 'rectangular', logo_alignment: 'left',
         });
       }
     } catch (error) {
@@ -127,114 +92,49 @@ export class LoginComponent implements AfterViewInit {
 
   triggerGoogleSignIn(): void {
     const btn = document.querySelector('#g-signin-login div[role="button"]') as HTMLElement;
-    if (btn) {
-      btn.click();
-    } else {
-      console.warn('Botón de Google no encontrado en el DOM, intentando prompt...');
-      google.accounts.id.prompt();
-    }
+    if (btn) btn.click();
+    else google.accounts.id.prompt();
   }
 
   handleGoogleCredential(response: any): void {
-    const idToken: string = response.credential;
     this.isSubmitting.set(true);
     this.errors.set([]);
-
-    this.loginService.loginWithGoogle(idToken).subscribe({
+    this.loginService.loginWithGoogle(response.credential).subscribe({
       next: () => {
         this.loginService.getProfile().subscribe({
-          next: () => {
-            this.isSubmitting.set(false);
-            this.redirectByRole(); // ← redirige según rol
-          },
-          error: () => {
-            this.isSubmitting.set(false);
-            this.errors.set([{ field: 'form', message: 'Iniciaste sesión con Google, pero no se pudo cargar tu perfil.' }]);
-          },
+          next: () => { this.isSubmitting.set(false); this.redirectByRole(); },
+          error: () => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'Iniciaste sesión con Google, pero no se pudo cargar tu perfil.' }]); },
         });
       },
-      error: () => {
-        this.isSubmitting.set(false);
-        this.errors.set([{ field: 'form', message: 'No se pudo iniciar sesión con Google. Intenta de nuevo.' }]);
-      },
+      error: () => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'No se pudo iniciar sesión con Google. Intenta de nuevo.' }]); },
     });
   }
-
-  /* =======================
-     FORM UPDATES
-     ======================= */
 
   updateField(field: keyof LoginFormData, value: string): void {
-    this.formData.set({
-      ...this.formData(),
-      [field]: value,
-    });
-  }
-
-  onUsernameInput(event: Event): void {
-    this.updateField('username', (event.target as HTMLInputElement).value);
-  }
-
-  onPasswordInput(event: Event): void {
-    this.updateField('password', (event.target as HTMLInputElement).value);
+    this.formData.set({ ...this.formData(), [field]: value });
   }
 
   onRememberMeChange(event: Event): void {
     this.rememberMe.set((event.target as HTMLInputElement).checked);
   }
 
-  /* =======================
-     SUBMIT
-     ======================= */
-
   onFormSubmit(): void {
     const data = this.formData();
-
     const validationErrors = validateLoginForm(data);
     this.errors.set(validationErrors);
-
-    if (validationErrors.length > 0) {
-      return;
-    }
+    if (validationErrors.length > 0) return;
 
     this.isSubmitting.set(true);
-
-    this.loginService
-      .login(
-        {
-          username: data.username!,
-          password: data.password!,
-        },
-        this.rememberMe(),
-      )
-      .subscribe({
-        next: () => {
-          this.loginService.getProfile().subscribe({
-            next: () => {
-              this.isSubmitting.set(false);
-              this.errors.set([]);
-              this.redirectByRole(); // ← redirige según rol
-            },
-            error: (err: any) => {
-              console.error('Error cargando perfil', err);
-              this.isSubmitting.set(false);
-              this.errors.set([
-                { field: 'form', message: 'Iniciaste sesión, pero no se pudo cargar tu perfil.' },
-              ]);
-            },
-          });
-        },
-        error: (err: any) => {
-          console.error('Error login', err);
-          this.isSubmitting.set(false);
-          this.errors.set([{ field: 'form', message: 'Credenciales incorrectas' }]);
-        },
-      });
+    this.loginService.login({ username: data.username!, password: data.password! }, this.rememberMe()).subscribe({
+      next: () => {
+        this.loginService.getProfile().subscribe({
+          next: () => { this.isSubmitting.set(false); this.errors.set([]); this.redirectByRole(); },
+          error: (err: any) => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'Iniciaste sesión, pero no se pudo cargar tu perfil.' }]); },
+        });
+      },
+      error: () => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'Credenciales incorrectas' }]); },
+    });
   }
-
-  /* =======================
-     ERRORS
-     ======================= */
 
   hasFieldError(field: string): boolean {
     return this.errors().some((e) => e.field === field);
@@ -244,19 +144,6 @@ export class LoginComponent implements AfterViewInit {
     return this.errors().find((e) => e.field === field)?.message || null;
   }
 
-  /* =======================
-     NAVIGATION
-     ======================= */
-
-  navigateToRegister(): void {
-    this.router.navigate(['/']);
-  }
-
-  navigateToPasswordReset(): void {
-    this.router.navigate(['/forgot-password']);
-  }
-
-  navigateToRecoverAccount(): void {
-    this.router.navigate(['/recover-account']);
-  }
+  navigateToPasswordReset(): void { this.router.navigate(['/forgot-password']); }
+  navigateToRecoverAccount(): void { this.router.navigate(['/recover-account']); }
 }

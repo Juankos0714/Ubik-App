@@ -3,7 +3,7 @@
     <label class="mb-1 text-white text-sm">{{ label }}</label>
   }
 
-  <div class="relative">
+  <div class="relative z-0">
     <input
       [type]="type === 'password' && visible ? 'text' : type"
       [placeholder]="placeholder"
@@ -12,16 +12,16 @@
       (input)="onChange($event.target.value)"
       (blur)="onTouched()"
       title="input"
-      [class.pr-12]="type === 'password' || hasToggle"
-      class="rounded-full p-3 text-black focus:outline-none focus:ring-2 focus:ring-red-600 w-full bg-white"
+      [class.pr-12]="type === 'password'"
+      [ngClass]="passwordStrengthClass"
+      class="rounded-full p-3 text-black focus:outline-none focus:ring-2 w-full bg-white transition-all duration-300"
     />
 
-    <!-- Toggle eye inside input when requested -->
-    @if (type === 'password' && hasToggle) {
+    @if (type === 'password') {
       <button
         type="button"
-        (click)="toggle.emit()"
-        class="absolute right-3 inset-y-0 flex items-center text-black hover:opacity-80 text-lg"
+        (click)="toggleVisibility()"
+        class="absolute right-3 inset-y-0 flex items-center text-gray-500 hover:text-gray-700 text-lg z-10"
         [disabled]="disabled"
         aria-label="Toggle password visibility"
       >
@@ -29,4 +29,21 @@
       </button>
     }
   </div>
+
+  <!-- Password strength bar -->
+  @if (type === 'password' && value && showStrength) {
+    <div class="mt-2 space-y-1">
+      <div class="flex gap-1">
+        @for (segment of [0,1,2,3]; track segment) {
+          <div
+            class="h-1 flex-1 rounded-full transition-all duration-400"
+            [ngClass]="segment < strengthScore ? strengthSegmentColor : 'bg-white/10'"
+          ></div>
+        }
+      </div>
+      <p class="text-xs transition-colors duration-300" [ngClass]="strengthLabelColor">
+        {{ strengthLabel }}
+      </p>
+    </div>
+  }
 </div>

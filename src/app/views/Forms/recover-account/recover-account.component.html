@@ -1,16 +1,13 @@
-<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-['DM_Sans',sans-serif]">
-  <!-- Card Reactivación - Usamos bg-zinc-900 u otro tono de marca -->
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-['DM_Sans',sans-serif]">
   <div class="w-full max-w-md bg-zinc-900 rounded-3xl shadow-[0_10px_35px_rgba(0,0,0,0.45)] border border-white/[0.07] overflow-hidden relative backdrop-blur-md">
-    
-    <!-- Separador decorativo superior (estilo modal desktop según convención) -->
+
     <div class="h-0.5 w-full bg-linear-to-r from-[#6E2A35] via-[#A72027] to-[#6E2A35]"></div>
 
     <div class="p-8 sm:p-10">
-      
-      <!-- STEP 1: SOLICITAR RECUPERACIÓN / REACTIVACIÓN DE CUENTA -->
+
+      <!-- STEP 1 -->
       @if (step() === 1) {
         <div class="flex flex-col items-center mb-8">
-          <!-- Icono con acento premium -->
           <div class="w-16 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center mb-6">
             <svg class="w-8 h-8 text-[#c8a97e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -24,10 +21,9 @@
         </div>
       }
 
-      <!-- STEP 2: RESTABLECER Y ACTIVAR -->
+      <!-- STEP 2 -->
       @if (step() === 2) {
         <div class="flex flex-col items-center mb-8">
-          <!-- Icono -->
           <div class="w-16 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center mb-6">
             <svg class="w-8 h-8 text-[#c8a97e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -40,12 +36,11 @@
         </div>
       }
 
-      <form [formGroup]="form" (submit)="$event.preventDefault()" class="space-y-5">
+      <form [formGroup]="form" (submit)="$event.preventDefault()" class="space-y-4">
 
-        <!-- CONTENIDO STEP 1 -->
+        <!-- STEP 1 content -->
         @if (step() === 1) {
-          <div class="w-full">
-            <!-- Labels convencionales para forms de auth si usamos app-input -->
+          <div class="flex flex-col gap-1">
             <app-input
               label="Correo electrónico asociado"
               placeholder="correo@ejemplo.com"
@@ -53,21 +48,19 @@
               formControlName="email"
               [disabled]="loading()"
             ></app-input>
-            
             @if (form.controls.email.touched && form.controls.email.invalid) {
-              <div class="flex items-center gap-2 mt-2 text-[#cc3a3a] text-xs bg-black/20 px-3 py-2 rounded-lg">
+              <div class="flex items-center gap-2 text-[#cc3a3a] text-xs bg-black/20 px-3 py-2 rounded-lg">
                 <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
                 <span>Correo no válido.</span>
               </div>
             }
           </div>
 
-          <!-- Botón primario Button-01 -->
           <button
             type="button"
             (click)="sendEmail()"
             [disabled]="loading()"
-            class="w-full p-2.5 mt-2 bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 cursor-pointer shadow-md shadow-black/40 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full p-2.5 bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 cursor-pointer shadow-md shadow-black/40 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             @if (loading()) {
               <svg class="animate-spin h-5 w-5 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -81,10 +74,10 @@
           </button>
         }
 
-        <!-- CONTENIDO STEP 2 -->
+        <!-- STEP 2 content -->
         @if (step() === 2) {
           @if (!form.controls.token.value) {
-            <div class="w-full">
+            <div class="flex flex-col gap-1">
               <app-input
                 label="Código Seguro"
                 placeholder="Ingresa el token recibido"
@@ -94,10 +87,11 @@
               ></app-input>
             </div>
           } @else {
-             <input type="hidden" formControlName="token" />
+            <input type="hidden" formControlName="token" />
           }
 
-          <div class="w-full">
+          <!-- El indicador de fuerza lo renderiza el propio app-input -->
+          <div class="flex flex-col gap-1">
             <app-input
               label="Contraseña de acceso"
               type="password"
@@ -105,9 +99,6 @@
               name="newPassword"
               formControlName="newPassword"
               [disabled]="loading()"
-              [hasToggle]="true"
-              [visible]="showPassword()"
-              (toggle)="togglePassword()"
             ></app-input>
           </div>
 
@@ -123,12 +114,11 @@
             </div>
           }
 
-          <!-- Botón primario Button-01 -->
-          <button 
-            type="button" 
-            (click)="resetPassword()" 
+          <button
+            type="button"
+            (click)="resetPassword()"
             [disabled]="loading()"
-            class="w-full p-2.5 mt-2 bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 cursor-pointer shadow-md shadow-black/40 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full p-2.5 bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg hover:from-[#7E3A45] hover:to-[#B73037] transition-all duration-300 cursor-pointer shadow-md shadow-black/40 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             @if (loading()) {
               <svg class="animate-spin h-5 w-5 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -144,14 +134,11 @@
 
       </form>
 
-      <!-- Divisor -->
       <div class="my-6">
         <div class="h-0.5 w-full bg-linear-to-r from-[#6E2A35] via-[#A72027] to-[#6E2A35] opacity-30"></div>
       </div>
 
-      <!-- Enlace secundario outline / volver -->
       <div class="text-center">
-        <!-- Usamos el estilo Button-02 (secundario/outline) para el back button en esta vista VIP -->
         <a routerLink="/login" class="inline-flex items-center justify-center w-full border border-white/10 text-white/70 bg-transparent font-medium rounded-lg hover:bg-white/5 transition-all duration-300 p-2.5 text-sm cursor-pointer">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           Volver al Login
