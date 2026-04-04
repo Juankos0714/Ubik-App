@@ -12,25 +12,15 @@
 
     <div class="relative group">
 
-      <!-- Flecha izquierda — solo desktop -->
-      <button
-        (click)="scrollLeft(nearbyMotelsCarousel)"
-        class="hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20
-               w-12 h-12 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ‹
-      </button>
+      <app-carousel-arrow-left
+        (clickArrow)="scrollLeft(nearbyMotelsCarousel)">
+      </app-carousel-arrow-left>
 
       <div
         #nearbyMotelsCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
-               scrollbar-hide w-full
-               snap-x snap-mandatory
-               rounded-2xl
-               [mask-image:linear-gradient(to_right,transparent_0%,black_3%,black_50%,transparent_100%)]
-               [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_3%,black_95%,transparent_100%)]">
+               scrollbar-hide w-full snap-x snap-mandatory px-2 sm:px-4">
+
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
             <div class="snap-start shrink-0">
@@ -46,16 +36,9 @@
         }
       </div>
 
-      <!-- Flecha derecha — solo desktop -->
-      <button
-        (click)="scrollRight(nearbyMotelsCarousel)"
-        class="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ›
-      </button>
+      <app-carousel-arrow-right
+        (clickArrow)="scrollRight(nearbyMotelsCarousel)">
+      </app-carousel-arrow-right>
 
     </div>
   </section>
@@ -72,22 +55,15 @@
 
     <div class="relative group">
 
-      <button
-        (click)="scrollLeft(destinosPopularesCarousel)"
-        class="hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ‹
-      </button>
+      <app-carousel-arrow-left
+        (clickArrow)="scrollLeft(destinosPopularesCarousel)">
+      </app-carousel-arrow-left>
 
       <div
         #destinosPopularesCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
-               scrollbar-hide pb-2
-               snap-x snap-mandatory
-               rounded-2xl">
+               scrollbar-hide w-full snap-x snap-mandatory px-2 sm:px-4">
+
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
             <div class="snap-start shrink-0">
@@ -103,15 +79,9 @@
         }
       </div>
 
-      <button
-        (click)="scrollRight(destinosPopularesCarousel)"
-        class="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ›
-      </button>
+      <app-carousel-arrow-right
+        (clickArrow)="scrollRight(destinosPopularesCarousel)">
+      </app-carousel-arrow-right>
 
     </div>
   </section>
@@ -128,25 +98,14 @@
 
     <div class="relative group">
 
-      <button
-        (click)="scrollLeft(ofertasCarousel)"
-        class="hidden lg:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ‹
-      </button>
+      <app-carousel-arrow-left
+        (clickArrow)="scrollLeft(ofertasCarousel)">
+      </app-carousel-arrow-left>
 
       <div
         #ofertasCarousel
         class="flex gap-4 overflow-x-auto scroll-smooth
-               scrollbar-hide
-               snap-x snap-mandatory
-               rounded-2xla
-               w-max-full
-               min-w-sm
-               ">
+               scrollbar-hide w-full snap-x snap-mandatory px-2 sm:px-4">
 
         @if (loading) {
           @for (_ of skeletonItems; track $index) {
@@ -163,15 +122,9 @@
         }
       </div>
 
-      <button
-        (click)="scrollRight(ofertasCarousel)"
-        class="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20
-               w-10 h-10 items-center justify-center rounded-full
-               bg-black/70 border border-white/20 text-white text-xl
-               opacity-0 group-hover:opacity-100 hover:bg-black/90
-               transition-all duration-200 cursor-pointer shadow-lg">
-        ›
-      </button>
+      <app-carousel-arrow-right
+        (clickArrow)="scrollRight(ofertasCarousel)">
+      </app-carousel-arrow-right>
 
     </div>
   </section>
