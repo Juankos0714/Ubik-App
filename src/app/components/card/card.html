@@ -1,4 +1,4 @@
-<div class="group relative flex flex-col w-68 rounded-3xl overflow-hidden
+<div class="group/card relative flex flex-col w-68 rounded-3xl overflow-hidden
             bg-zinc-900 border border-white/[0.07]
             shadow-xl shadow-black/40
             hover:shadow-2xl hover:shadow-red-900/20
@@ -6,10 +6,8 @@
             transition-all duration-300 ease-out
             min-h-85 sm:min-h-[340px] md:min-h-[360px]
             max-h-85 sm:max-h-[340px] md:max-h-[360px]"
-            
             [routerLink]="'/roominfo'"
-            [queryParams]="{ id: card.id }"
-            >
+            [queryParams]="{ id: card.id }">
 
   <!-- ══ IMAGEN ════════════════════════════════════════════════════ -->
   <div class="relative h-45 overflow-hidden shrink-0">
@@ -18,10 +16,9 @@
       alt="card.roomType"
       class="w-full h-full object-cover transform-gpu
              [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]
-             group-hover:scale-107 transition-transform duration-700 ease-out"
+             group-hover/card:scale-107 transition-transform duration-700 ease-out"
     />
 
-    <!-- Tipo de habitación ── arriba izquierda -->
     <div class="absolute top-3 left-3
                 bg-black/70 backdrop-blur-md border border-white/10
                 rounded-xl px-2.5 py-1 shadow-lg">
@@ -30,22 +27,20 @@
       </span>
     </div>
 
-    <!-- Precio ── arriba derecha -->
     @if (card.price) {
       <div class="absolute top-3 right-3 flex flex-col items-end
                   bg-black/70 backdrop-blur-md border border-white/10
                   rounded-2xl px-3 py-1.5 shadow-lg">
-          <span class="text-[12px] font-medium"
-                [class]="card.isAvailable ? 'text-emerald-400' : 'text-gray-600'">
-            {{ card.isAvailable ? 'Disponible' : 'Ocupada' }}
-          </span>
+        <span class="text-[12px] font-medium"
+              [class]="card.isAvailable ? 'text-emerald-400' : 'text-gray-600'">
+          {{ card.isAvailable ? 'Disponible' : 'Ocupada' }}
+        </span>
         <span class="text-sm font-bold text-white leading-tight mt-0.5">
           {{ card.price | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
         </span>
       </div>
     }
 
-    <!-- Motel ── abajo izquierda -->
     @if (card.motelName) {
       <div class="absolute bottom-3 left-3 flex items-center gap-1.5">
         <svg class="w-3 h-3 shrink-0 text-red-400" fill="currentColor" viewBox="0 0 20 20">
@@ -61,7 +56,6 @@
   <!-- ══ CONTENIDO ═════════════════════════════════════════════════ -->
   <div class="flex flex-col flex-1 px-4 py-4 gap-3">
 
-    <!-- Descripción -->
     @if (showDescription && card.description) {
       <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed">
         {{ card.description }}
@@ -70,29 +64,28 @@
 
     <div class="flex-1"></div>
 
-    <!-- Divider -->
     <div class="h-px bg-linear-to-r from-transparent via-white/10 to-transparent"></div>
 
-    <!-- Footer: disponibilidad + botones -->
     <div class="flex items-center justify-between gap-1 flex-col">
-
-
-      <!-- Botones -->
       <div class="flex gap-8">
-        <app-button-01
-          text="Reservar"
-          [id]="card.id"
-          action="reservar"
-        ></app-button-01>
+        <!-- Botón Reservar: llama openPayment() que valida auth internamente -->
+        <button
+          type="button"
+          (click)="$event.stopPropagation(); openPayment()"
+          class="bg-linear-to-r from-[#6E2A35] to-[#A72027] text-white font-medium rounded-lg
+                 hover:from-[#7E3A45] hover:to-[#B73037] transition-colors cursor-pointer
+                 flex items-center justify-center p-2.5 text-sm"
+        >
+          Reservar
+        </button>
+
         <app-button-02
           text="Ver más"
           [routerLink]="'/roominfo'"
           [queryParams]="{ id: card.id }"
         ></app-button-02>
       </div>
-
     </div>
 
   </div>
-  
 </div>
