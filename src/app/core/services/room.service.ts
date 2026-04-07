@@ -71,6 +71,10 @@ export class RoomService {
     return this.inBrowser(this.http.put<Room>(`${this.roomsUrl}/${id}`, payload));
   }
 
+  deleteRoom(id: number): Observable<void> {
+    return this.inBrowser(this.http.delete<void>(`${this.roomsUrl}/${id}`));
+  }
+
   // ─────────────────────── Services ────────────────────────
 
   getAllServices(): Observable<Service[]> {
@@ -128,6 +132,16 @@ export class RoomService {
           return start <= dayEnd && end >= dayStart;
         }))
       )
+    );
+  }
+
+  /**
+   * Devuelve todas las reservas activas de la habitación (PENDING, CONFIRMED, CHECKED_IN).
+   * Usar para validar antes de eliminar.
+   */
+  getActiveReservations(roomId: number): Observable<RoomReservation[]> {
+    return this.inBrowser(
+      this.http.get<RoomReservation[]>(`${this.baseUrl}/reservations/room/${roomId}/active`)
     );
   }
 

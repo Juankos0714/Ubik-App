@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 import { PropertyUserService } from '../../core/services/list-motel.service';
+import { RoomService } from '../../core/services/room.service';
 import { Motel, MotelImage } from '../../core/models/motel.model';
 
 export type MotelListItem = Motel & {
@@ -29,6 +30,7 @@ export class PropertyUserComponent implements OnInit {
 
   constructor(
     private propertyUserService: PropertyUserService,
+    private roomService: RoomService,
     @Inject(PLATFORM_ID) platformId: Object,
     private router: Router,
   ) {
@@ -71,6 +73,18 @@ export class PropertyUserComponent implements OnInit {
           this.errorMsg = 'No se pudieron cargar tus moteles. Revisa sesión/token.';
         },
       });
+  }
+
+  deleteRoom(roomId: number) {
+    if (!confirm('¿Eliminar esta habitación?')) return;
+
+    this.roomService.deleteRoom(roomId).subscribe({
+      next: () => this.loadProperties(),
+      error: (err) => {
+        console.error('Error eliminando habitación:', err);
+        alert('No se pudo eliminar la habitación.');
+      },
+    });
   }
 
   // ✅ reemplaza la imagen si falla la carga
