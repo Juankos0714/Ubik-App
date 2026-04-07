@@ -8,6 +8,8 @@ import { PaymentService, StripeConfig, CreatePaymentResponse } from '../../core/
 import { RoomService, RoomReservation } from '../../core/services/room.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Room } from '../../core/models/room.model';
+import { StreakService } from '../../core/services/streak.service';
+import { DiscountResponse } from '../../core/models/streak.model';
 
 interface CalendarDay {
   day: number | null;
@@ -41,6 +43,7 @@ export class PaymentModal implements OnInit, OnDestroy {
   isSubmitting = false;
   error = false;
   reserving = false;
+  streakDiscount: DiscountResponse | null = null;
 
   // ── Stripe ───────────────────────────────────────────────────────────────
   stripe: Stripe | null = null;
@@ -102,6 +105,7 @@ export class PaymentModal implements OnInit, OnDestroy {
     @Inject(DIALOG_DATA) public data: { id?: number; date?: string; time?: string },
     private roomService: RoomService,
     private paymentService: PaymentService,
+    private streakService: StreakService,
     private auth: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -635,6 +639,22 @@ export class PaymentModal implements OnInit, OnDestroy {
 
         if (!res.available) {
           this.refreshSelectedDateReservations();
+        } else {
+          // Si está disponible, calcular descuento por racha
+          const userId = this.resolveCurrentUserId();
+          const basePrice = (this.room?.price ?? 0) * this.totalHours;
+          if (userId && basePrice > 0) {
+            this.streakService.calculateDiscount(userId, basePrice).subscribe({
+              next: (d) => {
+                this.streakDiscount = d;
+                this.cdr.detectChanges();
+              },
+              error: () => {
+                this.streakDiscount = null;
+                this.cdr.detectChanges();
+              }
+            });
+          }
         }
       },
       error: () => {
@@ -1003,7 +1023,9 @@ export class PaymentModal implements OnInit, OnDestroy {
     return this.crossesMidnight ? 24 - sh + eh : eh - sh;
   }
 
-  get totalPrice(): number { return (this.room?.price ?? 0) * this.totalHours; }
+  get totalPrice(): number { 
+    return this.streakDiscount?.finalPrice ?? (this.room?.price ?? 0) * this.totalHours; 
+  }
 
   get timeSlots(): string[] { return this.ALL_SLOTS; }
 

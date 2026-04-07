@@ -8,12 +8,14 @@ import { Motel } from '../../core/models/motel.model';
 import { Card } from '../../components/card/card';
 import { LoadingCard } from '../../components/loading-card/loading-card';
 import { CardMotel } from '../../components/card-motel/card-motel';
+import { CarouselArrowLeft } from "../../components/carousel-arrow-left/carousel-arrow-left";
+import { CarouselArrowRight } from "../../components/carousel-arrow-right/carousel-arrow-right";
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.html',
-  imports: [Card, LoadingCard, CardMotel],
+  imports: [Card, LoadingCard, CardMotel, CarouselArrowLeft, CarouselArrowRight],
 })
 export class Home implements OnInit {
   private roomService = inject(RoomService);

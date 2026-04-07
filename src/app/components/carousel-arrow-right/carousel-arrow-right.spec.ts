@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Tag } from './tag';
+import { CarouselArrowRight } from './carousel-arrow-right';
 
-describe('Tag', () => {
-  let component: Tag;
-  let fixture: ComponentFixture<Tag>;
+describe('CarouselArrowRight', () => {
+  let component: CarouselArrowRight;
+  let fixture: ComponentFixture<CarouselArrowRight>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Tag]
+      imports: [CarouselArrowRight]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Tag);
+    fixture = TestBed.createComponent(CarouselArrowRight);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
