@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+  import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { MotelService } from '../../../core/services/motel.service';
 import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../../../core/models/reservation.model';
@@ -10,7 +11,7 @@ import { PropertyUserComponent } from '../../../components/List-motels/property-
 @Component({
   selector: 'app-dashboard-owner',
   standalone: true,
-  imports: [CommonModule, FormsModule, PropertyUserComponent],
+  imports: [CommonModule, FormsModule, RouterLink, PropertyUserComponent],
   templateUrl: './dashboard-owner.html',
 })
 export class DashboardOwner implements OnInit, OnDestroy {
