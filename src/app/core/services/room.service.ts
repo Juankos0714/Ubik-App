@@ -81,6 +81,12 @@ export class RoomService {
     return this.inBrowser(this.http.get<Service[]>(this.servicesUrl));
   }
 
+  // ─────────────────────── Delete Room ────────────────────────
+  
+  deleteRoom(id: number): Observable<void> {
+    return this.inBrowser(this.http.delete<void>(`${this.roomsUrl}/${id}`));
+  }
+
   // ─────────────────── Availability / Reservations ─────────────────────────
 
   /**
