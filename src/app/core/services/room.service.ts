@@ -71,9 +71,6 @@ export class RoomService {
     return this.inBrowser(this.http.put<Room>(`${this.roomsUrl}/${id}`, payload));
   }
 
-  deleteRoom(id: number): Observable<void> {
-    return this.inBrowser(this.http.delete<void>(`${this.roomsUrl}/${id}`));
-  }
 
   // ─────────────────────── Services ────────────────────────
 
