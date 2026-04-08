@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-chatbot',
@@ -54,7 +55,7 @@ export class ChatbotComponent {
       headers = headers.set('Authorization', `Bearer ${this.auth.token()}`);
     }
 
-    this.http.post<any>('http://localhost:8080/api/ai', body, { headers })
+    this.http.post<any>(`${environment.apiUrl}/ai`, body, { headers })
       .subscribe({
         next: (res) => {
           console.log('Respuesta API:', res);
