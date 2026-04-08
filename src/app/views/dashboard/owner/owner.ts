@@ -1,16 +1,19 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+  import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { MotelService } from '../../../core/services/motel.service';
 import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../../../core/models/reservation.model';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, forkJoin } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { PropertyUserComponent } from '../../../components/List-motels/property-user.component';
+import { Motel } from '../../../core/models/motel.model';
 
 @Component({
   selector: 'app-dashboard-owner',
   standalone: true,
-  imports: [CommonModule, FormsModule, PropertyUserComponent],
+  imports: [CommonModule, FormsModule, RouterLink, PropertyUserComponent],
   templateUrl: './dashboard-owner.html',
 })
 export class DashboardOwner implements OnInit, OnDestroy {
@@ -22,6 +25,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   rooms = signal<RoomStatusBoardResponse[]>([]);
   loading = signal(true);
   motelId = signal<number | null>(null);
+  motels = signal<Motel[]>([]);
   
   // Vista activa del panel derecho
   activeView = signal<'rooms' | 'properties'>('rooms');
@@ -32,12 +36,34 @@ export class DashboardOwner implements OnInit, OnDestroy {
   verifying = signal(false);
 
   private sseSubscription: Subscription | null = null;
+  private destroy$ = new Subject<void>();
+  private refreshTrigger$ = new Subject<number>();
 
   ngOnInit() {
+    this.refreshTrigger$.pipe(
+      switchMap(id => forkJoin({
+        summary: this.reservationService.getDashboardSummary(id),
+        rooms: this.reservationService.getRoomStatusBoard(id),
+      })),
+      takeUntil(this.destroy$),
+    ).subscribe({
+      next: ({ summary, rooms }) => {
+        this.summary.set(summary);
+        this.rooms.set(rooms);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error refreshing dashboard data', err);
+        this.loading.set(false);
+      }
+    });
+
     this.loadInitialData();
   }
 
   ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.reservationService.closeSSE();
     if (this.sseSubscription) {
       this.sseSubscription.unsubscribe();
@@ -45,30 +71,31 @@ export class DashboardOwner implements OnInit, OnDestroy {
   }
 
   loadInitialData() {
-    this.motelService.getMyMotels().subscribe({
-      next: (motels) => {
-        if (motels && motels.length > 0) {
-          const id = motels[0].id; // Tomamos el primero por ahora
-          this.motelId.set(id);
-          this.fetchDashboardData(id);
-          this.setupSSE();
-        } else {
+    this.motelService.getMyMotels()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (motels) => {
+          if (motels && motels.length > 0) {
+            // Ordenar por ID para garantizar estabilidad
+            const sorted = [...motels].sort((a, b) => a.id - b.id);
+            this.motels.set(sorted);
+            const id = sorted[0].id;
+            this.motelId.set(id);
+            this.fetchDashboardData(id);
+            this.setupSSE();
+          } else {
+            this.loading.set(false);
+          }
+        },
+        error: (err) => {
+          console.error('Error loading motels', err);
           this.loading.set(false);
         }
-      },
-      error: (err) => {
-        console.error('Error loading motels', err);
-        this.loading.set(false);
-      }
-    });
+      });
   }
 
   fetchDashboardData(id: number) {
-    this.reservationService.getDashboardSummary(id).subscribe(data => this.summary.set(data));
-    this.reservationService.getRoomStatusBoard(id).subscribe(data => {
-      this.rooms.set(data);
-      this.loading.set(false);
-    });
+    this.refreshTrigger$.next(id);
   }
 
   setupSSE() {
@@ -120,6 +147,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
       case 'PENDING_CHECKIN': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       case 'PENDING_CHECKOUT': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'CLEANING': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      case 'CHECKED_OUT': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   }

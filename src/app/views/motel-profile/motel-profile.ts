@@ -22,6 +22,7 @@ import { Service } from '../../core/models/services.model';
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 import { Card } from '../../components/card/card';
 import { ConfirmModal } from '../../components/confirm-modal/confirm-modal';
+import { FilterByAvailabilityPipe } from '../../core/pipes/availability.pipe';
 
 // ── Tipos auxiliares ──────────────────────────────────────────────────────────
 interface CalendarDay {
@@ -49,7 +50,7 @@ interface MotelEditForm {
   selector: 'app-motel-profile',
   standalone: true,
   templateUrl: './motel-profile.html',
-  imports: [CommonModule, FormsModule, Card],
+  imports: [CommonModule, FormsModule, Card, FilterByAvailabilityPipe],
 })
 export class MotelProfile implements OnInit {
 
@@ -138,11 +139,9 @@ export class MotelProfile implements OnInit {
 
   private loadRooms(motelId: number): void {
     this.loading = true;
-    // Usamos getRooms() público y filtramos por motelId en el cliente,
-    // ya que getRoomsByMotel() puede requerir autenticación.
-    this.roomService.getRooms().subscribe({
-      next: (allRooms) => {
-        this.rooms = allRooms.filter(r => r.motelId === motelId);
+    this.roomService.getRoomsByMotel(motelId).subscribe({
+      next: (rooms) => {
+        this.rooms = rooms;
         const now = new Date();
         this.rooms.forEach((r) =>
           this.calendarStates.set(r.id, {
@@ -207,14 +206,14 @@ export class MotelProfile implements OnInit {
         typeof img === 'string' ? img : img.url
       ),
     } as any)
-    .pipe(finalize(() => (this.savingMotel = false)))
-    .subscribe({
-      next: (updated: any) => {
-        this.motel = { ...this.motel!, ...updated } as Motel;
-        this.editMode = false;
-      },
-      error: (err) => { console.error('Error actualizando motel', err); },
-    });
+      .pipe(finalize(() => (this.savingMotel = false)))
+      .subscribe({
+        next: (updated: any) => {
+          this.motel = { ...this.motel!, ...updated } as Motel;
+          this.editMode = false;
+        },
+        error: (err) => { console.error('Error actualizando motel', err); },
+      });
   }
 
   cancelEdit(): void {
@@ -362,5 +361,5 @@ export class MotelProfile implements OnInit {
       });
     });
   }
-  
+
 }

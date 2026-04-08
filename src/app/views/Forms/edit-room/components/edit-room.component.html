@@ -13,28 +13,28 @@
       </div>
 
       <div class="flex gap-3">
-        <button
-          type="button"
-          class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10 active:scale-[0.99] transition disabled:opacity-50"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
-          Cancelar
-        </button>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/10 active:scale-[0.99] transition disabled:opacity-50"
+            (click)="cancel()"
+            [disabled]="loading"
+          >
+            Cancelar
+          </button>
 
-        <button
-          type="button"
-          class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#6E2A35] to-[#A72027] px-6 py-3 text-sm font-semibold text-white hover:opacity-90 active:scale-[0.99] transition shadow-lg shadow-[#6E2A35]/30 disabled:opacity-50"
-          (click)="submit()"
-          [disabled]="loading || form.invalid"
-        >
-          @if (loading) {
-            <span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
-            Guardando...
-          } @else {
-            Guardar cambios
-          }
-        </button>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#6E2A35] to-[#A72027] px-6 py-3 text-sm font-semibold text-white hover:opacity-90 active:scale-[0.99] transition shadow-lg shadow-[#6E2A35]/30 disabled:opacity-50"
+            (click)="submit()"
+            [disabled]="loading || form.invalid"
+          >
+            @if (loading) {
+              <span class="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+              Guardando...
+            } @else {
+              Guardar cambios
+            }
+          </button>
       </div>
     </div>
 
@@ -257,6 +257,26 @@
             } @else {
               Actualizar habitación
             }
+          </button>
+        </div>
+
+        <!-- Zona de peligro -->
+        <div class="md:col-span-2 mt-6 rounded-xl border border-red-500/20 bg-red-500/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-red-400">Eliminar habitación</p>
+            <p class="text-xs text-white/40 mt-0.5">Esta acción es permanente y no se puede deshacer.</p>
+          </div>
+          <button
+            type="button"
+            (click)="deleteRoom()"
+            [disabled]="loading"
+            class="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-500/40 bg-red-500/10 text-red-400 text-sm font-semibold hover:bg-red-500/25 hover:text-red-300 active:scale-[0.98] transition disabled:opacity-40"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M3 7h18"/>
+            </svg>
+            Eliminar habitación
           </button>
         </div>
       </form>

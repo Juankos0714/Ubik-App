@@ -1,4 +1,4 @@
-<div class="min-h-screen text-white font-['DM_Sans',sans-serif]">
+<div class="min-h-screen text-white font-['DM_Sans',sans-serif] ">
 
   <!-- ── LOADING ── -->
   @if (loading) {
@@ -17,7 +17,7 @@
   @if (!loading && room) {
 
     <!-- CARRUSEL HERO — full width -->
-    <div class="relative w-full h-[55vh] md:h-[65vh] overflow-hidden bg-black">
+    <div class="relative w-full h-[55vh] md:h-[65vh] overflow-hidden bg-black rounded-3xl">
 
       <!-- Slides -->
       <div
@@ -26,15 +26,15 @@
       >
         @if (room.imageUrls && room.imageUrls.length > 0) {
           @for (photo of room.imageUrls; track $index) {
-            <div class="relative shrink-0 w-full h-full">
+            <div class="relative shrink-0 w-full h-full ">
               <img
                 [src]="photo"
                 [alt]="'Imagen ' + ($index + 1) + ' — ' + room.roomType"
                 class="w-full h-full object-cover"
               />
               <!-- Viñeta lateral para profundidad -->
-              <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
-              <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80"></div>
+              <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 "></div>
+              <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 "></div>
             </div>
           }
         } @else {
