@@ -4,10 +4,11 @@ import { Header } from "./layout/header/header";
 import { Footer } from "./layout/footer/footer";
 import { NavBarBottomComponent } from "./layout/nav-bar-bottom/nav-bar-bottom";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ChatbotComponent } from './shared/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer, NavBarBottomComponent, FontAwesomeModule],
+  imports: [RouterOutlet, Header, Footer, NavBarBottomComponent, FontAwesomeModule,ChatbotComponent],
   templateUrl: './app.html',
 })
 export class App {
