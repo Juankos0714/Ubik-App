@@ -131,9 +131,7 @@ export class PaymentSuccessComponent {
 
   get displayCode(): string {
     if (!this.details?.confirmationCode) return '';
-    // Format is like 260310-0001-F8B, we only want the '0001' part
-    const parts = this.details.confirmationCode.split('-');
-    return parts.length > 1 ? parts[1] : this.details.confirmationCode;
+    return this.details.confirmationCode;
   }
 }
 

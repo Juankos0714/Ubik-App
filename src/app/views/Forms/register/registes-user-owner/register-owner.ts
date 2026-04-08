@@ -370,7 +370,7 @@ export class RegisterOwner implements OnInit, AfterViewInit {
       .submitClientRegistration(payload)
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
-        next: () => { console.log('🟢 REGISTER OK'); this.router.navigate(['/login']); },
+        next: () => { this.router.navigate(['/login']); },
         error: (err: any) => { console.error('🔴 REGISTER ERROR', err); this.handleRegisterError(err); },
       });
   }

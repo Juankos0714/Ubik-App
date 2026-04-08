@@ -79,7 +79,7 @@ export class RegisterServiceOwner {
       longitude: data.longitude 
     };
 
-    console.log('🚀 REGISTER PAYLOAD', payload);
+
 
     return this.http.post(
       this.REGISTER_URL,

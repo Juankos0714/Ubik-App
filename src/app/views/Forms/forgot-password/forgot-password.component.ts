@@ -63,8 +63,7 @@ export class ForgotPasswordComponent implements OnInit {
     this.success.set(null); // ✅ limpiar éxito
 
     this.forgotService.requestReset(emailCtrl.value).subscribe({
-      next: (res) => {
-        console.log('requestReset OK', res);
+      next: (_res) => {
         this.step.set(2);
         this.loading.set(false);
       },
@@ -100,11 +99,10 @@ export class ForgotPasswordComponent implements OnInit {
     this.success.set(null); // ✅ limpiar éxito antes de enviar
 
     this.forgotService.resetPassword(token, newPassword).subscribe({
-      next: (res) => {
-        console.log('resetPassword OK', res);
+      next: (_res) => {
         this.loading.set(false);
         this.error.set(null);
-        this.success.set('¡Listo! Tu contraseña fue cambiada. Ya puedes iniciar sesión.'); // ✅ AVISO OK
+        this.success.set('¡Listo! Tu contraseña fue cambiada. Ya puedes iniciar sesión.');
         
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => {
