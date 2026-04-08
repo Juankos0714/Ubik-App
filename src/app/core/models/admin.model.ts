@@ -24,6 +24,9 @@ export interface PendingMotel {
   legalRepresentativeName: string;
   legalDocumentUrl: string;
   imageUrls: MotelImageItem[];
+  dateCreated: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface MotelApprovalStats {
