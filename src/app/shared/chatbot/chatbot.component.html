@@ -1,0 +1,50 @@
+<!-- BOTÓN FLOTANTE -->
+<div class="chat-button" (click)="toggleChat()">
+  💬
+</div>
+
+<!-- CHAT -->
+<div class="chat-window" *ngIf="isOpen()">
+  <div class="chat-header">
+    Asistente IA
+    <span (click)="toggleChat()">✖</span>
+  </div>
+
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages()" 
+     [class.user]="msg.from === 'user'" 
+     class="message">
+
+    <!-- TEXTO -->
+    <div *ngIf="msg.text">
+        {{ msg.text }}
+    </div>
+
+    <!-- DATA GENÉRICA -->
+    <div *ngIf="msg.data && msg.data.length">
+        <div *ngFor="let item of msg.data" class="card">
+
+        <div *ngFor="let key of getKeys(item)">
+            <p>
+            <strong>{{ key }}:</strong> {{ item[key] }}
+            </p>
+        </div>
+
+        </div>
+    </div>
+
+    </div>
+
+    <div *ngIf="loading()" class="message bot">...</div>
+  </div>
+
+  <div class="chat-input">
+    <input 
+        [ngModel]="message()" 
+        (ngModelChange)="message.set($event)" 
+        (keyup.enter)="sendMessage()" 
+        placeholder="Escribe..." 
+    />
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+</div>
