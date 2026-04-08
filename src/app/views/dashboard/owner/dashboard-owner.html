@@ -177,10 +177,14 @@
 
           <!-- Vista: Estado de Habitaciones -->
           @if (activeView() === 'rooms') {
-            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4"
+            
+            >
               @for (room of rooms(); track room.roomId) {
                 <div
                   [class]="'group p-4 rounded-3xl border transition-all duration-300 ' + getStatusColor(room.status)"
+                  [routerLink]="'/roominfo'"
+                  [queryParams]="{ id: room.roomId }"
                 >
                   <div class="flex justify-between items-start mb-2">
                     <span class="text-lg font-black">{{ room.roomNumber }}</span>
