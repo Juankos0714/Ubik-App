@@ -19,6 +19,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { SearchService } from '../../core/services/search.service';
 import { ColombiaService, Department } from '../../core/services/colombia.service';
 import { routes } from '../../app.routes';
+import { LoadingHeader } from "../loading-header/loading-header";
 
 const ROUTES = {
   HOME: '/',
@@ -48,10 +49,11 @@ const QUERY_OPTIONS = [
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [Logo01, Button01, FormsModule],
+  imports: [Logo01, FormsModule, LoadingHeader, Button01],
   templateUrl: './header.html',
 })
 export class Header implements OnInit, OnDestroy {
+  loading = true;
   title = 'ENCUENTRA EL LUGAR PERFECTO PARA TU MOMENTO ESPECIAL';
   subtitle = 'Descubre moteles y espacios únicos cerca de ti, de forma rápida y segura.';
 
@@ -141,13 +143,24 @@ export class Header implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.colombiaService
-      .getAll()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: Department[]) => {
+  this.loading = true;
+
+  this.colombiaService
+    .getAll()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (data: Department[]) => {
         this.colombiaData = data;
         this.allDepartments = data.map((d) => d.name);
-      });
+
+
+        this.loading = false;
+      },
+      error: () => {
+      
+        this.loading = false;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -284,4 +297,6 @@ export class Header implements OnInit, OnDestroy {
     this.auth.logout();
     this.router.navigate([ROUTES.HOME]);
   }
+
+  
 }

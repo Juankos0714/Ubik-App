@@ -14,6 +14,7 @@ export class ReservationService {
   private reservationSubject = new Subject<Reservation>();
   private retryCount = 0;
   private readonly MAX_RETRIES = 5;
+  private retryTimer: any = null;
 
   constructor(
     private http: HttpClient,
@@ -41,6 +42,11 @@ export class ReservationService {
 
   checkIn(id: number): Observable<Reservation> {
     return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/checkin`, {});
+  }
+
+  getUserReservations(userId: number): Observable<Reservation[]> {
+    if (!this.isBrowser) return EMPTY as Observable<Reservation[]>;
+    return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/user/${userId}`);
   }
 
   // SSE connection
@@ -82,7 +88,7 @@ export class ReservationService {
       if (this.retryCount < this.MAX_RETRIES) {
         this.retryCount++;
         console.log(`Reintentando conexión SSE (${this.retryCount}/${this.MAX_RETRIES})...`);
-        setTimeout(() => this.subscribeToReservations(), 3000);
+        this.retryTimer = setTimeout(() => this.subscribeToReservations(), 3000);
       } else {
         console.error('SSE: Límite de reintentos alcanzado');
       }
@@ -92,9 +98,14 @@ export class ReservationService {
   }
 
   closeSSE(): void {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
     if (this.eventSource) {
       this.eventSource.close();
       this.eventSource = null;
     }
+    this.retryCount = 0;
   }
 }

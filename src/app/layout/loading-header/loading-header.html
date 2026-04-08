@@ -1,0 +1,106 @@
+@if(isHome()){
+
+   <!-- NAV -->
+      <nav class="flex items-center justify-center lg:justify-between bg-black/70 px-5 pt-4">
+
+        <!-- Logo -->
+        <div class="h-8 w-32 bg-white/10 rounded"></div>
+
+        <!-- Links -->
+        <div class="hidden lg:flex items-center gap-6">
+          <div class="h-4 w-16 bg-white/10 rounded"></div>
+          <div class="h-4 w-20 bg-white/10 rounded"></div>
+          <div class="h-4 w-16 bg-white/10 rounded"></div>
+        </div>
+
+        <!-- Auth -->
+        <div class="hidden lg:flex gap-4 items-center">
+          <div class="h-4 w-24 bg-white/10 rounded"></div>
+          <div class="h-8 w-28 bg-white/10 rounded-full"></div>
+        </div>
+
+      </nav>
+
+}  
+  
+  <header class="w-full relative min-h-[600px]">
+
+    <!-- Fondo -->
+    <div class="absolute inset-0 bg-black/70"></div>
+
+    <div class="relative z-10 w-full px-5 pt-4 flex flex-col animate-pulse">
+
+      <!-- NAV -->
+      <nav class="flex items-center justify-center lg:justify-between">
+
+        <!-- Logo -->
+        <div class="h-8 w-32 bg-white/10 rounded"></div>
+
+        <!-- Links -->
+        <div class="hidden lg:flex items-center gap-6">
+          <div class="h-4 w-16 bg-white/10 rounded"></div>
+          <div class="h-4 w-20 bg-white/10 rounded"></div>
+          <div class="h-4 w-16 bg-white/10 rounded"></div>
+        </div>
+
+        <!-- Auth -->
+        <div class="hidden lg:flex gap-4 items-center">
+          <div class="h-4 w-24 bg-white/10 rounded"></div>
+          <div class="h-8 w-28 bg-white/10 rounded-full"></div>
+        </div>
+
+      </nav>
+
+      <!-- HERO -->
+      <section class="w-full flex flex-col items-center justify-center pt-20 pb-16 px-4 gap-10">
+
+        <!-- Title -->
+        <div class="flex flex-col items-center gap-4 w-full max-w-3xl">
+          <div class="h-10 w-3/4 bg-white/10 rounded"></div>
+          <div class="h-4 w-2/3 bg-white/10 rounded"></div>
+        </div>
+
+        <!-- SEARCH DESKTOP -->
+        <div class="hidden lg:flex w-full max-w-5xl flex-col gap-3">
+
+          <div class="flex w-full items-stretch rounded-2xl
+                      border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl">
+
+            <!-- Inputs -->
+            @for (_ of [1,2,3]; track $index) {
+              <div class="flex-1 px-5 py-3.5 border-r border-white/10">
+                <div class="h-3 w-20 bg-white/10 rounded mb-2"></div>
+                <div class="h-4 w-full bg-white/10 rounded"></div>
+              </div>
+            }
+
+            <!-- Botón -->
+            <div class="flex items-center px-3">
+              <div class="h-10 w-24 bg-white/10 rounded-lg"></div>
+            </div>
+
+          </div>
+
+          <!-- Tags -->
+          <div class="flex items-center gap-2 px-1">
+            <div class="h-3 w-16 bg-white/10 rounded"></div>
+
+            <div class="flex gap-2">
+              @for (_ of [1,2,3,4]; track $index) {
+                <div class="h-6 w-16 bg-white/10 rounded-full"></div>
+              }
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEARCH MOBILE -->
+        <div class="flex lg:hidden w-full max-w-md gap-2">
+          <div class="flex-1 h-10 bg-white/10 rounded-xl"></div>
+          <div class="h-10 w-24 bg-white/10 rounded-xl"></div>
+        </div>
+
+      </section>
+
+    </div>
+  </header>

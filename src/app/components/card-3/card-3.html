@@ -79,17 +79,19 @@
       <div class="flex gap-3 flex-col">
 
         @if (card.type === 'room') {
-          <!-- Reservar + Ver más info lado a lado -->
-          <div class="flex gap-2">
+          <!-- Reservar + Ver info lado a lado -->
+          <div class="grid grid-cols-2 gap-2 w-full">
             <app-button-01
               text="Reservar"
               [fullWidth]="true"
+              class="w-full flex"
               (clicked)="openPayment()">
             </app-button-01>
 
             <app-button-01
-              text="Ver más info"
+              text="Ver info"
               [fullWidth]="true"
+              class="w-full flex"
               [routerLink]="['/motelProfile', card.motelId!]">
             </app-button-01>
           </div>
