@@ -238,6 +238,211 @@
   </div>
 }
 
+<!-- Modal de Revisión de Motel -->
+@if (selectedMotel(); as motel) {
+  <!-- Overlay -->
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6"
+    (click)="closeAction()"
+  >
+    <!-- Modal horizontal -->
+    <div
+      class="relative w-full max-w-5xl rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl flex flex-col lg:flex-row overflow-hidden"
+      style="max-height: 90vh"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- ── Sidebar izquierdo ── -->
+      <div class="lg:w-72 shrink-0 border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col">
+
+        <!-- Header info -->
+        <div class="px-6 py-5 border-b border-white/10">
+          <p class="text-xs font-semibold uppercase tracking-widest text-white/40 mb-1">Motel</p>
+          <h3 class="text-lg font-bold text-white leading-tight">{{ motel.name }}</h3>
+          <p class="text-xs text-white/40 mt-1">{{ motel.address }}</p>
+          <p class="text-xs text-white/40">{{ motel.city }}</p>
+        </div>
+
+        <!-- Datos clave -->
+        <div class="px-6 py-4 space-y-3 flex-1">
+          <div>
+            <p class="text-xs text-white/40 mb-0.5">Teléfono</p>
+            <p class="text-sm font-medium text-white">{{ motel.phoneNumber }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-white/40 mb-0.5">Registro</p>
+            <p class="text-sm font-medium text-white">{{ motel.dateCreated | date:'shortDate' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-white/40 mb-0.5">Coordenadas</p>
+            <p class="text-xs font-mono text-white/60">{{ motel.latitude }}, {{ motel.longitude }}</p>
+          </div>
+          @if (motel.description) {
+            <div>
+              <p class="text-xs text-white/40 mb-0.5">Descripción</p>
+              <p class="text-xs text-white/60 leading-relaxed">{{ motel.description }}</p>
+            </div>
+          }
+          <div class="pt-1">
+            <p class="text-xs text-white/40 mb-1.5">Info Legal</p>
+            <span
+              [class]="motel.hasCompleteLegalInfo
+                ? 'text-xs font-semibold px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20'
+                : 'text-xs font-semibold px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20'"
+            >
+              {{ motel.hasCompleteLegalInfo ? '✓ Completa' : '✗ Incompleta' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="px-6 py-4 border-t border-white/10 space-y-2">
+          <button
+            (click)="approveMotel()"
+            [disabled]="actionInProgress()"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-green-500/80 hover:bg-green-500 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          >{{ actionInProgress() ? 'Procesando...' : 'Aprobar' }}</button>
+          <button
+            (click)="rejectMotel()"
+            [disabled]="actionInProgress() || !rejectReason()"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500/80 hover:bg-red-500 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          >{{ actionInProgress() ? 'Procesando...' : 'Rechazar' }}</button>
+          <button
+            (click)="closeAction()"
+            class="w-full py-2 rounded-xl text-sm font-semibold text-white/50 hover:text-white/80 transition"
+          >Cancelar</button>
+        </div>
+      </div>
+
+      <!-- ── Contenido derecho ── -->
+      <div class="flex-1 overflow-y-auto">
+
+        <!-- Close btn -->
+        <div class="flex justify-end px-6 pt-4">
+          <button
+            (click)="closeAction()"
+            class="text-white/30 hover:text-white/70 transition text-xl leading-none"
+          >✕</button>
+        </div>
+
+        <div class="px-6 pb-6 space-y-5">
+
+          <!-- Alert -->
+          @if (actionResult()) {
+            <div
+              [class]="actionResult()?.includes('Error')
+                ? 'rounded-xl px-4 py-3 text-sm bg-red-500/10 border border-red-500/20 text-red-300'
+                : 'rounded-xl px-4 py-3 text-sm bg-green-500/10 border border-green-500/20 text-green-300'"
+            >
+              {{ actionResult() }}
+            </div>
+          }
+
+          <!-- Propietario -->
+          <section>
+            <p class="text-xs uppercase tracking-widest text-white/40 font-semibold mb-3">Propietario</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-white/5 rounded-xl px-4 py-3">
+                <p class="text-xs text-white/40 mb-1">Nombre</p>
+                <p class="text-sm font-medium text-white">{{ motel.ownerFullName }}</p>
+              </div>
+              <div class="bg-white/5 rounded-xl px-4 py-3">
+                <p class="text-xs text-white/40 mb-1">Tipo Documento</p>
+                <p class="text-sm font-medium text-white">{{ motel.ownerDocumentType }}</p>
+              </div>
+              <div class="bg-white/5 rounded-xl px-4 py-3">
+                <p class="text-xs text-white/40 mb-1">Número Documento</p>
+                <p class="text-sm font-medium text-white">{{ motel.ownerDocumentNumber }}</p>
+              </div>
+              @if (motel.legalRepresentativeName) {
+                <div class="sm:col-span-3 bg-white/5 rounded-xl px-4 py-3">
+                  <p class="text-xs text-white/40 mb-1">Representante Legal</p>
+                  <p class="text-sm font-medium text-white">{{ motel.legalRepresentativeName }}</p>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Documentos Legales -->
+          <section>
+            <p class="text-xs uppercase tracking-widest text-white/40 font-semibold mb-3">Documentos Legales</p>
+            <div class="grid grid-cols-3 gap-3">
+              @if (motel.rues) {
+                <div class="flex flex-col gap-1.5">
+                  <p class="text-xs text-white/40">RUES</p>
+                  <img [src]="motel.rues" alt="RUES"
+                    class="w-full h-28 object-cover rounded-xl border border-white/10 hover:border-white/30 cursor-pointer transition"
+                    (click)="openPreview(motel.rues)" />
+                </div>
+              }
+              @if (motel.rnt) {
+                <div class="flex flex-col gap-1.5">
+                  <p class="text-xs text-white/40">RNT</p>
+                  <img [src]="motel.rnt" alt="RNT"
+                    class="w-full h-28 object-cover rounded-xl border border-white/10 hover:border-white/30 cursor-pointer transition"
+                    (click)="openPreview(motel.rnt)" />
+                </div>
+              }
+              @if (motel.legalDocumentUrl) {
+                <div class="flex flex-col gap-1.5">
+                  <p class="text-xs text-white/40">Documento</p>
+                  <img [src]="motel.legalDocumentUrl" alt="Documento Legal"
+                    class="w-full h-28 object-cover rounded-xl border border-white/10 hover:border-white/30 cursor-pointer transition"
+                    (click)="openPreview(motel.legalDocumentUrl)" />
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Galería -->
+          @if (motel.imageUrls.length) {
+            <section>
+              <p class="text-xs uppercase tracking-widest text-white/40 font-semibold mb-3">Galería</p>
+              <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                @for (img of motel.imageUrls; track img.id) {
+                  <img [src]="img.url" [alt]="'Imagen ' + img.sortOrder"
+                    class="w-full aspect-square object-cover rounded-xl border border-white/10 hover:border-white/30 cursor-pointer transition"
+                    (click)="openPreview(img.url)" />
+                }
+              </div>
+            </section>
+          }
+
+          <!-- Decisión -->
+          <section>
+            <p class="text-xs uppercase tracking-widest text-white/40 font-semibold mb-3">Decisión</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-white/5 rounded-xl px-4 py-3">
+                <label class="text-xs text-white/40 block mb-2 uppercase tracking-widest">Comentarios (aprobación)</label>
+                <textarea
+                  [value]="approveComments()"
+                  (input)="approveComments.set($any($event.target).value)"
+                  placeholder="Documentación verificada..."
+                  rows="3"
+                  class="w-full bg-transparent text-sm text-white placeholder-white/20 resize-none outline-none"
+                ></textarea>
+              </div>
+              <div class="bg-white/5 rounded-xl px-4 py-3">
+                <label class="text-xs text-white/40 block mb-2 uppercase tracking-widest">Razón de rechazo</label>
+                <textarea
+                  [value]="rejectReason()"
+                  (input)="rejectReason.set($any($event.target).value)"
+                  placeholder="Documentos incompletos..."
+                  rows="3"
+                  class="w-full bg-transparent text-sm text-white placeholder-white/20 resize-none outline-none"
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+
+
 <!-- Modal de Override de Racha -->
 @if (selectedStreak(); as streak) {
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4" (click)="selectedStreak.set(null)">
