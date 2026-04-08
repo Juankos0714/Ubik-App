@@ -1,291 +1,315 @@
-<!-- ═══════════════════════════════════════════════════════════
-     NAV STICKY — aparece al hacer scroll hacia arriba (solo desktop)
-     Solo visible cuando: isHome && scrolled && scrollingUp
-════════════════════════════════════════════════════════════ -->
-@if (isHome()) {
-  <div
-    class="fixed top-0 left-0 right-0 z-50 hidden lg:flex
-           transition-transform duration-300 ease-in-out"
-    [class.-translate-y-full]="!showStickyNav()"
-    [class.translate-y-0]="showStickyNav()">
-    <div class="w-full px-8 py-3 flex items-center justify-between
-                bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg">
+@if(loading){
+  <app-loading-header></app-loading-header>
+}@else{
+  
+  @if (isHome()) {  
+    <div
+      class="fixed top-0 left-0 right-0 z-50 hidden lg:flex
+            transition-transform duration-300 ease-in-out"
+      [class.-translate-y-full]="!showStickyNav()"
+      [class.translate-y-0]="showStickyNav()">
+      <div class="w-full px-8 py-3 flex items-center justify-between
+                  bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg">
 
-      <app-logo-01></app-logo-01>
+        <app-logo-01></app-logo-01>
 
-      <div class="flex items-center gap-6">
-        <a (click)="navigateTo(ROUTES.HOME)"
-          class="text-sm transition cursor-pointer"
-          [class]="isActive(ROUTES.HOME) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
-          Inicio
-        </a>
-        <a (click)="navigateTo(ROUTES.EXPLORE)"
-          class="text-sm transition cursor-pointer"
-          [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
-          Explorar
-        </a>
-        <a href="#offerts"
-          class="text-sm transition cursor-pointer text-white/70 hover:text-white">
-          Ofertas
-        </a>
-      </div>
-
-      <div class="flex items-center gap-4">
-        @if (!isLogged()) {
-          <a (click)="navigateTo(ROUTES.LOGIN)"
-            class="text-sm text-white/60 hover:text-white transition cursor-pointer">
-            Inicia sesión
+        <div class="flex items-center gap-6">
+          <a (click)="navigateTo(ROUTES.HOME)"
+            class="text-sm transition cursor-pointer"
+            [class]="isActive(ROUTES.HOME) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
+            Inicio
           </a>
-          <a (click)="navigateTo(ROUTES.REGISTER)"
-            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
-                   hover:bg-red-600/10 transition cursor-pointer text-sm">
-            Registrarse
+          <a (click)="navigateTo(ROUTES.EXPLORE)"
+            class="text-sm transition cursor-pointer"
+            [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400 font-semibold' : 'text-white/70 hover:text-white'">
+            Explorar
           </a>
-        }
-        @if (isLogged()) {
-          @switch (role()) {
-            @case (7392841056473829) {
-              <a (click)="navigateTo(ROUTES.ADMIN)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Panel Admin</a>
-            }
-            @case (3847261094857362) {
-              <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
-              <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Dashboard</a>
-            }
-            @default {
-              <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
-            }
+          <a href="#offerts"
+            class="text-sm transition cursor-pointer text-white/70 hover:text-white">
+            Ofertas
+          </a>
+        </div>
+
+        <div class="flex items-center gap-4">
+          @if (!isLogged()) {
+            <a (click)="navigateTo(ROUTES.LOGIN)"
+              class="text-sm text-white/60 hover:text-white transition cursor-pointer">
+              Inicia sesión
+            </a>
+            <a (click)="navigateTo(ROUTES.REGISTER)"
+              class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
+                    hover:bg-red-600/10 transition cursor-pointer text-sm">
+              Registrarse
+            </a>
           }
-          <a (click)="logout()"
-            class="text-sm text-white/40 hover:text-red-400 transition cursor-pointer">
-            Cerrar sesión
-          </a>
-        }
+          @if (isLogged()) {
+            @switch (role()) {
+              @case (7392841056473829) {
+                <a (click)="navigateTo(ROUTES.ADMIN)"
+                  class="text-sm text-white/70 hover:text-white transition cursor-pointer">Panel Admin</a>
+              }
+              @case (3847261094857362) {
+                <a (click)="navigateTo(ROUTES.PROFILE)"
+                  class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
+                <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
+                  class="text-sm text-white/70 hover:text-white transition cursor-pointer">Dashboard</a>
+              }
+              @default {
+                <a (click)="navigateTo(ROUTES.PROFILE)"
+                  class="text-sm text-white/70 hover:text-white transition cursor-pointer">Mi Perfil</a>
+              }
+            }
+            <a (click)="logout()"
+              class="text-sm text-white/40 hover:text-red-400 transition cursor-pointer">
+              Cerrar sesión
+            </a>
+          }
+        </div>
+
       </div>
-
     </div>
-  </div>
-}
-
-<!-- ═══════════════════════════════════════════════════════════
-     HEADER PRINCIPAL
-════════════════════════════════════════════════════════════ -->
-<header
-  class="w-full relative"
-  [class.min-h-[600px]]="isHome()"
-  [style]="isHome() ? 'background-image: url(/assets/images/banner-bg-image-02.png); background-size: cover; background-position: center;' : ''">
-
-  <!-- Degradado oscuro solo en home — de arriba hacia abajo -->
-  @if (isHome()) {
-    <div class="absolute inset-0 bg-linear-to-b from-black/80 via-black/50 to-black/20 pointer-events-none"></div>
   }
 
-  <!-- Contenido relativo sobre el degradado -->
-  <div class="relative z-10 w-full px-5 pt-4 flex flex-col">
+  <header
+    class="w-full relative"
+    [class.min-h-[600px]]="isHome()"
+    [style]="isHome() ? 'background-image: url(/assets/images/banner-bg-image-02.png); background-size: cover; background-position: center;' : ''">
 
-    <!-- Nav principal -->
-    <nav class="flex items-center justify-center lg:justify-between">
-      <app-logo-01></app-logo-01>
-
-      <div class="navlinks hidden lg:flex items-center gap-6">
-        <a (click)="navigateTo(ROUTES.HOME)"
-          class="text-sm transition cursor-pointer font-medium"
-          [class]="isActive(ROUTES.HOME) ? 'text-red-400' : 'text-white/70 hover:text-white'">
-          Inicio
-        </a>
-        <a (click)="navigateTo(ROUTES.EXPLORE)"
-          class="text-sm transition cursor-pointer font-medium"
-          [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400' : 'text-white/70 hover:text-white'">
-          Explorar
-        </a>
-        <a href="#offerts"
-          class="text-sm transition cursor-pointer font-medium text-white/70 hover:text-white">
-          Ofertas
-        </a>
-      </div>
-
-      <div class="logandreg hidden lg:flex gap-4 items-center">
-        @if (!isLogged()) {
-          <a (click)="navigateTo(ROUTES.LOGIN)"
-            class="text-white/60 hover:text-white transition cursor-pointer text-sm">
-            Inicia sesión
-          </a>
-          <a (click)="navigateTo(ROUTES.REGISTER)"
-            class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
-                   hover:bg-red-600/10 hover:border-red-500 transition cursor-pointer text-sm">
-            Registrarse
-          </a>
-        }
-        @if (isLogged()) {
-          @switch (role()) {
-            @case (7392841056473829) {
-              <a (click)="navigateTo(ROUTES.ADMIN)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Panel Admin</a>
-            }
-            @case (3847261094857362) {
-              <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Dashboard</a>
-              <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
-            }
-            @default {
-              <a (click)="navigateTo(ROUTES.PROFILE)"
-                class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
-            }
-          }
-          <a (click)="logout()"
-            class="text-white/40 hover:text-red-400 transition cursor-pointer text-sm">
-            Cerrar sesión
-          </a>
-        }
-      </div>
-    </nav>
-
-    <!-- Hero + Search — solo en home -->
+    <!-- Degradado oscuro solo en home — de arriba hacia abajo -->
     @if (isHome()) {
-      <section class="w-full flex flex-col items-center justify-center pt-20 pb-16 px-4 gap-10">
-
-        <!-- Hero text -->
-        <div class="flex flex-col text-center text-white max-w-3xl gap-4">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight drop-shadow-lg">
-            {{ title }}
-          </h2>
-          <p class="text-sm sm:text-base text-white/60 max-w-xl mx-auto drop-shadow">
-            {{ subtitle }}
-          </p>
-        </div>
-
-        <!-- Search bar desktop -->
-        <div class="hidden lg:flex w-full max-w-5xl flex-col gap-3">
-          <div class="flex w-full items-stretch rounded-2xl overflow-visible
-                      border border-white/10 bg-white/6 backdrop-blur-md shadow-2xl">
-
-            <!-- Departamento -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
-                Departamento
-              </label>
-              <input
-                type="text" placeholder="Quindío, Antioquia..."
-                autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
-                [(ngModel)]="form.department"
-                (ngModelChange)="onDepartmentInput($event)"
-                (focus)="onDepartmentInput(form.department)"
-                (blur)="closeDropdown('department', 150)"
-                (keydown.enter)="search()"
-                (keydown.arrowdown)="moveDown('department')"
-                (keydown.arrowup)="moveUp('department')" />
-              @if (departmentSuggestions.length && dropdowns.department) {
-                <ul class="absolute top-full left-0 right-0 mt-1 z-50
-                           bg-[#13151a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                  @for (dep of departmentSuggestions; track dep; let i = $index) {
-                    <li (mousedown)="selectDepartment(dep)"
-                      class="px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-2"
-                      [class]="i === activeIndex.department ? 'bg-red-700/30 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'">
-                      <span class="text-red-500/60 text-xs">📍</span>{{ dep }}
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-
-            <!-- Municipio -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
-                Municipio
-              </label>
-              <input
-                type="text" placeholder="Armenia, Calarcá..."
-                autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
-                [(ngModel)]="form.city"
-                (ngModelChange)="onCityInput($event)"
-                (focus)="onCityInput(form.city)"
-                (blur)="closeDropdown('city', 150)"
-                (keydown.enter)="search()"
-                (keydown.arrowdown)="moveDown('city')"
-                (keydown.arrowup)="moveUp('city')" />
-              @if (citySuggestions.length && dropdowns.city) {
-                <ul class="absolute top-full left-0 right-0 mt-1 z-50
-                           bg-[#13151a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                  @for (city of citySuggestions; track city; let i = $index) {
-                    <li (mousedown)="selectCity(city)"
-                      class="px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-2"
-                      [class]="i === activeIndex.city ? 'bg-red-700/30 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'">
-                      <span class="text-red-500/60 text-xs">🏙️</span>{{ city }}
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-
-            <!-- Búsqueda libre -->
-            <div class="flex-1 flex flex-col px-5 py-3.5 border-r border-white/8 min-w-0 relative">
-              <label class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-1.5">
-                ¿Qué buscas?
-              </label>
-              <input
-                type="text" placeholder="Jacuzzi, suite, parqueadero..."
-                autocomplete="off"
-                class="bg-transparent text-white text-sm outline-none placeholder-white/25 w-full"
-                [(ngModel)]="form.query"
-                (ngModelChange)="onQueryInput($event)"
-                (focus)="onQueryInput(form.query)"
-                (blur)="closeDropdown('query', 150)"
-                (keydown.enter)="search()"
-                (keydown.arrowdown)="moveDown('query')"
-                (keydown.arrowup)="moveUp('query')" />
-              @if (querySuggestions.length && dropdowns.query) {
-                <ul class="absolute top-full left-0 right-0 mt-1 z-50
-                           bg-[#13151a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                  @for (sug of querySuggestions; track sug; let i = $index) {
-                    <li (mousedown)="selectQuery(sug)"
-                      class="px-4 py-2.5 text-sm cursor-pointer transition-colors flex items-center gap-2"
-                      [class]="i === activeIndex.query ? 'bg-red-700/30 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'">
-                      <span class="text-red-500/60 text-xs">🔍</span>{{ sug }}
-                    </li>
-                  }
-                </ul>
-              }
-            </div>
-
-            <!-- Botón -->
-            <div class="flex items-center px-3">
-              <app-button-01 text="Buscar" (clicked)="search()"></app-button-01>
-            </div>
-          </div>
-
-          <!-- Tags rápidos -->
-          <div class="flex items-center gap-2 px-1">
-            <span class="text-white/30 text-xs shrink-0">Popular:</span>
-            <div class="flex flex-wrap gap-2">
-              @for (tag of quickTags; track tag) {
-                <button (click)="quickSearch(tag)"
-                  class="text-xs px-3 py-1 rounded-full border border-white/10 text-white/40
-                         hover:border-white/25 hover:text-white/70 transition cursor-pointer bg-white/[0.03]">
-                  {{ tag }}
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Search bar mobile -->
-        <div class="flex lg:hidden w-full max-w-md gap-2">
-          <input type="text" placeholder="Ciudad, motel, jacuzzi..."
-            class="flex-1 bg-white/10 border border-white/15 rounded-xl px-4 py-2.5
-                   text-white text-sm outline-none placeholder-white/30 focus:border-white/30 transition"
-            [(ngModel)]="form.query"
-            (keydown.enter)="search()" />
-          <app-button-01 text="Buscar" (clicked)="search()"></app-button-01>
-        </div>
-
-      </section>
+      <div class="absolute inset-0 bg-linear-to-b from-black/80 via-black/50 to-black/20 pointer-events-none"></div>
     }
 
-  </div>
-</header>
+    <!-- Contenido relativo sobre el degradado -->
+    <div class="relative z-10 w-full px-5 pt-4 flex flex-col">
+
+      <!-- Nav principal -->
+      <nav class="flex items-center justify-center lg:justify-between">
+        <app-logo-01></app-logo-01>
+
+        <div class="navlinks hidden lg:flex items-center gap-6">
+          <a (click)="navigateTo(ROUTES.HOME)"
+            class="text-sm transition cursor-pointer font-medium"
+            [class]="isActive(ROUTES.HOME) ? 'text-red-400' : 'text-white/70 hover:text-white'">
+            Inicio
+          </a>
+          <a (click)="navigateTo(ROUTES.EXPLORE)"
+            class="text-sm transition cursor-pointer font-medium"
+            [class]="isActive(ROUTES.EXPLORE) ? 'text-red-400' : 'text-white/70 hover:text-white'">
+            Explorar
+          </a>
+          <a href="#offerts"
+            class="text-sm transition cursor-pointer font-medium text-white/70 hover:text-white">
+            Ofertas
+          </a>
+        </div>
+
+        <div class="logandreg hidden lg:flex gap-4 items-center">
+          @if (!isLogged()) {
+            <a (click)="navigateTo(ROUTES.LOGIN)"
+              class="text-white/60 hover:text-white transition cursor-pointer text-sm">
+              Inicia sesión
+            </a>
+            <a (click)="navigateTo(ROUTES.REGISTER)"
+              class="px-4 py-1.5 rounded-full border border-red-600/50 text-red-400
+                    hover:bg-red-600/10 hover:border-red-500 transition cursor-pointer text-sm">
+              Registrarse
+            </a>
+          }
+          @if (isLogged()) {
+            @switch (role()) {
+              @case (7392841056473829) {
+                <a (click)="navigateTo(ROUTES.ADMIN)"
+                  class="text-white/70 hover:text-white transition cursor-pointer text-sm">Panel Admin</a>
+              }
+              @case (3847261094857362) {
+                <a (click)="navigateTo(ROUTES.DASHBOARDOWNER)"
+                  class="text-white/70 hover:text-white transition cursor-pointer text-sm">Dashboard</a>
+                <a (click)="navigateTo(ROUTES.PROFILE)"
+                  class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
+              }
+              @default {
+                <a (click)="navigateTo(ROUTES.PROFILE)"
+                  class="text-white/70 hover:text-white transition cursor-pointer text-sm">Mi Perfil</a>
+              }
+            }
+            <a (click)="logout()"
+              class="text-white/40 hover:text-red-400 transition cursor-pointer text-sm">
+              Cerrar sesión
+            </a>
+          }
+        </div>
+      </nav>
+
+      <!-- Hero + Search — solo en home -->
+      @if (isHome()) {
+        <section class="w-full flex flex-col items-center justify-center pt-20 pb-16 px-4 gap-10">
+
+          <!-- Hero text -->
+          <div class="flex flex-col text-center text-white max-w-3xl gap-4">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight drop-shadow-lg">
+              {{ title }}
+            </h2>
+            <p class="text-sm sm:text-base text-white/60 max-w-xl mx-auto drop-shadow">
+              {{ subtitle }}
+            </p>
+          </div>
+
+          <!-- Search bar desktop -->
+          <div class="hidden lg:flex w-full max-w-5xl flex-col gap-3">
+            <div class="flex w-full items-stretch rounded-full overflow-visible
+                        border border-white/10 bg-[#13151a]/80 backdrop-blur-xl shadow-2xl transition-all">
+
+              <!-- Departamento -->
+              <div class="flex-1 flex flex-col px-6 py-3 border-r border-white/8 min-w-0 relative rounded-l-full hover:bg-white/5 focus-within:bg-white/10 transition-colors cursor-text"
+                   (click)="depInput.focus()">
+                <div class="flex items-center gap-2 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-red-500/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <label class="text-[10px] font-bold uppercase tracking-widest text-white/50 cursor-text">
+                    Departamento
+                  </label>
+                </div>
+                <input
+                  #depInput
+                  type="text" placeholder="Quindío, Antioquia..."
+                  autocomplete="off"
+                  class="bg-transparent text-white text-sm outline-none placeholder-white/30 w-full"
+                  [(ngModel)]="form.department"
+                  (ngModelChange)="onDepartmentInput($event)"
+                  (focus)="onDepartmentInput(form.department)"
+                  (blur)="closeDropdown('department', 150)"
+                  (keydown.enter)="search()"
+                  (keydown.arrowdown)="moveDown('department')"
+                  (keydown.arrowup)="moveUp('department')" />
+                @if (departmentSuggestions.length && dropdowns.department) {
+                  <ul class="absolute top-[110%] left-0 right-0 mt-2 z-50
+                            bg-[#13151a]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                    @for (dep of departmentSuggestions; track dep; let i = $index) {
+                      <li (mousedown)="selectDepartment(dep)"
+                        class="px-5 py-3 text-sm cursor-pointer transition-colors flex items-center gap-3"
+                        [class]="i === activeIndex.department ? 'bg-red-600/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'">
+                        <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs">📍</span>{{ dep }}
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <!-- Municipio -->
+              <div class="flex-1 flex flex-col px-6 py-3 border-r border-white/8 min-w-0 relative hover:bg-white/5 focus-within:bg-white/10 transition-colors cursor-text"
+                   (click)="cityInput.focus()">
+                <div class="flex items-center gap-2 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-400/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <label class="text-[10px] font-bold uppercase tracking-widest text-white/50 cursor-text">
+                    Municipio
+                  </label>
+                </div>
+                <input
+                  #cityInput
+                  type="text" placeholder="Armenia, Calarcá..."
+                  autocomplete="off"
+                  class="bg-transparent text-white text-sm outline-none placeholder-white/30 w-full"
+                  [(ngModel)]="form.city"
+                  (ngModelChange)="onCityInput($event)"
+                  (focus)="onCityInput(form.city)"
+                  (blur)="closeDropdown('city', 150)"
+                  (keydown.enter)="search()"
+                  (keydown.arrowdown)="moveDown('city')"
+                  (keydown.arrowup)="moveUp('city')" />
+                @if (citySuggestions.length && dropdowns.city) {
+                  <ul class="absolute top-[110%] left-0 right-0 mt-2 z-50
+                            bg-[#13151a]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                    @for (city of citySuggestions; track city; let i = $index) {
+                      <li (mousedown)="selectCity(city)"
+                        class="px-5 py-3 text-sm cursor-pointer transition-colors flex items-center gap-3"
+                        [class]="i === activeIndex.city ? 'bg-red-600/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'">
+                        <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs">🏙️</span>{{ city }}
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <!-- Búsqueda libre -->
+              <div class="flex-1 flex flex-col px-6 py-3 min-w-0 relative hover:bg-white/5 focus-within:bg-white/10 transition-colors cursor-text"
+                   (click)="queryInput.focus()">
+                <div class="flex items-center gap-2 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-amber-400/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <label class="text-[10px] font-bold uppercase tracking-widest text-white/50 cursor-text">
+                    ¿Qué buscas?
+                  </label>
+                </div>
+                <input
+                  #queryInput
+                  type="text" placeholder="Jacuzzi, suite, parqueadero..."
+                  autocomplete="off"
+                  class="bg-transparent text-white text-sm outline-none placeholder-white/30 w-full"
+                  [(ngModel)]="form.query"
+                  (ngModelChange)="onQueryInput($event)"
+                  (focus)="onQueryInput(form.query)"
+                  (blur)="closeDropdown('query', 150)"
+                  (keydown.enter)="search()"
+                  (keydown.arrowdown)="moveDown('query')"
+                  (keydown.arrowup)="moveUp('query')" />
+                @if (querySuggestions.length && dropdowns.query) {
+                  <ul class="absolute top-[110%] left-0 right-0 mt-2 z-50
+                            bg-[#13151a]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                    @for (sug of querySuggestions; track sug; let i = $index) {
+                      <li (mousedown)="selectQuery(sug)"
+                        class="px-5 py-3 text-sm cursor-pointer transition-colors flex items-center gap-3"
+                        [class]="i === activeIndex.query ? 'bg-red-600/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'">
+                        <span class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-xs">🔍</span>{{ sug }}
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+
+              <!-- Botón -->
+              <div class="flex items-center px-3 py-2">
+                <app-button-01 text="Buscar" (clicked)="search()"></app-button-01>
+              </div>
+            </div>
+
+            <!-- Tags rápidos -->
+            <div class="flex items-center gap-2 px-3">
+              <span class="text-white/40 text-xs shrink-0 font-medium">Popular:</span>
+              <div class="flex flex-wrap gap-2">
+                @for (tag of quickTags; track tag) {
+                  <button (click)="quickSearch(tag)"
+                    class="text-xs px-3 py-1.5 rounded-full border border-white/10 text-white/60
+                          hover:bg-white/10 hover:border-white/30 hover:text-white transition cursor-pointer bg-white/[0.04]">
+                    {{ tag }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Search bar mobile -->
+          <div class="flex lg:hidden w-full max-w-md gap-2 items-center">
+            <div class="flex-1 bg-white/10 border border-white/15 rounded-full px-4 py-3
+                        flex items-center gap-3 focus-within:border-white/30 focus-within:bg-white/15 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" placeholder="Ciudad, motel, jacuzzi..."
+                class="bg-transparent text-white text-sm outline-none placeholder-white/60 w-full"
+                [(ngModel)]="form.query"
+                (keydown.enter)="search()" />
+            </div>
+          </div>
+
+        </section>
+      }
+
+    </div>
+  </header>
+}

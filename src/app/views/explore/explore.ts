@@ -11,6 +11,7 @@ import { ServiceService } from '../../core/services/services.service';
 import { Room } from '../../core/models/room.model';
 import { Motel } from '../../core/models/motel.model';
 import { Service } from '../../core/models/services.model';
+import { ColombiaService, Department } from '../../core/services/colombia.service';
 
 import { FilterModal, Filters } from '../../components/filter-modal/filter-modal';
 import { Button01 } from '../../components/button-01/button-01';
@@ -39,7 +40,7 @@ function normalize(str: string): string {
   selector: 'app-explore',
   standalone: true,
   templateUrl: './explore.html',
-  imports: [CommonModule, Button01, Button02, Card3, MapComponent, LoadingCard3, RouterLink],
+  imports: [CommonModule, Button01, Card3, MapComponent, LoadingCard3, RouterLink],
 })
 export class Explore implements OnInit {
 
@@ -50,6 +51,7 @@ export class Explore implements OnInit {
   private searchService = inject(SearchService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private colombiaService = inject(ColombiaService);
 
   /** Referencia al mapa mobile para forzar invalidateSize al abrir */
   @ViewChild('mobileMap') mobileMapRef?: MapComponent;
@@ -58,6 +60,7 @@ export class Explore implements OnInit {
   cards: Card3Informacion[] = [];
   points: MapPoint[] = [];
   services: Service[] = [];
+  colombiaData: Department[] = [];
 
   loading = false;
   error = false;
@@ -66,6 +69,7 @@ export class Explore implements OnInit {
   cities: string[] = [];
 
   activePoint: MapPoint | null = null;
+  hoverCardId: number | null = null;
   skeletonItems = Array.from({ length: 5 });
   searchInputValue = '';
 
@@ -84,7 +88,7 @@ export class Explore implements OnInit {
     onlyAvailable: true,
     serviceIds: [],
     sortBy: null,
-    showType: 'all',
+    showType: 'rooms',
   };
 
   ngOnInit(): void {
@@ -99,10 +103,12 @@ export class Explore implements OnInit {
       rooms: this.roomService.getRooms(),
       motels: this.motelService.getAllMotels(),   // ✅ endpoint público, sin auth
       services: this.serviceService.getServices(),
+      colombia: this.colombiaService.getAll(),
     }).subscribe({
-      next: ({ rooms, motels, services }) => {
+      next: ({ rooms, motels, services, colombia }) => {
 
         this.services = [...new Map((services as Service[]).map(s => [s.id, s])).values()];
+        this.colombiaData = colombia;
 
         const roomCards: Card3Informacion[] = (rooms as Room[]).map(room => ({
           id: room.id,
@@ -142,7 +148,14 @@ export class Explore implements OnInit {
         this.cities = [...new Set((rooms as Room[]).map(r => r.motelCity))];
         this.allCards = [...roomCards, ...motelCards];
 
-        this.applyHeaderSearch();
+        // Muestra todos temporalmente para poblar el mapa inicial
+        this.applyFilters(this.currentFilters);
+
+        // Aplica el filtro guardado en ráfaga progresiva
+        setTimeout(() => {
+          this.applyHeaderSearch();
+          this.cdr.markForCheck();
+        }, 2000);
 
         this.loading = false;
         this.cdr.markForCheck();
@@ -233,13 +246,21 @@ export class Explore implements OnInit {
       );
     }
 
-    if (filters.department?.length) {
+    if (filters.department?.length && filters.cities.length === 0) {
       const normalizedDep = normalize(filters.department[0]);
-      result = result.filter(r =>
-        normalize(r.location).includes(normalizedDep) ||
-        normalize(r.adress).includes(normalizedDep) ||
-        normalizedDep.includes(normalize(r.location))
-      );
+      
+      const deptDetails = this.colombiaData.find(d => normalize(d.name) === normalizedDep);
+      let depCitiesNormalized: string[] = [];
+      if(deptDetails) {
+        depCitiesNormalized = deptDetails.municipalities.map(normalize);
+      }
+
+      result = result.filter(r => {
+        const normLoc = normalize(r.location);
+        return normLoc.includes(normalizedDep) ||
+               normalize(r.adress).includes(normalizedDep) ||
+               depCitiesNormalized.some(c => normLoc.includes(c) || c.includes(normLoc));
+      });
     }
 
     if (filters.serviceIds.length) {
@@ -267,6 +288,80 @@ export class Explore implements OnInit {
 
     this.cards = result;
     this.points = this.mapPoints(result);
+    this.generateChips(filters, textQuery);
+
+    this.mapCenterOverride = null;
+    if (result.length === 0 && (filters.cities.length || filters.department?.length)) {
+      const q = `${filters.cities[0] || ''} ${filters.department?.[0] || ''} Colombia`.trim();
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            this.mapCenterOverride = [lat, lon];
+            this.cdr.markForCheck();
+          }
+        })
+        .catch(err => console.error('Map geocoding fallback failed:', err));
+    }
+  }
+
+  activeChips: { id: string; label: string; field: string; value: any }[] = [];
+  mapCenterOverride: [number, number] | null = null;
+
+  private generateChips(filters: Filters, query: string) {
+    const chips: { id: string; label: string; field: string; value: any }[] = [];
+
+    if (query.trim()) {
+      chips.push({ id: `q_${query}`, label: `Búsqueda: ${query}`, field: 'query', value: query });
+    }
+    if (filters.department && filters.department.length > 0) {
+      chips.push({ id: `dep_${filters.department[0]}`, label: `Dep: ${filters.department[0]}`, field: 'department', value: filters.department[0] });
+    }
+    if (filters.cities.length) {
+      filters.cities.forEach(c => chips.push({ id: `city_${c}`, label: `Ciudad: ${c}`, field: 'cities', value: c }));
+    }
+    if (filters.roomTypes.length) {
+      filters.roomTypes.forEach(t => chips.push({ id: `rt_${t}`, label: t, field: 'roomTypes', value: t }));
+    }
+    if (filters.serviceIds.length) {
+      filters.serviceIds.forEach(id => {
+        const s = this.services.find(ser => ser.id === id);
+        if (s) chips.push({ id: `serv_${id}`, label: s.name, field: 'serviceIds', value: id });
+      });
+    }
+    if (filters.priceMin !== null || filters.priceMax !== null) {
+      const min = filters.priceMin ? `$${filters.priceMin.toLocaleString()}` : '$0';
+      const max = filters.priceMax ? `$${filters.priceMax.toLocaleString()}` : 'Max';
+      chips.push({ id: `price`, label: `${min} - ${max}`, field: 'price', value: null });
+    }
+    if (filters.onlyAvailable) {
+      chips.push({ id: 'available', label: 'Disponibles hoy', field: 'available', value: true });
+    }
+
+    this.activeChips = chips;
+  }
+
+  removeChip(chip: { id: string; label: string; field: string; value: any }) {
+    if (chip.field === 'query') {
+      this.searchInputValue = '';
+    } else if (chip.field === 'department') {
+      this.currentFilters.department = null;
+    } else if (chip.field === 'cities') {
+      this.currentFilters.cities = this.currentFilters.cities.filter(c => c !== chip.value);
+    } else if (chip.field === 'roomTypes') {
+      this.currentFilters.roomTypes = this.currentFilters.roomTypes.filter(t => t !== chip.value);
+    } else if (chip.field === 'serviceIds') {
+      this.currentFilters.serviceIds = this.currentFilters.serviceIds.filter(id => id !== chip.value);
+    } else if (chip.field === 'price') {
+      this.currentFilters.priceMin = null;
+      this.currentFilters.priceMax = null;
+    } else if (chip.field === 'available') {
+      this.currentFilters.onlyAvailable = false;
+    }
+    
+    this.applyFilters(this.currentFilters, this.searchInputValue);
   }
 
   private mapPoints(cards: Card3Informacion[]): MapPoint[] {
@@ -277,6 +372,7 @@ export class Explore implements OnInit {
         lng: c.lng!,
         name: c.type === 'room' ? `${c.motelName} — ${c.roomType}` : c.motelName,
         id: c.id,
+        image: c.image
       }));
   }
 

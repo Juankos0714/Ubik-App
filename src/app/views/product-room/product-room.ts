@@ -148,6 +148,11 @@ export class ProductRoom implements OnInit {
   constructor(private dialog: Dialog) { }
 
   openPayment() {
+    if (!this.authService.isLogged()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     const dialogRef = this.dialog.open(PaymentModal, {
       data: { id: this.room?.id }
     });

@@ -115,20 +115,7 @@
 
         <!-- Acciones: favorito + compartir -->
         <div class="flex items-center gap-2">
-          <!-- Favorito -->
-          <button
-            (click)="toggleFavorite()"
-            title="button-add-favorite"
-            class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/15 flex items-center justify-center transition-all duration-300"
-            [ngClass]="isFavorite ? 'text-red-400 border-red-500/50 bg-red-900/30' : 'text-white/60 hover:text-white hover:border-white/40'"
-            [title]="isFavorite ? 'Quitar de favoritos' : 'Guardar en favoritos'"
-          >
-            <svg class="w-5 h-5 transition-transform duration-200" [class.scale-125]="isFavorite"
-              [attr.fill]="isFavorite ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-          </button>
+
 
           <!-- Editar (solo owner/admin) -->
           @if (authService.isOwner() || authService.isAdmin()) {
@@ -232,7 +219,7 @@
             <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
           </div>
           <div class="h-56">
-            <app-map [points]="points"></app-map>
+            <app-map [points]="points" [showUserLocation]="false"></app-map>
           </div>
         </div>
 
@@ -376,7 +363,7 @@
             <h2 class="text-[#c8a97e] text-xs tracking-[0.25em] uppercase">Ubicación</h2>
           </div>
           <div class="h-52">
-            <app-map [points]="points"></app-map>
+            <app-map [points]="points" [showUserLocation]="false"></app-map>
           </div>
         </div>
 

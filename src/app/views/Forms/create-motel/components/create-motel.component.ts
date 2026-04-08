@@ -15,11 +15,12 @@ import { MotelService } from '../../../../core/services/motel.service';
 import { CloudinaryService } from '../../../../core/services/Cloudinary.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CreateMotelRequest, DocumentType } from '../types/create-motel.types';
+import { Map, MapPoint } from '../../../../components/map/map';
 
 @Component({
   selector: 'app-create-motel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Map],
   templateUrl: './create-motel.component.html',
 })
 export class CreateMotelComponent implements OnInit {
@@ -37,6 +38,8 @@ export class CreateMotelComponent implements OnInit {
   rntFile: File | null = null;
   ruesFile: File | null = null;
   legalDocumentFile: File | null = null;
+
+  mapPoints: MapPoint[] = [];
 
   constructor(
     private fb: NonNullableFormBuilder,
@@ -63,12 +66,16 @@ export class CreateMotelComponent implements OnInit {
         validators: [Validators.required],
       }),
       ownerDocumentNumber: this.fb.control('', { validators: [Validators.required] }),
-      ownerFullName: this.fb.control('', { validators: [Validators.required] }),
-      legalRepresentativeName: this.fb.control<string | null>(null),
+      legalRepresentativeName: this.fb.control('', { validators: [Validators.required] }),
     });
   }
 
   ngOnInit(): void {}
+
+  onMapClicked(coords: {lat: number, lng: number}): void {
+    this.form.patchValue({ latitude: coords.lat, longitude: coords.lng });
+    this.mapPoints = [{ lat: coords.lat, lng: coords.lng, name: 'Ubicación seleccionada' }];
+  }
 
   getUserLocation(): void {
     this.error = null;
@@ -87,6 +94,7 @@ export class CreateMotelComponent implements OnInit {
         const lng = pos.coords.longitude;
 
         this.form.patchValue({ latitude: lat, longitude: lng });
+        this.mapPoints = [{ lat, lng, name: 'Ubicación actual' }];
         this.locationStatus = `Ubicación lista: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
         this.gettingLocation = false;
       },
@@ -204,8 +212,8 @@ export class CreateMotelComponent implements OnInit {
 
             ownerDocumentType: v.ownerDocumentType,
             ownerDocumentNumber: v.ownerDocumentNumber,
-            ownerFullName: v.ownerFullName,
-            legalRepresentativeName: v.legalRepresentativeName ?? null,
+            ownerFullName: this.auth.user()?.username ?? 'Sin Nombre',
+            legalRepresentativeName: v.legalRepresentativeName,
             legalDocumentUrl: legalUrl,
 
             imageUrls: [...(galleryUrls ?? []), profileUrl],

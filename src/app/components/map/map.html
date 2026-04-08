@@ -1,3 +1,12 @@
-<!-- <div id="map"></div> -->
-
-<div #mapContainer class="map-container"></div>
+<div class="relative w-full h-full">
+  <div #mapContainer class="map-container w-full h-full"></div>
+  
+  <button 
+    (click)="centerUser()"
+    class="absolute bottom-6 right-6 z-[1000] w-12 h-12 bg-white text-gray-800 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.3)] flex items-center justify-center hover:bg-gray-100 transition-colors focus:outline-none"
+    title="Volver a mi ubicación">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-black">
+      <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm0 1.5a8.25 8.25 0 100 16.5 8.25 8.25 0 000-16.5zm0 3.75a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" clip-rule="evenodd" />
+    </svg>
+  </button>
+</div>

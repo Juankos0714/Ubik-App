@@ -19,6 +19,7 @@ export interface MapPoint {
   lng: number;
   name: string;
   id?: number;
+  image?: string;
 }
 
 @Component({
@@ -32,9 +33,13 @@ export class Map implements AfterViewInit, OnChanges {
 
   @Input() points: MapPoint[] = [];
   @Input() active: MapPoint | null = null;
+  @Input() showUserLocation: boolean = true;
+  @Input() allowMapClick: boolean = false;
+  @Input() hoverId: number | null = null;
 
   /** Emite cuando el usuario hace click en un marker de motel/habitación */
   @Output() markerClicked = new EventEmitter<MapPoint>();
+  @Output() mapClicked = new EventEmitter<{lat: number, lng: number}>();
 
   @ViewChild('mapContainer', { static: false })
   mapContainer!: ElementRef<HTMLDivElement>;
@@ -53,6 +58,7 @@ export class Map implements AfterViewInit, OnChanges {
 
   /** Flag: ya se hizo el zoom inicial al usuario (para no repetirlo) */
   private userZoomDone = false;
+  private markersDict: Record<number, import('leaflet').Marker> = {};
 
   /* =========================
      INIT
@@ -97,7 +103,16 @@ export class Map implements AfterViewInit, OnChanges {
     }
 
     //  Luego (en paralelo, sin bloquear) iniciar geolocalización
-    this.initializeLocation();
+    if (this.showUserLocation) {
+      this.initializeLocation();
+    }
+
+    // Emitir clic del mapa si está habilitado
+    this.map.on('click', (e: any) => {
+      if (this.allowMapClick) {
+        this.mapClicked.emit({ lat: e.latlng.lat, lng: e.latlng.lng });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -107,12 +122,18 @@ export class Map implements AfterViewInit, OnChanges {
     }
   }
 
+  @Input() centerOverride: [number, number] | null = null;
+
   /* =========================
      INPUT CHANGES
   ========================== */
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.map) return;
+
+    if (changes['centerOverride'] && this.centerOverride) {
+      this.map.flyTo(this.centerOverride, 12, { animate: true, duration: 1.5 });
+    }
 
     if (changes['points']) {
       this.renderMarkers();
@@ -137,6 +158,17 @@ export class Map implements AfterViewInit, OnChanges {
         animate: true,
         duration: 1.2,
       });
+    }
+
+    if (changes['hoverId'] !== undefined && this.map) {
+      if (this.hoverId) {
+        const marker = this.markersDict[this.hoverId];
+        if (marker) {
+          marker.openPopup();
+        }
+      } else {
+        this.map.closePopup();
+      }
     }
   }
 
@@ -214,9 +246,18 @@ export class Map implements AfterViewInit, OnChanges {
 
     this.markerLayer.clearLayers();
 
+    this.markersDict = {};
+
     for (const p of this.points) {
+      const popupHtml = p.image 
+        ? `<div style="text-align:center; min-width: 120px;">
+             <img src="${p.image}" style="width:100%; height:80px; object-fit:cover; border-radius:8px; margin-bottom:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);"/>
+             <b style="color: #333; font-size: 13px; font-family: sans-serif;">${p.name}</b>
+           </div>`
+        : `<b>${p.name}</b>`;
+
       const marker = this.L.marker([p.lat, p.lng], { icon: this.motelIcon })
-        .bindPopup(p.name);
+        .bindPopup(popupHtml, { closeButton: false, offset: [0, -20] });
 
       // Emitir evento al hacer click en un marker
       marker.on('click', () => {
@@ -224,6 +265,9 @@ export class Map implements AfterViewInit, OnChanges {
       });
 
       marker.addTo(this.markerLayer);
+      if (p.id) {
+        this.markersDict[p.id] = marker;
+      }
     }
 
     this.adjustView();
@@ -254,5 +298,12 @@ export class Map implements AfterViewInit, OnChanges {
   /** Fuerza recálculo del tamaño (útil al mostrar/ocultar el mapa en mobile) */
   invalidateSize() {
     setTimeout(() => this.map?.invalidateSize(), 100);
+  }
+
+  /** Refocus the map to the user's location on demand */
+  centerUser() {
+    if (this.userLatLng && this.map) {
+       this.map.flyTo(this.userLatLng, 14, { animate: true, duration: 1.5 });
+    }
   }
 }

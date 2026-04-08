@@ -43,6 +43,11 @@ export class ReservationService {
     return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/checkin`, {});
   }
 
+  getUserReservations(userId: number): Observable<Reservation[]> {
+    if (!this.isBrowser) return EMPTY as Observable<Reservation[]>;
+    return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/user/${userId}`);
+  }
+
   // SSE connection
   subscribeToReservations(): Observable<Reservation> {
     if (!this.isBrowser) return EMPTY as Observable<Reservation>;

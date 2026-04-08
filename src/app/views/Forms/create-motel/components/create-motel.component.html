@@ -89,6 +89,10 @@
         Ubicación
       </h4>
 
+      <div class="md:col-span-2 h-64 mb-4 rounded-xl overflow-hidden border border-white/10">
+        <app-map [points]="mapPoints" [allowMapClick]="true" (mapClicked)="onMapClicked($event)"></app-map>
+      </div>
+
       <div class="md:col-span-2 flex flex-col sm:flex-row sm:items-center gap-3">
         <button
           type="button"
@@ -281,19 +285,14 @@
       </div>
 
       <div class="flex flex-col gap-2">
-        <label class="text-sm text-white/80">Nombre propietario</label>
-        <input
-          class="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-white placeholder-white/35 outline-none transition focus:border-red-500/40 focus:ring-2 focus:ring-red-500/40"
-          formControlName="ownerFullName"
-        />
-      </div>
-
-      <div class="md:col-span-2 flex flex-col gap-2">
-        <label class="text-sm text-white/80">Representante legal (opcional)</label>
+        <label class="text-sm text-white/80">Gerente del motel</label>
         <input
           class="w-full rounded-xl bg-black/30 border border-white/10 px-4 py-3 text-white placeholder-white/35 outline-none transition focus:border-red-500/40 focus:ring-2 focus:ring-red-500/40"
           formControlName="legalRepresentativeName"
         />
+        @if (form.get('legalRepresentativeName')?.touched && form.get('legalRepresentativeName')?.invalid) {
+          <div class="text-xs text-red-300">Gerente del motel requerido.</div>
+        }
       </div>
 
       <div class="md:col-span-2 flex gap-3 mt-2">
