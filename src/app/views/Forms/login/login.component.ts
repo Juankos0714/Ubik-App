@@ -12,11 +12,8 @@ import { environment } from '../../../../environments/environment';
 
 declare const google: any;
 
-const ROLE_IDS = {
-  ADMIN: 7392841056473829,
-  OWNER: 3847261094857362,
-  CLIENT: 9182736450192837,
-} as const;
+import { ROLE_IDS } from '../../../core/models/roles.model';
+import { UsersService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -32,6 +29,7 @@ export class LoginComponent implements AfterViewInit {
 
   constructor(
     private loginService: LoginService,
+    private usersService: UsersService,
     private auth: AuthService,
     private router: Router,
     private ngZone: NgZone,
@@ -93,7 +91,7 @@ export class LoginComponent implements AfterViewInit {
   triggerGoogleSignIn(): void {
     const btn = document.querySelector('#g-signin-login div[role="button"]') as HTMLElement;
     if (btn) btn.click();
-    else google.accounts.id.prompt();
+    else if (typeof google !== 'undefined') google.accounts.id.prompt();
   }
 
   handleGoogleCredential(response: any): void {
@@ -101,8 +99,12 @@ export class LoginComponent implements AfterViewInit {
     this.errors.set([]);
     this.loginService.loginWithGoogle(response.credential).subscribe({
       next: () => {
-        this.loginService.getProfile().subscribe({
-          next: () => { this.isSubmitting.set(false); this.redirectByRole(); },
+        this.usersService.loadProfile().subscribe({
+          next: (user) => { 
+            this.auth.setUser(user);
+            this.isSubmitting.set(false); 
+            this.redirectByRole(); 
+          },
           error: () => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'Iniciaste sesión con Google, pero no se pudo cargar tu perfil.' }]); },
         });
       },
@@ -127,8 +129,13 @@ export class LoginComponent implements AfterViewInit {
     this.isSubmitting.set(true);
     this.loginService.login({ username: data.username!, password: data.password! }, this.rememberMe()).subscribe({
       next: () => {
-        this.loginService.getProfile().subscribe({
-          next: () => { this.isSubmitting.set(false); this.errors.set([]); this.redirectByRole(); },
+        this.usersService.loadProfile().subscribe({
+          next: (user) => { 
+            this.auth.setUser(user);
+            this.isSubmitting.set(false); 
+            this.errors.set([]); 
+            this.redirectByRole(); 
+          },
           error: (err: any) => { this.isSubmitting.set(false); this.errors.set([{ field: 'form', message: 'Iniciaste sesión, pero no se pudo cargar tu perfil.' }]); },
         });
       },

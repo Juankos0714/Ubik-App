@@ -9,6 +9,8 @@ import { Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { PropertyUserComponent } from '../../../components/List-motels/property-user.component';
 import { Motel } from '../../../core/models/motel.model';
+import { UsersService } from '../../../core/services/user.service';
+import { PaymentService } from '../../../core/services/payment.service';
 
 @Component({
   selector: 'app-dashboard-owner',
@@ -19,6 +21,10 @@ import { Motel } from '../../../core/models/motel.model';
 export class DashboardOwner implements OnInit, OnDestroy {
   private reservationService = inject(ReservationService);
   private motelService = inject(MotelService);
+  private usersService = inject(UsersService);
+  private paymentService = inject(PaymentService);
+  
+  profile$ = this.usersService.profile$;
   
   // Estados reactivos
   summary = signal<OwnerDashboardSummary | null>(null);
@@ -28,7 +34,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   motels = signal<Motel[]>([]);
   
   // Vista activa del panel derecho
-  activeView = signal<'rooms' | 'properties'>('rooms');
+  activeView = signal<'properties' | 'rooms' | 'reservations'>('properties');
 
   // Verificación de código
   verifyCode = '';  // plain string — compatible with [(ngModel)]
@@ -59,6 +65,13 @@ export class DashboardOwner implements OnInit, OnDestroy {
     });
 
     this.loadInitialData();
+
+    // Cargar perfil si aún no está en el BehaviorSubject (sesión restaurada desde localStorage)
+    this.usersService.profile$.pipe(takeUntil(this.destroy$)).subscribe(profile => {
+      if (!profile) {
+        this.usersService.loadProfile().pipe(takeUntil(this.destroy$)).subscribe();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -149,6 +162,30 @@ export class DashboardOwner implements OnInit, OnDestroy {
       case 'CLEANING': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'CHECKED_OUT': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  }
+
+  cancelReservation(id: number) {
+    if (confirm('¿Seguro de cancelar esta reserva?')) {
+      this.paymentService.cancelReservation(id).subscribe({
+        next: () => {
+          const mid = this.motelId();
+          if (mid) this.fetchDashboardData(mid);
+        },
+        error: (err) => console.error('Error cancelando reserva', err)
+      });
+    }
+  }
+
+  deleteReservation(id: number) {
+    if (confirm('¿Seguro de ELIMINAR permanentemente esta reserva? (Debe estar cancelada primero)')) {
+      this.paymentService.deleteReservation(id).subscribe({
+        next: () => {
+          const mid = this.motelId();
+          if (mid) this.fetchDashboardData(mid);
+        },
+        error: (err) => alert('No se pudo eliminar: ' + (err?.error?.message || err?.message))
+      });
     }
   }
 }

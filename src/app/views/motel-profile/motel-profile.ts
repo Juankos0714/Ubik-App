@@ -273,8 +273,7 @@ export class MotelProfile implements OnInit {
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(s.year, s.month, d); date.setHours(0, 0, 0, 0);
       const isPast = date < today;
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      days.push({ day: d, date, available: !isPast && !isWeekend, isPast });
+      days.push({ day: d, date, available: !isPast, isPast });
     }
     return days;
   }
@@ -354,7 +353,7 @@ export class MotelProfile implements OnInit {
     dialogRef.closed.subscribe((confirmed) => {
       if (!confirmed) return;
       this.motelService.deleteMotel(motelId).subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => this.router.navigate(['/dashboard/owner']),
         error: (err) => {
           console.error('Error eliminando motel:', err);
         },

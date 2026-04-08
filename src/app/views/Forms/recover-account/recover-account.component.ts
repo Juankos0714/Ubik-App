@@ -62,8 +62,7 @@ export class RecoverAccountComponent implements OnInit {
     this.success.set(null);
 
     this.forgotService.requestReset(emailCtrl.value).subscribe({
-      next: (res) => {
-        console.log('requestReset OK', res);
+      next: (_res) => {
         this.step.set(2);
         this.loading.set(false);
       },
@@ -99,8 +98,7 @@ export class RecoverAccountComponent implements OnInit {
     this.success.set(null);
 
     this.forgotService.resetPassword(token, newPassword).subscribe({
-      next: (res) => {
-        console.log('resetPassword OK', res);
+      next: (_res) => {
         this.loading.set(false);
         this.error.set(null);
         this.success.set('¡Tu cuenta ha sido reactivada exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.');

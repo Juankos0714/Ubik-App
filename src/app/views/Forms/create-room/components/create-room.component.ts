@@ -208,7 +208,7 @@ export class CreateRoomComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.router.navigate(['/listProperty']);
+          this.router.navigate(['/motelProfile', this.motelId]);
         },
         error: (err) => {
           this.error = err?.message ?? err?.error?.message ?? 'Error creando la habitación.';

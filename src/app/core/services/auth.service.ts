@@ -3,13 +3,15 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Users } from '../models/users.model';
+import { ROLE_IDS } from '../models/roles.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private isBrowser: boolean;
   private http = inject(HttpClient);
 
-  private _user = signal<any | null>(null);
+  private _user = signal<Users | null>(null);
   private _token = signal<string | null>(null);
 
   private _initialized = signal(false);
@@ -20,9 +22,9 @@ export class AuthService {
   isLogged = computed(() => !!this._token());
   initialized = computed(() => this._initialized());
 
-  isAdmin = computed(() => Number(this.role()) === 7392841056473829);
-  isOwner = computed(() => Number(this.role()) === 3847261094857362);
-  isUser = computed(() => Number(this.role()) === 9182736450192837);
+  isAdmin = computed(() => Number(this.role()) === ROLE_IDS.ADMIN);
+  isOwner = computed(() => Number(this.role()) === ROLE_IDS.OWNER);
+  isUser = computed(() => Number(this.role()) === ROLE_IDS.CLIENT);
 
   // ===================== NUEVO: expiración + timer =====================
   private readonly TOKEN_KEY = 'auth_token';
@@ -37,35 +39,43 @@ export class AuthService {
     this.isBrowser = isPlatformBrowser(platformId);
     if (!this.isBrowser) return;
 
-    const rawToken = localStorage.getItem(this.TOKEN_KEY);
-    const token = rawToken ? this.normalizeToken(rawToken) : null;
+    this.initializeAuth();
 
-    // ✅ si hay token, valida expiración antes de setearlo
-    if (token) {
-      const expiresAt = this.getExpiresAtFromStorageOrToken(token);
-      if (!expiresAt || Date.now() >= expiresAt) {
-        this.logout();
-      } else {
-        this._token.set(token);
-        this.scheduleAutoLogout(expiresAt);
-      }
-    }
-
-    // ✅ USER (como lo tenías: localStorage)
-    const storedUser = localStorage.getItem(this.USER_KEY);
-    if (storedUser) this._user.set(JSON.parse(storedUser));
-
-    // Opcional: revalidar al volver a la pestaña (por si expiró mientras estaba en background)
+    // Opcional: revalidar al volver a la pestaña
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.checkExpiryAndLogoutIfNeeded();
     });
     window.addEventListener('focus', () => this.checkExpiryAndLogoutIfNeeded());
 
-    // Opcional: sincroniza logout entre pestañas
     window.addEventListener('storage', (e) => {
       if (e.key === this.TOKEN_KEY && !e.newValue) this.logout();
       if (e.key === this.EXPIRES_KEY) this.checkExpiryAndLogoutIfNeeded();
     });
+  }
+
+  private initializeAuth(isManualRestore = false): boolean {
+    if (!this.isBrowser) return false;
+
+    const rawToken = localStorage.getItem(this.TOKEN_KEY);
+    const token = rawToken ? this.normalizeToken(rawToken) : null;
+
+    if (token) {
+      const expiresAt = this.getExpiresAtFromStorageOrToken(token);
+      if (!expiresAt || Date.now() >= expiresAt) {
+        this.logout();
+        return false;
+      } else {
+        this._token.set(token);
+        this.persistExpiresAt(expiresAt);
+        this.scheduleAutoLogout(expiresAt);
+        
+        const storedUser = localStorage.getItem(this.USER_KEY);
+        if (storedUser) this._user.set(JSON.parse(storedUser));
+        
+        return true;
+      }
+    }
+    return false;
   }
 
   private normalizeToken(token: string): string {
@@ -151,28 +161,13 @@ export class AuthService {
       return;
     }
 
-    const rawToken = localStorage.getItem(this.TOKEN_KEY);
-    const token = rawToken ? this.normalizeToken(rawToken) : null;
+    const hasValidToken = this.initializeAuth(true);
 
-    if (!token) {
+    if (!hasValidToken) {
       this._initialized.set(true);
       return;
     }
 
-    // ✅ valida expiración antes de continuar
-    const expiresAt = this.getExpiresAtFromStorageOrToken(token);
-    if (!expiresAt || Date.now() >= expiresAt) {
-      this.logout();
-      this._initialized.set(true);
-      return;
-    }
-
-    // ✅ set token + programa auto logout
-    this._token.set(token);
-    this.persistExpiresAt(expiresAt);
-    this.scheduleAutoLogout(expiresAt);
-
-    // Si ya tienes user en memoria, no hace falta pegarle a /me
     if (this._user()) {
       this._initialized.set(true);
       return;
@@ -213,6 +208,9 @@ export class AuthService {
   /* ================= USER (localStorage como lo tenías) ================= */
 
   setUser(user: any) {
+    if (user && !user.id && (user.userId || user.sub)) {
+      user = { ...user, id: user.userId ?? user.sub };
+    }
     this._user.set(user);
     if (!this.isBrowser) return;
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));

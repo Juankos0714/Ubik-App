@@ -29,15 +29,10 @@ export class RegisterSelect {
   // =========================
 
   onSelectEstablishment(): void {
-    console.log('Seleccionó Propetario de Establecimiento');
-
     this.router.navigate(['/register-owner']);
-
   }
 
   onSelectClient(): void {
-    console.log('Seleccionó Cliente');
-
     this.router.navigate(['/register-user']);
   }
 

@@ -15,18 +15,13 @@ import { ColombiaService, Department } from '../../core/services/colombia.servic
 
 import { FilterModal, Filters } from '../../components/filter-modal/filter-modal';
 import { Button01 } from '../../components/button-01/button-01';
-import { Button02 } from '../../components/button-02/button-02';
 import { Card3, Card3Informacion } from '../../components/card-3/card-3';
 import { Map as MapComponent, MapPoint } from '../../components/map/map';
 import { LoadingCard3 } from '../../components/loading-card-3/loading-card-3';
 import { SearchService } from '../../core/services/search.service';
 import { PaymentModal } from '../../components/payment-modal/payment-modal';
 
-/**
- * Normaliza un string para comparación robusta:
- * minúsculas, sin tildes, sin puntos, trim.
- * Ej: "Bogotá D.C." → "bogota dc"
- */
+
 function normalize(str: string): string {
   return (str ?? '')
     .toLowerCase()
@@ -42,6 +37,7 @@ function normalize(str: string): string {
   templateUrl: './explore.html',
   imports: [CommonModule, Button01, Card3, MapComponent, LoadingCard3, RouterLink],
 })
+
 export class Explore implements OnInit {
 
   private roomService = inject(RoomService);
@@ -101,7 +97,7 @@ export class Explore implements OnInit {
 
     forkJoin({
       rooms: this.roomService.getRooms(),
-      motels: this.motelService.getAllMotels(),   // ✅ endpoint público, sin auth
+      motels: this.motelService.getAllMotels(),   
       services: this.serviceService.getServices(),
       colombia: this.colombiaService.getAll(),
     }).subscribe({
@@ -151,11 +147,8 @@ export class Explore implements OnInit {
         // Muestra todos temporalmente para poblar el mapa inicial
         this.applyFilters(this.currentFilters);
 
-        // Aplica el filtro guardado en ráfaga progresiva
-        setTimeout(() => {
-          this.applyHeaderSearch();
-          this.cdr.markForCheck();
-        }, 2000);
+        // Aplicar filtro de búsqueda del header de forma inmediata tras cargar los datos
+        this.applyHeaderSearch();
 
         this.loading = false;
         this.cdr.markForCheck();

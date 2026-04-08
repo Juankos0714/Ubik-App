@@ -71,6 +71,7 @@ export class Header implements OnInit, OnDestroy {
 
   isLogged = this.auth.isLogged;
   role = this.auth.role;
+  isAdmin = computed(() => this.role() === 7392841056473829);
 
   // ── Ruta actual ───────────────────────────────────────────────
   currentUrl = signal<string>('/');
