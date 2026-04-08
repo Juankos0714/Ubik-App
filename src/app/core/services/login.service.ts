@@ -67,17 +67,8 @@ export class LoginService {
   }
 
   /* ======================= */
-  /* PERFIL DEL USUARIO */
+  /* AUTH HELPERS */
   /* ======================= */
-
-  getProfile(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user`).pipe(
-      tap((user) => this.auth.setUser(user)),
-      catchError((error) => {
-        return throwError(() => error);
-      }),
-    );
-  }
 
   /* ======================= */
 

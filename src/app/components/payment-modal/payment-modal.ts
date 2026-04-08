@@ -293,24 +293,12 @@ export class PaymentModal implements OnInit, OnDestroy {
     ]).subscribe({
       next: ([rPrev, rCurr, rNext]) => {
         const all = [...rPrev, ...rCurr, ...rNext];
-        console.log('📅 Reservas cargadas raw:', all.length, JSON.stringify(all.map(r => ({
-          id: (r as any).id,
-          status: (r as any).status,
-          checkIn: (r as any).checkInDate,
-          checkOut: (r as any).checkOutDate,
-        }))));
 
         const uniqueById = new Map<number, RoomReservation>();
         for (const r of all) {
           uniqueById.set(r.id, r);
         }
         this.reservations = Array.from(uniqueById.values()).filter((r) => this.isBlockingReservation(r));
-        console.log('🔒 Reservas bloqueantes:', this.reservations.length, this.reservations.map(r => ({
-          id: (r as any).id,
-          status: (r as any).status,
-          checkIn: (r as any).checkInDate,
-          checkOut: (r as any).checkOutDate,
-        })));
         this.updateTimeSlotAvailability();
       },
       error: (err) => {
@@ -658,8 +646,9 @@ export class PaymentModal implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        // Endpoint no disponible → no bloquear el flujo
-        this.availabilityOk = true;
+        // Si el backend no responde, bloquear la reserva — no asumir disponible
+        this.availabilityOk = null;
+        this.availabilityMsg = 'No se pudo verificar disponibilidad. Por favor intenta de nuevo.';
         this.checkingAvailability = false;
       },
     });
@@ -783,15 +772,8 @@ export class PaymentModal implements OnInit, OnDestroy {
   }
 
   private resolveCurrentUserId(): number | null {
-    let storageUser: any = null;
-    if (typeof localStorage !== 'undefined') {
-      const raw = localStorage.getItem('user');
-      if (raw) {
-        try { storageUser = JSON.parse(raw); } catch { storageUser = null; }
-      }
-    }
-    const user = this.auth.user() ?? storageUser;
-    const rawId = user?.id ?? user?.userId ?? user?.sub;
+    const user = this.auth.user();
+    const rawId = (user as any)?.id ?? (user as any)?.userId ?? (user as any)?.sub;
     const userId = typeof rawId === 'number' ? rawId : Number(rawId);
     return Number.isFinite(userId) ? userId : null;
   }

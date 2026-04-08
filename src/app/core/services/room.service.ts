@@ -56,15 +56,47 @@ export class RoomService {
   }
 
   getRooms(): Observable<Room[]> {
-    return this.inBrowser(this.http.get<Room[]>(this.roomsUrl));
+    return this.inBrowser(
+      this.http.get<any[]>(this.roomsUrl).pipe(
+        map(rooms => rooms.map(r => this.mapRoom(r)))
+      )
+    );
   }
 
   getRoomById(id: number): Observable<Room> {
-    return this.inBrowser(this.http.get<Room>(`${this.roomsUrl}/${id}`));
+    return this.inBrowser(
+      this.http.get<any>(`${this.roomsUrl}/${id}`).pipe(
+        map(r => this.mapRoom(r))
+      )
+    );
   }
 
   getRoomsByMotel(motelId: number): Observable<Room[]> {
-    return this.inBrowser(this.http.get<Room[]>(`${this.baseUrl}/motels/${motelId}/rooms`));
+    return this.inBrowser(
+      this.http.get<any[]>(`${this.roomsUrl}/motel/${motelId}`).pipe(
+        map(rooms => rooms.map(r => this.mapRoom(r)))
+      )
+    );
+  }
+
+  private mapRoom(r: any): Room {
+    return {
+      id: r.id,
+      motelId: r.motelId ?? r.motel_id,
+      motelName: r.motelName ?? r.motel_name,
+      motelCity: r.motelCity ?? r.motel_city ?? r.city,
+      motelAddress: r.motelAddress ?? r.motel_address ?? r.address,
+      motelPhoneNumber: r.motelPhoneNumber ?? r.motel_phone_number ?? r.phoneNumber,
+      number: r.number ?? r.roomNumber ?? r.room_number,
+      roomType: r.roomType ?? r.room_type ?? 'Habitación',
+      price: r.price ?? r.pricePerHour ?? r.price_per_hour ?? 0,
+      description: r.description ?? r.descripcion ?? '',
+      imageUrls: r.imageUrls ?? r.images ?? r.image_urls ?? [],
+      serviceIds: r.serviceIds ?? r.services?.map((s: any) => s.id) ?? r.service_ids ?? [],
+      latitude: r.latitude,
+      longitude: r.longitude,
+      isAvailable: r.isAvailable ?? r.available ?? r.is_available ?? true
+    };
   }
 
   updateRoom(id: number, payload: any): Observable<Room> {

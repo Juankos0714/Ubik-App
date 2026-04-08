@@ -3,8 +3,10 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
-import { PropertyUserService } from '../../core/services/list-motel.service';
+import { Dialog } from '@angular/cdk/dialog';
+import { MotelService } from '../../core/services/motel.service';
 import { RoomService } from '../../core/services/room.service';
+import { ConfirmModal } from '../confirm-modal/confirm-modal';
 import { Motel, MotelImage } from '../../core/models/motel.model';
 
 export type MotelListItem = Motel & {
@@ -29,8 +31,9 @@ export class PropertyUserComponent implements OnInit {
   private isBrowser: boolean;
 
   constructor(
-    private propertyUserService: PropertyUserService,
+    private motelService: MotelService,
     private roomService: RoomService,
+    private dialog: Dialog,
     @Inject(PLATFORM_ID) platformId: Object,
     private router: Router,
   ) {
@@ -58,7 +61,7 @@ export class PropertyUserComponent implements OnInit {
     this.loading = true;
     this.errorMsg = null;
 
-    this.propertyUserService
+    this.motelService
       .getMyMotels()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -76,14 +79,25 @@ export class PropertyUserComponent implements OnInit {
   }
 
   deleteRoom(roomId: number) {
-    if (!confirm('¿Eliminar esta habitación?')) return;
-
-    this.roomService.deleteRoom(roomId).subscribe({
-      next: () => this.loadProperties(),
-      error: (err) => {
-        console.error('Error eliminando habitación:', err);
-        alert('No se pudo eliminar la habitación.');
+    const dialogRef = this.dialog.open(ConfirmModal, {
+      data: {
+        title: 'Eliminar habitación',
+        message: '¿Estás seguro de que deseas eliminar esta habitación? Esta acción no se puede deshacer.',
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar',
       },
+      panelClass: ['!rounded-2xl'],
+    });
+
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      this.roomService.deleteRoom(roomId).subscribe({
+        next: () => this.loadProperties(),
+        error: (err) => {
+          console.error('Error eliminando habitación:', err);
+        },
+      });
     });
   }
 

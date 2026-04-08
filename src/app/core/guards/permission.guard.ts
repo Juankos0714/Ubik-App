@@ -18,7 +18,7 @@ export const permissionGuard =
     const allowed = permissionService.hasPermission(requiredPermission);
 
     if (!allowed) {
-      return router.parseUrl('/home');
+      return router.parseUrl('/');
     }
 
     return true;

@@ -74,13 +74,13 @@ export class RegisterService {
       comfirmPassword: data.comfirmPassword?.trim(),
       phoneNumber: data.phoneNumber?.trim(),
       anonymous: data.anonymous ?? false,
-      roleId: data.roleId ?? 3,
+      roleId: data.roleId ?? 9182736450192837,
       birthDate: data.birthDate,
       latitude: data.latitude ?? 4.6097,
       longitude: data.longitude ?? -74.0721
     };
 
-    console.log('🚀 REGISTER PAYLOAD', payload);
+
 
     return this.http.post(
       this.REGISTER_URL,
