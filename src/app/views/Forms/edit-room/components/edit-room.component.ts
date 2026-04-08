@@ -255,7 +255,7 @@ export class EditRoomComponent implements OnInit, OnDestroy {
       finalize(() => this.loading = false)
     ).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard-owner']);
+        this.router.navigate(['/dashboard/owner']);
       },
       error: (err) => {
         if (err?.message === 'active_reservations' || err?.message === 'cancelled') return;

@@ -261,12 +261,12 @@
           
         }
 
-        @for (room of filteredRooms; track room.id) {
+        @for (room of (rooms | filterByAvailability:filterAvailable); track room.id) {
           <app-card [card]="room"></app-card>
         }
       </div>
 
-      @if (!loading && filteredRooms.length === 0) {
+      @if (!loading && (rooms | filterByAvailability:filterAvailable).length === 0) {
         <div class="text-center py-16 text-white/30 font-['DM_Sans',sans-serif]">
           <svg class="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
