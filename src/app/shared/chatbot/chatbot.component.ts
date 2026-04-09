@@ -34,15 +34,23 @@ export class ChatbotComponent {
   });
 
   toggleChat() {
+    const wasClosed = !this.isOpen();
     this.isOpen.update(v => !v);
+    
+    if (wasClosed && this.messages().length === 0) {
+      this.sendMessage('mostrar opciones', true);
+    }
   }
 
-  sendMessage() {
-    const text = this.message().trim();
+  sendMessage(customText?: string, isHidden: boolean = false) {
+    const text = customText ?? this.message().trim();
     if (!text) return;
 
-    this.messages.update(m => [...m, { from: 'user', text }]);
-    this.message.set('');
+    if (!isHidden) {
+      this.messages.update(m => [...m, { from: 'user', text }]);
+      this.message.set('');
+    }
+    
     this.loading.set(true);
 
     const body = {
@@ -58,9 +66,20 @@ export class ChatbotComponent {
     this.http.post<any>(`${environment.apiUrl}/ai`, body, { headers })
       .subscribe({
         next: (res) => {
-
-
           const reply = res?.message || 'Sin respuesta';
+
+          // Detectar si es un mensaje de "calentamiento" de la IA
+          const isWarmUp = reply.toLowerCase().includes('iniciando') || 
+                           reply.toLowerCase().includes('motor') || 
+                           reply.toLowerCase().includes('segundos');
+
+          if (isHidden && isWarmUp) {
+            // Si es un mensaje oculto y la IA se está iniciando, reintentamos en 7 segundos
+            setTimeout(() => {
+              this.sendMessage(text, true);
+            }, 7000);
+            return; // No mostramos el mensaje ni quitamos el loading
+          }
 
           // Primero mostramos el mensaje con typing
           this.simulateTyping(reply);
@@ -78,7 +97,14 @@ export class ChatbotComponent {
             ]);
           }
         },
-        error: () => this.simulateTyping('Error al procesar mensaje')
+        error: () => {
+          if (isHidden) {
+            // Si hubo error en el mensaje oculto, reintentamos después
+            setTimeout(() => this.sendMessage(text, true), 10000);
+          } else {
+            this.simulateTyping('Error al procesar mensaje');
+          }
+        }
       });
   }
 
