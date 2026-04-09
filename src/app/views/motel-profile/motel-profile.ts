@@ -72,7 +72,10 @@ export class MotelProfile implements OnInit {
   editMode = false;
   editForm: MotelEditForm = { description: '', address: '', city: '', phoneNumber: '' };
 
-  get isOwner(): boolean { return this.authService.isOwner(); }
+  get isOwner(): boolean { 
+    if (!this.authService.isOwner() || !this.motel) return false;
+    return this.motel.propertyId === this.authService.user()?.id;
+  }
 
   private calendarStates = new Map<number, RoomCalendarState>();
 
@@ -84,7 +87,6 @@ export class MotelProfile implements OnInit {
     return this.motel?.imageUrls?.[index]?.url ?? fallback;
   }
 
-  // ── Helper: estado de aprobación en español ───────────────────────────────
   get statusLabel(): string {
     const map: Record<string, string> = {
       APPROVED: 'Aprobado',

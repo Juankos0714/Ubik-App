@@ -1,5 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ConfirmModal } from '../../../components/confirm-modal/confirm-modal';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { filter, switchMap, take, tap, catchError, of, finalize } from 'rxjs';
@@ -22,6 +24,7 @@ export class EditProfileComponent {
   private cdr = inject(ChangeDetectorRef);
   private AuthService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
+  private dialog = inject(Dialog);
 
   loading = true;
   saving = false;
@@ -136,11 +139,25 @@ export class EditProfileComponent {
   onDeleteProfile() {
     this.errorMsg = null;
 
-    const ok = confirm('¿Seguro que deseas eliminar tu perfil? Esta acción no se puede deshacer.');
-    if (!ok) return;
+    const dialogRef = this.dialog.open(ConfirmModal, {
+      data: {
+        title: 'Eliminar cuenta',
+        message: '¿Estás seguro de que deseas eliminar tu perfil permanentemente? Esta acción borrará todos tus datos y no se puede deshacer.',
+        confirmText: 'Sí, eliminar cuenta',
+        cancelText: 'Cancelar',
+      },
+      panelClass: ['!rounded-2xl'],
+    });
 
-    this.deleting = true;
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) return;
 
+      this.deleting = true;
+      this.executeDeleteProfile();
+    });
+  }
+
+  private executeDeleteProfile() {
     this.usersService
       .deleteProfile()
       .pipe(

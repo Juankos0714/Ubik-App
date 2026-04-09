@@ -4,8 +4,10 @@ export interface Reservation {
   userId: number;
   checkInDate: string;
   checkOutDate: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CHECKED_IN' | 'CHECKED_OUT' | 'CANCELLED';
+  status: 'PENDIENTE' | 'PAGADO' | 'CHECKED_IN' | 'CHECKED_OUT' | 'CANCELADO' | 'INGRESO';
   totalPrice: number;
+  motelId?: number;
+  motelName?: string;
   specialRequests?: string;
   confirmationCode?: string;
   createdAt?: string;

@@ -1,7 +1,10 @@
-  import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
+import { ConfirmModal } from '../../../components/confirm-modal/confirm-modal';
+import { QRScannerModal } from '../../../components/qr-scanner-modal/qr-scanner-modal';
+import { ReservationDetailModal } from '../../../components/reservation-detail-modal/reservation-detail-modal';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { MotelService } from '../../../core/services/motel.service';
 import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../../../core/models/reservation.model';
@@ -15,7 +18,7 @@ import { PaymentService } from '../../../core/services/payment.service';
 @Component({
   selector: 'app-dashboard-owner',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, PropertyUserComponent],
+  imports: [CommonModule, FormsModule, PropertyUserComponent],
   templateUrl: './dashboard-owner.html',
 })
 export class DashboardOwner implements OnInit, OnDestroy {
@@ -23,6 +26,7 @@ export class DashboardOwner implements OnInit, OnDestroy {
   private motelService = inject(MotelService);
   private usersService = inject(UsersService);
   private paymentService = inject(PaymentService);
+  private dialog = inject(Dialog);
   
   profile$ = this.usersService.profile$;
   
@@ -132,17 +136,61 @@ export class DashboardOwner implements OnInit, OnDestroy {
     this.verifying.set(true);
     this.reservationService.verifyCode(code).subscribe({
       next: (res) => {
-        this.verificationResult.set(res);
         this.verifying.set(false);
+        this.openReservationDetail(res);
+        this.verifyCode = '';
       },
       error: (err) => {
         console.error('Invalid code', err);
-        this.verificationResult.set(null);
         this.verifying.set(false);
+        this.verificationResult.set(null);
         alert('Código no encontrado o ya procesado');
       }
     });
   }
+
+  openScanner() {
+    const dialogRef = this.dialog.open<string>(QRScannerModal, {
+      panelClass: ['!rounded-[2.5rem]', 'max-w-md', 'w-full']
+    });
+
+    dialogRef.closed.subscribe(code => {
+      if (code) {
+        this.verifyCode = code;
+        this.onVerifyCode();
+      }
+    });
+  }
+
+  openReservationDetail(res: any) {
+    // Seguridad: verificar si el dueño actual posee el motel de esta reserva
+    const ownedIds = this.motels().map(m => m.id);
+    const mId = res.motelId || this.motelId(); // Fallback if partial from board
+    const isActuallyMine = !!mId && ownedIds.includes(mId);
+
+    const dialogRef = this.dialog.open(ReservationDetailModal, {
+      data: {
+        reservation: {
+          ...res,
+          id: res.id || res.reservationId, // Normalizar id
+          status: res.status || res.reservationStatus, // Normalizar status
+          motelId: mId
+        },
+        isOwner: isActuallyMine
+      },
+      panelClass: ['!rounded-[2.5rem]', 'max-w-lg', 'w-full']
+    });
+
+
+    dialogRef.closed.subscribe((result: any) => {
+      if (result?.success) {
+        const mid = this.motelId();
+        if (mid) this.fetchDashboardData(mid);
+      }
+    });
+  }
+
+
 
   onCheckIn(id: number) {
     this.reservationService.checkIn(id).subscribe(() => {
@@ -166,7 +214,18 @@ export class DashboardOwner implements OnInit, OnDestroy {
   }
 
   cancelReservation(id: number) {
-    if (confirm('¿Seguro de cancelar esta reserva?')) {
+    const dialogRef = this.dialog.open(ConfirmModal, {
+      data: {
+        title: 'Cancelar reserva',
+        message: '¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.',
+        confirmText: 'Sí, cancelar',
+        cancelText: 'Volver',
+      },
+      panelClass: ['!rounded-2xl'],
+    });
+
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) return;
       this.paymentService.cancelReservation(id).subscribe({
         next: () => {
           const mid = this.motelId();
@@ -174,11 +233,22 @@ export class DashboardOwner implements OnInit, OnDestroy {
         },
         error: (err) => console.error('Error cancelando reserva', err)
       });
-    }
+    });
   }
 
   deleteReservation(id: number) {
-    if (confirm('¿Seguro de ELIMINAR permanentemente esta reserva? (Debe estar cancelada primero)')) {
+    const dialogRef = this.dialog.open(ConfirmModal, {
+      data: {
+        title: 'ELIMINAR reserva',
+        message: '¿Estás seguro de que deseas ELIMINAR permanentemente esta reserva? (Debe estar cancelada primero). Esta acción es irreversible.',
+        confirmText: 'Sí, ELIMINAR',
+        cancelText: 'Volver',
+      },
+      panelClass: ['!rounded-2xl'],
+    });
+
+    dialogRef.closed.subscribe((confirmed) => {
+      if (!confirmed) return;
       this.paymentService.deleteReservation(id).subscribe({
         next: () => {
           const mid = this.motelId();
@@ -186,6 +256,6 @@ export class DashboardOwner implements OnInit, OnDestroy {
         },
         error: (err) => alert('No se pudo eliminar: ' + (err?.error?.message || err?.message))
       });
-    }
+    });
   }
 }
