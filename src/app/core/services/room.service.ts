@@ -27,7 +27,7 @@ export interface RoomReservation {
   end_time?: string;
   startTime?: string;
   endTime?: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'CHECKED_IN' | 'CHECKED_OUT' | 'pending' | 'confirmed' | 'cancelled';
+  status: 'PENDIENTE' | 'PAGADO' | 'CANCELADO' | 'CHECKED_IN' | 'CHECKED_OUT' | 'pendiente' | 'pagado' | 'cancelado';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -150,20 +150,18 @@ export class RoomService {
    */
   getReservationsForDate(roomId: number, date: string): Observable<RoomReservation[]> {
     return this.inBrowser(
-      this.http.get<RoomReservation[]>(
+      this.http.get<any[]>(
         `${this.baseUrl}/reservations/room/${roomId}/active`
       ).pipe(
+        map(reservations => reservations.map(r => this.mapReservation(r))),
         map(reservations => reservations.filter(r => {
-          const res = r as any;
-          const rawStart: string = res.checkInDate ?? res.startDate ?? res.start_date ?? '';
-          const rawEnd: string   = res.checkOutDate ?? res.endDate ?? res.end_date ?? '';
+          const rawStart: string = r.checkInDate ?? r.startDate ?? r.start_date ?? '';
+          const rawEnd: string   = r.checkOutDate ?? r.endDate ?? r.end_date ?? '';
           if (!rawStart) return false;
-          // Parsear como hora local (backend guarda en America/Bogota)
           const start    = new Date(rawStart);
           const end      = rawEnd ? new Date(rawEnd) : start;
           const dayStart = new Date(date + 'T00:00:00');
           const dayEnd   = new Date(date + 'T23:59:59');
-          // Incluir si la reserva toca este día
           return start <= dayEnd && end >= dayStart;
         }))
       )
@@ -176,8 +174,40 @@ export class RoomService {
    */
   getActiveReservations(roomId: number): Observable<RoomReservation[]> {
     return this.inBrowser(
-      this.http.get<RoomReservation[]>(`${this.baseUrl}/reservations/room/${roomId}/active`)
+      this.http.get<any[]>(`${this.baseUrl}/reservations/room/${roomId}/active`).pipe(
+        map(list => list.map(r => this.mapReservation(r)))
+      )
     );
+  }
+
+  private mapReservation(r: any): RoomReservation {
+    let status = this.mapStatus(r.status);
+    
+    // Auto-cancelar si pasó el tiempo y seguía PENDIENTE
+    const rawStart: string = r.checkInDate ?? r.startDate ?? r.start_date ?? '';
+    if (status === 'PENDIENTE' && rawStart) {
+      const checkIn = new Date(rawStart);
+      if (Date.now() > checkIn.getTime()) {
+        status = 'CANCELADO';
+      }
+    }
+
+    return {
+      ...r,
+      status
+    } as RoomReservation;
+  }
+
+  private mapStatus(status: string): any {
+    if (!status) return status;
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'PENDIENTE';
+      case 'CONFIRMED': return 'PAGADO';
+      case 'CANCELLED': return 'CANCELADO';
+      case 'CHECKED_IN': return 'INGRESO'; // Mapeado a INGRESO por solicitud
+      default: return status;
+    }
   }
 
   subscribeAvailability(roomId: number, email: string): Observable<void> {

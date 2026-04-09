@@ -40,6 +40,8 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@stripe/stripe-js": "^8.9.0",
     "@tailwindcss/postcss": "^4.1.17",
+    "@zxing/library": "^0.21.0",
+    "@zxing/ngx-scanner": "^20.0.0",
     "angularx-qrcode": "^20.0.0",
     "driver.js": "^1.4.0",
     "express": "^5.1.0",

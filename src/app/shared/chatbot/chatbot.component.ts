@@ -58,7 +58,7 @@ export class ChatbotComponent {
     this.http.post<any>(`${environment.apiUrl}/ai`, body, { headers })
       .subscribe({
         next: (res) => {
-          console.log('Respuesta API:', res);
+
 
           const reply = res?.message || 'Sin respuesta';
 
@@ -111,5 +111,23 @@ export class ChatbotComponent {
       const container = document.querySelector('.chat-messages');
       container?.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }, 100);
+  }
+
+  isImageUrl(value: any): boolean {
+    if (typeof value !== 'string') return false;
+    const url = value.toLowerCase();
+    return url.startsWith('http') && (
+      url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || 
+      url.endsWith('.webp') || url.endsWith('.gif') || url.includes('cloudinary.com')
+    );
+  }
+
+  isImageArray(value: any): boolean {
+    return Array.isArray(value) && value.length > 0 && (this.isImageUrl(value[0]) || this.isImageUrl(value[0]?.url));
+  }
+
+  extractImageUrl(item: any): string | null {
+    if (typeof item === 'string') return item;
+    return item?.url || item?.image_url || null;
   }
 }

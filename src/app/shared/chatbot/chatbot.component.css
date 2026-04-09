@@ -1,80 +1,10 @@
-/* BOTÓN FLOTANTE */
-.chat-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #6E2A35, #A72027);
-  color: white;
-  padding: 15px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
+/* Los estilos de este componente han sido migrados a Tailwind CSS en el HTML */
 
-/* CHAT */
-.chat-window {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 450px;
-  background: #1e2128;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+/* Utilidad para ocultar el scrollbar en el área de mensajes */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-
-/* HEADER */
-.chat-header {
-  background: #14090C;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* MENSAJES */
-.chat-messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-}
-
-/* MENSAJE */
-.message {
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  max-width: 70%;
-  background: #2d2f35;
-}
-
-.message.user {
-  margin-left: auto;
-  background: linear-gradient(135deg, #6E2A35, #A72027);
-}
-
-/* INPUT */
-.chat-input {
-  display: flex;
-  padding: 10px;
-  background: #2d2f35;
-}
-
-.chat-input input {
-  flex: 1;
-  background: #1a1c22;
-  border: none;
-  color: white;
-  padding: 8px;
-}
-
-.chat-input button {
-  margin-left: 5px;
-  background: linear-gradient(135deg, #6E2A35, #A72027);
-  border: none;
-  color: white;
-  padding: 8px;
-  cursor: pointer;
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

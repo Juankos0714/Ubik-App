@@ -1,50 +1,123 @@
-<!-- BOTÓN FLOTANTE -->
-<div class="chat-button" (click)="toggleChat()">
-  💬
+<!-- BOTÓN FLOTANTE (Activador) -->
+<div 
+  (click)="toggleChat()"
+  class="fixed bottom-6 right-6 w-14 h-14 rounded-full flex items-center justify-center cursor-pointer
+         bg-gradient-to-br from-[#6E2A35] to-[#A72027] text-white text-2xl shadow-2xl 
+         hover:scale-110 hover:shadow-red-500/30 transition-all duration-300 z-[1001]
+         border border-white/20 backdrop-blur-sm group"
+>
+  <span class="group-hover:rotate-12 transition-transform duration-300">💬</span>
+  
+  <!-- Efecto de pulso discreto -->
+  <div class="absolute inset-0 rounded-full bg-red-500/20 animate-ping -z-10"></div>
 </div>
 
-<!-- CHAT -->
-<div class="chat-window" *ngIf="isOpen()">
-  <div class="chat-header">
-    Asistente IA
-    <span (click)="toggleChat()">✖</span>
+<!-- VENTANA DE CHAT -->
+<div 
+  *ngIf="isOpen()"
+  class="fixed bottom-24 right-6 w-[350px] h-[520px] max-w-[90vw] flex flex-col overflow-hidden
+         bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem]
+         shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[1000] animate-in slide-in-from-bottom-5 fade-in duration-300"
+>
+  
+  <!-- HEADER -->
+  <div class="bg-gradient-to-r from-[#14090C] to-[#2A0F13] px-6 py-4 flex items-center justify-between border-b border-white/5">
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+      <h3 class="text-white font-semibold tracking-wide text-sm uppercase opacity-90">Asistente Virtual Ubik</h3>
+    </div>
+    <button 
+      (click)="toggleChat()"
+      class="text-white/40 hover:text-white transition-colors p-1"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
   </div>
 
-  <div class="chat-messages">
+  <!-- AREA DE MENSAJES -->
+  <div class="chat-messages flex-1 overflow-y-auto px-4 py-6 scrollbar-hide space-y-4">
+    
     <div *ngFor="let msg of messages()" 
-     [class.user]="msg.from === 'user'" 
-     class="message">
-
-    <!-- TEXTO -->
-    <div *ngIf="msg.text">
-        {{ msg.text }}
-    </div>
-
-    <!-- DATA GENÉRICA -->
-    <div *ngIf="msg.data && msg.data.length">
-        <div *ngFor="let item of msg.data" class="card">
-
-        <div *ngFor="let key of getKeys(item)">
-            <p>
-            <strong>{{ key }}:</strong> {{ item[key] }}
-            </p>
+         [class.justify-end]="msg.from === 'user'" 
+         class="flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+      
+      <div 
+        [ngClass]="msg.from === 'user' 
+          ? 'bg-gradient-to-br from-[#6E2A35] to-[#A72027] text-white rounded-2xl rounded-tr-none shadow-lg' 
+          : 'bg-white/5 border border-white/10 text-white/90 rounded-2xl rounded-tl-none'"
+        class="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed shadow-sm font-['DM_Sans',sans-serif]"
+      >
+        <!-- TEXTO -->
+        <div *ngIf="msg.text" class="whitespace-pre-wrap">
+          {{ msg.text }}
         </div>
 
+        <!-- DATA GENÉRICA (Entidades) -->
+        <div *ngIf="msg.data && msg.data.length" class="mt-3 space-y-3">
+          <div *ngFor="let item of msg.data" 
+               class="p-3 bg-black/40 rounded-xl border border-white/5 text-[12px] shadow-inner">
+            
+            <div *ngFor="let key of getKeys(item)" class="mb-2 last:mb-0">
+              
+              <!-- Caso: Es una imagen individual -->
+              <div *ngIf="isImageUrl(item[key])" class="mt-1">
+                <span class="text-white/40 block mb-1 uppercase text-[10px]">{{ key }}</span>
+                <img [src]="item[key]" class="w-full h-32 object-cover rounded-lg border border-white/10 shadow-md hover:scale-[1.02] transition-transform" />
+              </div>
+
+              <!-- Caso: Es un arreglo de imágenes -->
+              <div *ngIf="isImageArray(item[key])" class="mt-1">
+                <span class="text-white/40 block mb-1 uppercase text-[10px]">{{ key }}</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <img *ngFor="let imgObj of item[key] | slice:0:4" 
+                       [src]="extractImageUrl(imgObj)" 
+                       class="w-full h-20 object-cover rounded-lg border border-white/10 shadow-sm" />
+                </div>
+              </div>
+
+              <!-- Caso: Texto normal -->
+              <div *ngIf="!isImageUrl(item[key]) && !isImageArray(item[key])">
+                <span class="text-white/40 font-medium mr-1 uppercase text-[10px] tracking-tighter">{{ key }}:</span>
+                <span class="text-white/80 leading-relaxed">{{ item[key] }}</span>
+              </div>
+
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
+    <!-- Indicador de carga -->
+    <div *ngIf="loading()" class="flex justify-start">
+      <div class="bg-white/5 px-4 py-2.5 rounded-2xl rounded-tl-none flex gap-1">
+        <div class="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce"></div>
+        <div class="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+        <div class="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+      </div>
     </div>
-
-    <div *ngIf="loading()" class="message bot">...</div>
   </div>
 
-  <div class="chat-input">
-    <input 
+  <!-- BARRA DE INPUT -->
+  <div class="p-4 bg-black/20 border-t border-white/5">
+    <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-1.5 focus-within:border-red-500/50 transition-all">
+      <input 
         [ngModel]="message()" 
         (ngModelChange)="message.set($event)" 
         (keyup.enter)="sendMessage()" 
-        placeholder="Escribe..." 
-    />
-    <button (click)="sendMessage()">Enviar</button>
+        class="flex-1 bg-transparent border-none text-white text-sm px-3 focus:outline-none placeholder:text-white/20"
+        placeholder="¿En qué puedo ayudarte?" 
+      />
+      <button 
+        (click)="sendMessage()"
+        class="p-2 bg-[#A72027] text-white rounded-xl hover:bg-[#6E2A35] transition-colors shadow-lg disabled:opacity-50"
+        [disabled]="!message().trim()"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

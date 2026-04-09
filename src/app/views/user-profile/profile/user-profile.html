@@ -91,38 +91,63 @@
 
     <!-- Historial de Reservas -->
     <div class="mt-8">
-      <h2 class="text-xl font-bold text-white mb-4">Historial de Reservas</h2>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 class="text-xl font-bold text-white">Historial de Reservas</h2>
+        
+        <!-- Filtros -->
+        <div class="flex flex-wrap gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
+          <button 
+            (click)="activeFilter.set('ALL')"
+            [class]="'px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ' + (activeFilter() === 'ALL' ? 'bg-white text-black shadow-lg shadow-white/10' : 'text-white/40 hover:text-white')"
+          >TODOS</button>
+          <button 
+            (click)="activeFilter.set('PENDIENTE')"
+            [class]="'px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ' + (activeFilter() === 'PENDIENTE' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-white/40 hover:text-white')"
+          >PENDIENTES</button>
+          <button 
+            (click)="activeFilter.set('CANCELADO')"
+            [class]="'px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ' + (activeFilter() === 'CANCELADO' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-white/40 hover:text-white')"
+          >CANCELADOS</button>
+          <button 
+            (click)="activeFilter.set('PAGADO')"
+            [class]="'px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ' + (activeFilter() === 'PAGADO' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-white/40 hover:text-white')"
+          >PAGADOS</button>
+        </div>
+      </div>
       
-      @if (reservations.length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          @for (res of reservations; track res.id) {
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+      @if (filteredReservations().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          @for (res of filteredReservations(); track res.id) {
+            <div 
+              (click)="openReservationDetail(res)"
+              class="group bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all duration-300 cursor-pointer hover:border-white/20 hover:scale-[1.01]"
+            >
               <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-mono text-white/50">#{{ res.confirmationCode || res.id }}</span>
+                <span class="text-xs font-mono text-white/50 group-hover:text-white/80 transition-colors">#{{ res.confirmationCode || res.id }}</span>
                 <span class="px-2 py-1 rounded-full text-[10px] font-bold"
                   [ngClass]="{
-                    'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': res.status === 'CONFIRMED' || res.status === 'CHECKED_IN' || res.status === 'CHECKED_OUT',
-                    'bg-orange-500/20 text-orange-400 border border-orange-500/30': res.status === 'PENDING',
-                    'bg-red-500/20 text-red-400 border border-red-500/30': res.status === 'CANCELLED'
+                    'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30': res.status === 'PAGADO' || res.status === 'CHECKED_IN' || res.status === 'CHECKED_OUT' || res.status === 'INGRESO',
+                    'bg-orange-500/20 text-orange-400 border border-orange-500/30': res.status === 'PENDIENTE',
+                    'bg-red-500/20 text-red-400 border border-red-500/30': res.status === 'CANCELADO'
                   }">
                   {{ res.status }}
                 </span>
               </div>
               <div class="space-y-1 mb-4">
-                <p class="text-sm text-white/70"><i class="fa-regular fa-calendar-check mr-2"></i> {{ res.checkInDate | date:'short' }}</p>
-                <p class="text-sm text-white/70"><i class="fa-solid fa-person-walking-arrow-right mr-2"></i> {{ res.checkOutDate | date:'short' }}</p>
+                <p class="text-sm text-white/70"><i class="fa-regular fa-calendar-check mr-2 opacity-50"></i> {{ res.checkInDate | date:'short' }}</p>
+                <p class="text-sm text-white/70"><i class="fa-solid fa-person-walking-arrow-right mr-2 opacity-50"></i> {{ res.checkOutDate | date:'short' }}</p>
               </div>
               <div class="flex justify-between items-end border-t border-white/10 pt-3">
-                <span class="text-xs text-white/40">Total</span>
-                <span class="text-lg font-semibold text-white">{{ res.totalPrice | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span class="text-[10px] uppercase tracking-widest text-white/30 font-bold">Total</span>
+                <span class="text-lg font-black text-white">{{ res.totalPrice | currency:'COP':'symbol':'1.0-0' }}</span>
               </div>
             </div>
           }
         </div>
       } @else {
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/50 flex flex-col items-center gap-3">
-          <i class="fa-solid fa-bed text-2xl opacity-50"></i>
-          <span>No tienes reservaciones en tu historial aún.</span>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-white/50 flex flex-col items-center gap-3 animate-in fade-in duration-700">
+          <i class="fa-solid fa-calendar-xmark text-3xl opacity-20"></i>
+          <span class="text-sm">No se encontraron reservaciones con este filtro.</span>
         </div>
       }
     </div>

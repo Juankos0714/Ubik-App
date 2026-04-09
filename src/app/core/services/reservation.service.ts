@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, EMPTY, Subject } from 'rxjs';
+import { Observable, EMPTY, Subject, map } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { OwnerDashboardSummary, RoomStatusBoardResponse, Reservation } from '../models/reservation.model';
@@ -32,21 +32,65 @@ export class ReservationService {
 
   getRoomStatusBoard(motelId: number): Observable<RoomStatusBoardResponse[]> {
     if (!this.isBrowser) return EMPTY as Observable<RoomStatusBoardResponse[]>;
-    return this.http.get<RoomStatusBoardResponse[]>(`${this.apiUrl}/reservations/owner/status-board?motelId=${motelId}`);
+    return this.http.get<RoomStatusBoardResponse[]>(`${this.apiUrl}/reservations/owner/status-board?motelId=${motelId}`).pipe(
+      map(rooms => rooms.map(room => ({
+        ...room,
+        currentReservation: room.currentReservation ? {
+          ...room.currentReservation,
+          reservationStatus: this.mapStatus(room.currentReservation.reservationStatus)
+        } : undefined
+      })))
+    );
   }
 
   verifyCode(code: string): Observable<Reservation> {
     if (!this.isBrowser) return EMPTY as Observable<Reservation>;
-    return this.http.get<Reservation>(`${this.apiUrl}/reservations/confirm-code/${code}`);
+    return this.http.get<Reservation>(`${this.apiUrl}/reservations/confirm-code/${code}`).pipe(
+      map(res => this.mapReservation(res))
+    );
   }
 
   checkIn(id: number): Observable<Reservation> {
-    return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/checkin`, {});
+    return this.http.patch<Reservation>(`${this.apiUrl}/reservations/${id}/checkin`, {}).pipe(
+      map(res => this.mapReservation(res))
+    );
   }
 
   getUserReservations(userId: number): Observable<Reservation[]> {
     if (!this.isBrowser) return EMPTY as Observable<Reservation[]>;
-    return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/user/${userId}`);
+    return this.http.get<Reservation[]>(`${this.apiUrl}/reservations/user/${userId}`).pipe(
+      map(list => list.map(res => this.mapReservation(res)))
+    );
+  }
+
+  private mapReservation(res: any): Reservation {
+    let status = this.mapStatus(res.status);
+    
+    // Auto-cancelar si pasó el tiempo y seguía PENDIENTE
+    if (status === 'PENDIENTE' && res.checkInDate) {
+      const checkIn = new Date(res.checkInDate);
+      if (Date.now() > checkIn.getTime()) {
+        status = 'CANCELADO';
+      }
+    }
+
+    return {
+      ...res,
+      status
+    } as Reservation;
+  }
+
+  private mapStatus(status: string): any {
+    if (!status) return status;
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'PENDIENTE';
+      case 'CONFIRMED': return 'PAGADO';
+      case 'CANCELLED': return 'CANCELADO';
+      case 'CHECKED_IN': return 'INGRESO'; // Mapeado a INGRESO por solicitud
+      case 'CHECKED_OUT': return 'CHECKED_OUT';
+      default: return status;
+    }
   }
 
   // SSE connection
@@ -69,8 +113,7 @@ export class ReservationService {
     this.eventSource = new EventSource(sseUrl);
 
     this.eventSource.onopen = () => {
-      console.log('SSE: conexión establecida');
-      // No se resetea retryCount aquí para evitar loops infinitos
+      // Conexión establecida
     };
 
     this.eventSource.onmessage = (event) => {
@@ -87,7 +130,6 @@ export class ReservationService {
       this.closeSSE();
       if (this.retryCount < this.MAX_RETRIES) {
         this.retryCount++;
-        console.log(`Reintentando conexión SSE (${this.retryCount}/${this.MAX_RETRIES})...`);
         this.retryTimer = setTimeout(() => this.subscribeToReservations(), 3000);
       } else {
         console.error('SSE: Límite de reintentos alcanzado');

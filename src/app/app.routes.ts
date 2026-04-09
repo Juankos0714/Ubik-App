@@ -42,10 +42,8 @@ import { CreateRoomComponent } from './views/Forms/create-room/components/create
 
 // ----------------------------------------------------------------------------------------------------
 
-import { MotelProfile } from './views/motel-profile/motel-profile'; // Perfil detallado de un motel
-import { RoomsMotel } from './views/rooms-motel/rooms-motel';
+import { MotelProfile } from './views/motel-profile/motel-profile';
 import { PropertyUserComponent } from './components/List-motels/property-user.component';
-import { RoomsOfferts } from './views/rooms-offerts/rooms-offerts';
 import { ProductRoom } from './views/product-room/product-room'; // Información detallada de una habitación
 import { EditRoomComponent } from './views/Forms/edit-room/components/edit-room.component';
 
@@ -72,9 +70,6 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'explore', component: Explore },
   { path: 'motelProfile/:id', component: MotelProfile },
-
-  { path: 'rooms-motel', component: RoomsMotel },
-  { path: 'rooms-offerts', component: RoomsOfferts },
 
   /*========== PAYMENTS ==========*/
   { path: 'payment/success', component: PaymentSuccessComponent },

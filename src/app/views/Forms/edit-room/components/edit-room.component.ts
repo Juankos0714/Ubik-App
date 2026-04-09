@@ -11,6 +11,8 @@ import { RoomService } from '../../../../core/services/room.service';
 import { CloudinaryService } from '../../../../core/services/Cloudinary.service';
 import { Room } from '../../../../core/models/room.model';
 import { AlertModal } from '../../../../components/alert-modal/alert-modal';
+import { ConfirmModal } from '../../../../components/confirm-modal/confirm-modal';
+
 
 import type { Service, RoomType } from '../../create-room/types/create-room.type';
 
@@ -245,12 +247,24 @@ export class EditRoomComponent implements OnInit, OnDestroy {
           return throwError(() => new Error('active_reservations'));
         }
 
-        if (!confirm('¿Estás seguro de que deseas eliminar esta habitación? Esta acción no se puede deshacer.')) {
-          return throwError(() => new Error('cancelled'));
-        }
+        const confirmRef = this.dialog.open(ConfirmModal, {
+          data: {
+            title: 'Eliminar habitación',
+            message: '¿Estás seguro de que deseas eliminar esta habitación? Esta acción no se puede deshacer.',
+            confirmText: 'Sí, eliminar',
+            cancelText: 'Cancelar'
+          },
+          panelClass: ['!rounded-2xl'],
+        });
 
-        this.loading = true;
-        return this.roomService.deleteRoom(this.roomId);
+        return confirmRef.closed.pipe(
+          switchMap(confirmed => {
+            if (!confirmed) return throwError(() => new Error('cancelled'));
+            this.loading = true;
+            return this.roomService.deleteRoom(this.roomId);
+          })
+        );
+
       }),
       finalize(() => this.loading = false)
     ).subscribe({
