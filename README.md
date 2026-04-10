@@ -20,7 +20,7 @@
 
 ## 📌 Descripción del Proyecto
 
-**Ubik** es una plataforma web progresiva (PWA) diseñada específicamente para el sector hotelero turístico, desarrollada con Angular. La aplicación facilita la búsqueda de moteles y la realización de reservas de manera fácil y segura, conectando a dos tipos de usuarios principales:
+**Ubik** es un aplicativo web diseñada específicamente para el sector hotelero turístico, desarrollada con Angular. La aplicación facilita la búsqueda de moteles y la realización de reservas de manera fácil y segura, conectando a dos tipos de usuarios principales:
 
 - 🏢 **Dueños de moteles**: Pueden registrarse, agregar sus establecimientos, gestionar habitaciones y ofertas.
 - 👤 **Clientes**: Pueden explorar moteles cercanos, visualizar disponibilidad y realizar reservas de forma intuitiva.
